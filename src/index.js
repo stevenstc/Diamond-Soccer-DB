@@ -3,6 +3,8 @@ const fetch = require('node-fetch');
 const TronWeb = require('tronweb');
 var cors = require('cors')
 require('dotenv').config();
+var moment = require('moment'); // require
+moment().format(); 
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -34,20 +36,19 @@ app.get('/api/v1',async(req,res) => {
     res.send("Conectado y funcionando");
 });
 
+app.get('/api/v1/tiempo',async(req,res) => {
+
+	data = moment(Date.now()).format('MM-DD-YYYY/HH:mm:ss')
+
+    res.send(data);
+});
+
 app.get('/api/v1/user/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
 
-	user = {
-		data:{
-			"wallet": wallet,
-			"correo": "sevenupsoyo12@gmail.com",
-			"balance": 300,
-			"gastos": 150
-		}
-
-	};
+	user = `${wallet}/sevenupsoyo12@gmail.com/${300}/${150}`
 
     res.send(user);
 });
