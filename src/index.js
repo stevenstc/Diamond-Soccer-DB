@@ -13,7 +13,7 @@ app.use(cors());
 
 
 const port = process.env.PORT || 3004;
-const PEKEY = process.env.APP_PRIVATEKEY || "56d2256d18d3fb6ea1a1f077df4bf87183fcca855d06e0a0c629e6168bca5e3f";
+const PEKEY = process.env.APP_PRIVATEKEY;
 
 const RED = "https://data-seed-prebsc-1-s1.binance.org:8545/";
 const addressContract = process.env.APP_CONTRACT || "TBRVNF2YCJYGREKuPKaP7jYYP9R1jvVQeq";
@@ -21,11 +21,11 @@ const addressContractPool = process.env.APP_CONTRACT_POOL || "TNGkvCofQcECQFHmuw
 
 
 let web3 = new Web3(Web3.providers.HttpProvider(RED));
-//web3.eth.accounts.privateKeyToAccount(PEKEY);
+web3.eth.accounts.privateKeyToAccount(PEKEY);
 
 
 //console.log(web3.eth.accounts);
-console.log(web3.eth.accounts.wallet);
+//console.log(web3.eth.accounts.wallet);
 
 
 app.get('/api',async(req,res) => {
@@ -54,6 +54,15 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
     res.send(user);
 });
 
+app.get('/api/v1/user/teams/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+	user = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0" //32 teams
+
+    res.send(user);
+});
+
 
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
@@ -67,17 +76,6 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
     res.send(user);
 });
 
-
-app.get('/api/v1/ejemplo',async(req,res) => {
-
-    //let wallet = req.params.wallet;
-
-	//monedasin/monedas Out
-	user = "50000-10"
-		
-
-    res.send(user);
-});
 
 app.get('/api/v1/asignar/:wallet',async(req,res) => {
 
