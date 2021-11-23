@@ -130,5 +130,18 @@ app.get('/api/v1/precio/:moneda',async(req,res) => {
 	}
 });
 
+app.get('/api/v1/ejemplo',async(req,res) => {
+
+    //let wallet = req.params.wallet;
+
+
+	user = {
+		monedasIn: 100,
+		monedasOut: 10
+	}
+
+    res.send(user);
+});
+
 
 app.listen(port, ()=> console.log('Escuchando Puerto: ' + port))
