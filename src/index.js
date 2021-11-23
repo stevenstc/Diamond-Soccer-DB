@@ -55,6 +55,19 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
 });
 
 
+app.get('/api/v1/coins/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+	console.log(wallet);
+	//monedasin/monedas Out
+	user = "50203-10"
+		
+
+    res.send(user);
+});
+
+
 app.get('/api/v1/ejemplo',async(req,res) => {
 
     //let wallet = req.params.wallet;
@@ -66,15 +79,16 @@ app.get('/api/v1/ejemplo',async(req,res) => {
     res.send(user);
 });
 
-app.get('/api/v1/coins/:wallet',async(req,res) => {
+app.get('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
-	console.log(wallet);
-	//monedasin/monedas Out
-	user = "50203-10"
-		
+    req.query
 
+	console.log(req.query);
+	//monedasin/monedas Out
+	user = "true"
+		
     res.send(user);
 });
 
