@@ -135,7 +135,7 @@ app.get('/api/v1/ejemplo',async(req,res) => {
     //let wallet = req.params.wallet;
 
 	//monedasin/monedas Out
-	user = "100/10"
+	user = "100-10"
 		
 
     res.send(user);
