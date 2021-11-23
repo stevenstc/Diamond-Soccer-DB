@@ -18,7 +18,7 @@
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
     "request": "^2.88.2",
-    "tronweb": "^3.2.6"
+    "web3": "^1.6.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
