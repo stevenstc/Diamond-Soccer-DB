@@ -13,13 +13,20 @@ app.use(cors());
 
 
 const port = process.env.PORT || 3004;
-const PEKEY = process.env.APP_PRIVATEKEY;
+const PEKEY = process.env.APP_PRIVATEKEY || "56d2256d18d3fb6ea1a1f077df4bf87183fcca855d06e0a0c629e6168bca5e3f";
 
 const RED = "https://data-seed-prebsc-1-s1.binance.org:8545/";
 const addressContract = process.env.APP_CONTRACT || "TBRVNF2YCJYGREKuPKaP7jYYP9R1jvVQeq";
 const addressContractPool = process.env.APP_CONTRACT_POOL || "TNGkvCofQcECQFHmuwZ1119uVK8qJYU5C4";
 
+
 let web3 = new Web3(Web3.providers.HttpProvider(RED));
+//web3.eth.accounts.privateKeyToAccount(PEKEY);
+
+
+//console.log(web3.eth.accounts);
+console.log(web3.eth.accounts.wallet);
+
 
 app.get('/api',async(req,res) => {
 
@@ -65,11 +72,19 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
 	console.log(wallet);
 	//monedasin/monedas Out
-	user = "50000-10"
+	user = "50101-10"
 		
 
     res.send(user);
 });
+
+
+app.get('/', (req, res, next) => {
+    console.log(req.query);
+
+    res.send(req.query);
+
+ });
 
 
 
