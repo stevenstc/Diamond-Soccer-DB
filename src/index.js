@@ -19,7 +19,7 @@ const RED = "https://data-seed-prebsc-1-s1.binance.org:8545/";
 const addressContract = process.env.APP_CONTRACT || "TBRVNF2YCJYGREKuPKaP7jYYP9R1jvVQeq";
 const addressContractPool = process.env.APP_CONTRACT_POOL || "TNGkvCofQcECQFHmuwZ1119uVK8qJYU5C4";
 
-let web3 = Web3(new Web3.providers.HttpProvider(RED));
+let web3 = new Web3(Web3.providers.HttpProvider(RED));
 
 app.get('/api',async(req,res) => {
 
