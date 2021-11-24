@@ -58,7 +58,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
-	user = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0" //32 teams
+	user = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" //32 teams
 
     console.log(user);
     res.send(user);
