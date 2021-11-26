@@ -70,6 +70,15 @@ app.get('/api/v1/date',async(req,res) => {
     res.send(data);
 });
 
+app.get('/api/v1/convertdate/:date',async(req,res) => {
+
+    date = parseInt(req.params.date);
+
+	data = moment(date).format('MM-DD-YYYY/HH:mm:ss');
+
+    res.send(data); 
+});
+
 app.get('/api/v1/datefuture',async(req,res) => {
 
 	data = Date.now()+604800*1000;
@@ -123,9 +132,13 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
-	console.log(wallet);
+    var result = await contractMarket.methods
+        .investors(wallet)
+        .call({ from: cuenta.address });
+
+	//console.log(result);
 	//monedasin/monedas Out
-	user = "50203-10"
+	user = result.balance+"-"+result.gastado;
 		
 
     res.send(user);
