@@ -65,7 +65,7 @@ app.get('/api/v1/tiempo',async(req,res) => {
 
 app.get('/api/v1/date',async(req,res) => {
 
-	data = Date.now()
+	data = ""+Date.now();
 
     res.send(data);
 });
@@ -73,8 +73,9 @@ app.get('/api/v1/date',async(req,res) => {
 app.get('/api/v1/datefuture',async(req,res) => {
 
 	data = Date.now()+604800*1000;
+    data = ""+data;
 
-    res.send(data);
+    res.send(data); 
 });
 
 app.get('/api/v1/user/:wallet',async(req,res) => {
