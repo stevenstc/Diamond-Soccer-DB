@@ -63,6 +63,20 @@ app.get('/api/v1/tiempo',async(req,res) => {
     res.send(data);
 });
 
+app.get('/api/v1/date',async(req,res) => {
+
+	data = Date.now()
+
+    res.send(data);
+});
+
+app.get('/api/v1/datefuture',async(req,res) => {
+
+	data = Date.now()+604800*1000;
+
+    res.send(data);
+});
+
 app.get('/api/v1/user/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
