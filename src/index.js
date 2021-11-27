@@ -23,10 +23,12 @@ const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f83
 let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY);
 
+web3.eth.accounts.wallet.add(PEKEY);
+
 const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
 
-console.log(cuenta.address);
-//web3.eth.accounts.signTransaction(tx, privateKey);
+//console.log(web3.eth.accounts.wallet);
+//tx web3.eth.accounts.signTransaction(tx, privateKey);
 /*web3.eth.sendTransaction({
     from: "0xEB014f8c8B418Db6b45774c326A0E64C78914dC0",
     gasPrice: "20000000000",
@@ -149,9 +151,18 @@ app.get('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
-    req.query
+    //?coins=14&token=crypto2021 
+    //console.log(req.query.coins);
+    //console.log(web3.currentProvider);
 
-	console.log(req.query);
+    var gases = await web3.eth.getGasPrice(); 
+
+    var result = await contractMarket.methods
+        .asignarCoinsTo(req.query.coins, wallet)
+        .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
+
+    console.log(result);
+	//console.log(req.query);
 	//monedasin/monedas Out
 	user = "true"
 		
