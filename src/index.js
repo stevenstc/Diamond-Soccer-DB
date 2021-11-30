@@ -145,7 +145,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
 	//console.log(result); 
 	//monedasin/monedas Out
-	user = result.balance-result.gastado;
+	user = result.balance-result.gastado+"";
 		
 
     res.send(user);
