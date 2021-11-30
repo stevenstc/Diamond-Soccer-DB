@@ -161,7 +161,47 @@ app.get('/api/v1/asignar/:wallet',async(req,res) => {
         .asignarCoinsTo(req.query.coins, wallet)
         .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
 
-    console.log(result);
+    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+	//console.log(req.query);
+	//monedasin/monedas Out
+	user = "true"
+		
+    res.send(user);
+});
+
+app.post('/api/v1/asignar/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+    var gases = await web3.eth.getGasPrice(); 
+
+    var result = await contractMarket.methods
+        .asignarCoinsTo(req.query.coins, wallet)
+        .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
+
+    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+	//console.log(req.query);
+	//monedasin/monedas Out
+	user = "true"
+		
+    res.send(user);
+});
+
+app.get('/api/v1/quitar/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+    //?coins=14&token=crypto2021 
+    //console.log(req.query.coins);
+    //console.log(web3.currentProvider);
+
+    var gases = await web3.eth.getGasPrice(); 
+
+    var result = await contractMarket.methods
+        .asignarCoinsTo(req.query.coins, wallet)
+        .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
+
+    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
 	//console.log(req.query);
 	//monedasin/monedas Out
 	user = "true"
