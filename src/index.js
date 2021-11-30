@@ -20,6 +20,7 @@ app.use(bodyParser.json());
 
 const port = process.env.PORT || 3004;
 const PEKEY = process.env.APP_PRIVATEKEY;
+const TOKEN = process.env.APP_TOKEN;
 
 const RED = "https://data-seed-prebsc-1-s1.binance.org:8545/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
@@ -151,66 +152,50 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 });
 
 
-app.get('/api/v1/asignar/:wallet',async(req,res) => {
-
-    let wallet = req.params.wallet;
-
-    //?coins=14&token=crypto2021 
-    //console.log(req.query.coins);
-    //console.log(web3.currentProvider);
-
-    var gases = await web3.eth.getGasPrice(); 
-
-    var result = await contractMarket.methods
-        .asignarCoinsTo(req.query.coins, wallet)
-        .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
-
-    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-	//console.log(req.query);
-	//monedasin/monedas Out
-	user = "true"
-		
-    res.send(user);
-});
-
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
-    console.log(req.params);
     let wallet = req.params.wallet;
     console.log(req.body);
 
-    var gases = await web3.eth.getGasPrice(); 
+    if(req.body.token == TOKEN){
 
-    var result = await contractMarket.methods
-        .asignarCoinsTo(req.body.coins, wallet)
-        .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
+        var gases = await web3.eth.getGasPrice(); 
 
-    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-	//console.log(req.body);
-	//monedasin/monedas Out
-	user = "true"
+        var result = await contractMarket.methods
+            .asignarCoinsTo(req.body.coins, wallet)
+            .send({ from: web3.eth.accounts.wallet[0].address, gas: 40000, gasPrice: gases });
+
+        console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+        //console.log(req.body);
+        //monedasin/monedas Out
+        user = "true"
+    }else{
+        user = "false"
+    }
 		
     res.send(user);
 });
 
-app.get('/api/v1/quitar/:wallet',async(req,res) => {
+app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+    console.log(req.body);
 
-    //?coins=14&token=crypto2021 
-    //console.log(req.query.coins);
-    //console.log(web3.currentProvider);
+    if(req.body.token == TOKEN){
 
-    var gases = await web3.eth.getGasPrice(); 
+        var gases = await web3.eth.getGasPrice(); 
 
-    var result = await contractMarket.methods
-        .asignarCoinsTo(req.query.coins, wallet)
-        .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
+        var result = await contractMarket.methods
+            .gastarCoinsfrom(req.body.coins, wallet)
+            .send({ from: web3.eth.accounts.wallet[0].address, gas: 40000, gasPrice: gases });
 
-    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-	//console.log(req.query);
-	//monedasin/monedas Out
-	user = "true"
+        console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+        //console.log(req.body);
+        //monedasin/monedas Out
+        user = "true"
+    }else{
+        user = "false"
+    }
 		
     res.send(user);
 });
