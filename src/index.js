@@ -98,7 +98,7 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
-	user = `${wallet}/sevenupsoyo12@gmail.com/${300}/${150}`
+	user = "true"
 
     res.send(user);
 });
