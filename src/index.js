@@ -134,6 +134,22 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
     res.send(inventario.toString());
 });
 
+app.get('/api/v1/formations/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+    /*var result = await contractMarket.methods
+        .investors(wallet)
+        .call({ from: cuenta.address });
+*/
+	//console.log(result); 
+	//monedasin/monedas Out
+	user = "1,0,0,0,0";
+		
+
+    res.send(user);
+});
+
 
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
