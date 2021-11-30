@@ -145,7 +145,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
 	//console.log(result); 
 	//monedasin/monedas Out
-	user = result.balance+"-"+result.gastado;
+	user = result.balance-result.gastado;
 		
 
     res.send(user);
@@ -187,7 +187,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
         var result = await contractMarket.methods
             .gastarCoinsfrom(req.body.coins, wallet)
-            .send({ from: web3.eth.accounts.wallet[0].address, gas: 40000, gasPrice: gases });
+            .send({ from: web3.eth.accounts.wallet[0].address, gas: 60000, gasPrice: gases });
 
         console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
         //console.log(req.body);
