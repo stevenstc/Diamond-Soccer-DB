@@ -1,5 +1,6 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const bodyParser = require("body-parser");
 const Web3 = require('web3');
 var cors = require('cors')
 require('dotenv').config();
@@ -12,6 +13,9 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const app = express();
 app.use(cors());
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 
 const port = process.env.PORT || 3004;
@@ -138,7 +142,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         .investors(wallet)
         .call({ from: cuenta.address });
 
-	//console.log(result);
+	//console.log(result); 
 	//monedasin/monedas Out
 	user = result.balance+"-"+result.gastado;
 		
@@ -171,7 +175,9 @@ app.get('/api/v1/asignar/:wallet',async(req,res) => {
 
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
+    console.log(req.params);
     let wallet = req.params.wallet;
+    console.log(req.body);
 
     var gases = await web3.eth.getGasPrice(); 
 
