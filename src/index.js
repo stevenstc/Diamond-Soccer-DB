@@ -176,11 +176,11 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
     var gases = await web3.eth.getGasPrice(); 
 
     var result = await contractMarket.methods
-        .asignarCoinsTo(req.query.coins, wallet)
+        .asignarCoinsTo(req.body.coins, wallet)
         .send({ from: web3.eth.accounts.wallet[0].address,gas: 40000 , gasPrice: gases });
 
     console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-	//console.log(req.query);
+	//console.log(req.body);
 	//monedasin/monedas Out
 	user = "true"
 		
