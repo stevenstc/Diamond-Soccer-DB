@@ -98,6 +98,8 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
+
+
 	user = "true"
 
     res.send(user);
@@ -125,7 +127,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
           console.log(item.nombre);
 
-        inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))] =  1;
+        inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
   
       }
 
