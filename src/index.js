@@ -101,7 +101,7 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
 
 
 
-	user = "false"
+	user = "true"
 
     res.send(user);
 });
