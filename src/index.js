@@ -97,10 +97,11 @@ app.get('/api/v1/datefuture',async(req,res) => {
 app.get('/api/v1/user/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+    let email = req.body.email;
 
 
 
-	user = "true"
+	user = "false"
 
     res.send(user);
 });
