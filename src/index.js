@@ -202,7 +202,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
-    console.log(req.body);
+    console.log("win coins: "+req.body.coins+" # "+req.params.wallet);
 
     if(req.body.token == TOKEN){
 
@@ -246,7 +246,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
-    console.log(req.body);
+    console.log("lost coins:"+req.body.coins+" # "+req.params.wallet);
 
     if(req.body.token == TOKEN){
 
