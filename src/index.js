@@ -199,7 +199,6 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
     res.send(balance.toString());
 });
 
-
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
@@ -207,7 +206,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     if(req.body.token == TOKEN){
 
-        delay(Math.floor(Math.random() * 12000));
+        await delay(Math.floor(Math.random() * 12000));
 
         var coins = new BigNumber(req.body.coins);
         coins = coins.multipliedBy(10**18);
@@ -219,22 +218,29 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
             .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
             .then(result => {
                 console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-                user = "true";
-            })
-            .catch(error => {
-                console.log(error)
-                user = "false";
+                res.send("true");
             })
 
-        
-        //console.log(req.body);
-        //monedasin/monedas Out
+            .catch(async() => {
+                console.log("dobleerror")
+                await delay(Math.floor(Math.random() * 12000));
+                contractMarket.methods
+                .asignarCoinsTo(coins, wallet)
+                .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
+                .then(result => {
+                    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+                    res.send("true");
+                })
+                .catch(error => {
+                    console.log("nofunciono")
+                    res.send("false");
+                })
+            })
         
     }else{
-        user = "false";
+        res.send("false");
     }
 		
-    res.send(user);
 });
 
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
@@ -244,7 +250,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     if(req.body.token == TOKEN){
 
-        delay(Math.floor(Math.random() * 12000));
+        await delay(Math.floor(Math.random() * 12000));
 
         var coins = new BigNumber(req.body.coins);
         coins = coins.multipliedBy(10**18);
@@ -256,18 +262,29 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
             .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
             .then(result => {
                 console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-                user = "true";
+                res.send("true");
             })
-            .catch(error => {
-                console.log(error)
-                user = "false";
+            .catch(async() => {
+                console.log("dobleerror")
+                await delay(Math.floor(Math.random() * 12000));
+                contractMarket.methods
+                .gastarCoinsfrom(coins, wallet)
+                .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
+                .then(result => {
+                    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+                    res.send("true");
+                })
+                .catch(error => {
+                    console.log("nofunciono")
+                    res.send("false");
+                })
             })
 
     }else{
-        user = "false"
+        res.send("false");
     }
 		
-    res.send(user);
+    
 });
 
 
