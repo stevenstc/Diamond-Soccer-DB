@@ -28,6 +28,8 @@ const PEKEY = process.env.APP_PRIVATEKEY;
 const TOKEN = process.env.APP_TOKEN;
 const cryptr = new Cryptr(process.env.APP_MAIL);
 
+const COMISION = process.env.APP_COMISION || 60000;
+
 const RED = "https://data-seed-prebsc-1-s1.binance.org:8545/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 
@@ -212,7 +214,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
         var result = await contractMarket.methods
             .asignarCoinsTo(coins, wallet)
-            .send({ from: web3.eth.accounts.wallet[0].address, gas: 40000, gasPrice: gases });
+            .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases });
 
         console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
         //console.log(req.body);
@@ -236,10 +238,11 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
         coins = coins.multipliedBy(10**18);
 
         var gases = await web3.eth.getGasPrice(); 
+        console.log(gases)
 
         var result = await contractMarket.methods
             .gastarCoinsfrom(coins, wallet)
-            .send({ from: web3.eth.accounts.wallet[0].address, gas: 60000, gasPrice: gases });
+            .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases });
 
         console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
         //console.log(req.body);
