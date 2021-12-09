@@ -149,13 +149,13 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
           .inventario(wallet, index)
           .call({ from: cuenta.address });
 
-          console.log(item.nombre);
+          //console.log(item.nombre);
 
         inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
   
       }
 
-      console.log(inventario.toString());
+      //console.log(inventario.toString());
 
     res.send(inventario.toString());
 });
@@ -199,43 +199,57 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
     res.send(balance.toString());
 });
 
+async function asignarMonedas(coins,wallet,intentos){
+
+    await delay(Math.floor(Math.random() * 12000));
+
+    var gases = await web3.eth.getGasPrice(); 
+
+    var paso = false;
+
+    await contractMarket.methods
+        .asignarCoinsTo(coins, wallet)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
+        .then(result => {
+            console.log("Monedas ASIGNADAS en "+intentos+" intentos");
+            console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+            paso = true;
+        })
+
+        .catch(async() => {
+            intentos++;
+            console.log(coins.dividedBy(10**18)+" + "+wallet+" : "+intentos)
+            await delay(Math.floor(Math.random() * 12000));
+            paso = await asignarMonedas(coins,wallet,intentos);
+            
+        })
+
+    return paso;
+
+}
+
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
-    console.log("win coins: "+req.body.coins+" # "+req.params.wallet);
+    
 
     if(req.body.token == TOKEN){
-
-        await delay(Math.floor(Math.random() * 12000));
 
         var coins = new BigNumber(req.body.coins);
         coins = coins.multipliedBy(10**18);
 
-        var gases = await web3.eth.getGasPrice(); 
+        await delay(Math.floor(Math.random() * 12000));
 
-        contractMarket.methods
-            .asignarCoinsTo(coins, wallet)
-            .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
-            .then(result => {
-                console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-                res.send("true");
-            })
+        if(await asignarMonedas(coins, wallet,1)){
+            console.log("Win coins: "+req.body.coins+" # "+req.params.wallet);
+            res.send("true");
 
-            .catch(async() => {
-                console.log("dobleerror")
-                await delay(Math.floor(Math.random() * 12000));
-                contractMarket.methods
-                .asignarCoinsTo(coins, wallet)
-                .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
-                .then(result => {
-                    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-                    res.send("true");
-                })
-                .catch(error => {
-                    console.log("nofunciono")
-                    res.send("false");
-                })
-            })
+        }else{
+            res.send("false");
+
+        }
+
+        
         
     }else{
         res.send("false");
@@ -243,10 +257,37 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 		
 });
 
+async function quitarMonedas(coins,wallet,intentos){
+
+    await delay(Math.floor(Math.random() * 12000));
+
+    var gases = await web3.eth.getGasPrice(); 
+
+    var paso = false;
+
+    await contractMarket.methods
+        .gastarCoinsfrom(coins, wallet)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
+        .then(result => {
+            console.log("Monedas RETIRADAS en "+intentos+" intentos");
+            console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+            paso = true;
+        })
+
+        .catch(async() => {
+            intentos++;
+            console.log(coins.dividedBy(10**18)+" - "+wallet+" : "+intentos)
+            await delay(Math.floor(Math.random() * 12000));
+            paso = await quitarMonedas(coins,wallet,intentos);
+        })
+
+    return paso;
+
+}
+
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
-    console.log("lost coins:"+req.body.coins+" # "+req.params.wallet);
 
     if(req.body.token == TOKEN){
 
@@ -255,30 +296,14 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
         var coins = new BigNumber(req.body.coins);
         coins = coins.multipliedBy(10**18);
 
-        var gases = await web3.eth.getGasPrice(); 
+        if(await quitarMonedas(coins, wallet,1)){
+            console.log("Lost coins: "+req.body.coins+" # "+req.params.wallet);
+            res.send("true");
 
-        contractMarket.methods
-            .gastarCoinsfrom(coins, wallet)
-            .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
-            .then(result => {
-                console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-                res.send("true");
-            })
-            .catch(async() => {
-                console.log("dobleerror")
-                await delay(Math.floor(Math.random() * 12000));
-                contractMarket.methods
-                .gastarCoinsfrom(coins, wallet)
-                .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
-                .then(result => {
-                    console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-                    res.send("true");
-                })
-                .catch(error => {
-                    console.log("nofunciono")
-                    res.send("false");
-                })
-            })
+        }else{
+            res.send("false");
+
+        }
 
     }else{
         res.send("false");
@@ -289,7 +314,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
 
 app.get('/', (req, res, next) => {
-    console.log(req.query);
+    //console.log(req.query);
 
     res.send(req.query);
 
