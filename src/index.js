@@ -151,7 +151,13 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
           //console.log(item.nombre);
 
-        inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
+          if(item.nombre.indexOf("t") === 0){
+
+            inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
+
+          }
+
+        
   
       }
 
@@ -164,16 +170,37 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
-    /*var result = await contractMarket.methods
-        .investors(wallet)
+    var result = await contractMarket.methods
+        .largoInventario(wallet)
         .call({ from: cuenta.address });
-*/
-	//console.log(result); 
-	//monedasin/monedas Out
-	user = "1,0,0,0,0";
-		
+  
+        var inventario = [];
 
-    res.send(user);
+        for (let index = 0; index < 4; index++) {
+            inventario[index] = 0;
+        }
+  
+      for (let index = 0; index < result; index++) {
+
+        var item = await contractMarket.methods
+          .inventario(wallet, index)
+          .call({ from: cuenta.address });
+
+          //console.log(item.nombre);
+
+          if(item.nombre.indexOf("f") === 0){
+
+            inventario[parseInt(item.nombre.slice(item.nombre.indexOf("f")+1,item.nombre.indexOf("-")))-1] =  1;
+
+          }
+
+        
+  
+      }
+
+      //console.log(inventario.toString());
+
+    res.send("1,"+inventario.toString());
 });
 
 
