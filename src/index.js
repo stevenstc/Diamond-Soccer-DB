@@ -1,5 +1,6 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const Web3 = require('web3');
 var cors = require('cors')
@@ -25,6 +26,7 @@ const port = process.env.PORT || 3004;
 const PEKEY = process.env.APP_PRIVATEKEY;
 const TOKEN = process.env.APP_TOKEN;
 const cryptr = new Cryptr(process.env.APP_MAIL);
+const uri = process.env.APP_URI;
 
 const COMISION = process.env.APP_COMISION || 60000;
 
@@ -49,6 +51,39 @@ const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
     data: ""
 }, 'MyPassword!').then(console.log);*/
 //console.log(web3.eth.accounts.wallet);
+const options = { useNewUrlParser: true, useUnifiedTopology: true };
+mongoose.connect(uri, options).then(
+    () => { console.log("Conectado Exitodamente!");},
+    err => { console.log(err); }
+  );
+
+const user = mongoose.model('usuarios', {
+    wallet: String,
+    active: Boolean,
+    payAt: Number,
+    balance: Number,
+    ingresado: Number,
+    retirado: Number,
+    deposit: [{
+      amount: Number,
+      date: Number,
+      finalized: Boolean,
+      txhash: String
+
+    }],
+    retiro: [{
+      amount: Number,
+      date: Number,
+      done: Boolean,
+      dateSend: Number,
+      txhash: String
+
+    }],
+    txs: [String]
+
+});
+
+
 
 app.get('/',async(req,res) => {
 
@@ -195,104 +230,102 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
 
-    var investor = await contractMarket.methods
-        .investors(wallet)
-        .call({ from: cuenta.address });
+    if(!web3.utils.isAddress(wallet)){
+        console.log("wallet incorrecta")
+        res.send("0");
+    }else{
 
-    var balance = investor.balance;
-    var gastado = investor.gastado;
+            usuario = await user.find({ wallet: wallet });
 
-    balance = new BigNumber(balance);
-    gastado = new BigNumber(gastado);
-    balance = balance.minus(gastado);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(0);
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+            console.log("usuario creado")
+            res.send(usuario.balance+"");
 
-    res.send(balance.toString());
+        }else{
+            console.log("usuario NO creado")
+            var users = new user({
+                wallet: wallet,    
+                active: true,
+                balance: 0,
+                ingresado: 0,
+                retirado: 0,
+                deposit: [],
+                retiro: [],
+                txs: []
+            });
+
+            users.save().then(()=>{
+                console.log("Usuario creado exitodamente");
+                res.send("0");
+            })
+                
+            
+        }
+
+    }
+
+    
 });
 
-async function asignarMonedas(coins,wallet,intentos){
-
-    await delay(Math.floor(Math.random() * 12000));
-
-    var gases = await web3.eth.getGasPrice(); 
-
-    var paso = false;
-
-    await contractMarket.methods
-        .asignarCoinsTo(coins, wallet)
-        .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
-        .then(result => {
-            console.log("Monedas ASIGNADAS en "+intentos+" intentos");
-            console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-            paso = true;
-        })
-
-        .catch(async() => {
-            intentos++;
-            console.log(coins.dividedBy(10**18)+" + "+wallet+" : "+intentos)
-            await delay(Math.floor(Math.random() * 12000));
-            paso = await asignarMonedas(coins,wallet,intentos);
-            
-        })
-
-    return paso;
-
-}
 
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
     
-    if(req.body.token == TOKEN){
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
-        var coins = new BigNumber(req.body.coins);
-        coins = coins.multipliedBy(10**18);
+        usuario = await user.find({ wallet: wallet });
 
-        await delay(Math.floor(Math.random() * 12000));
-
-        if(await asignarMonedas(coins, wallet,1)){
-            console.log("Win coins: "+req.body.coins+" # "+req.params.wallet);
-            res.send("true");
-
+        if (usuario.length >= 1) {
+            var datos = usuario[0];
+            if(datos.active){
+                datos.balance =+ req.body.coins;
+                datos.ingresado =+ req.body.coins;
+                datos.deposit.push({amount: req.body.coins,
+                    date: Date.now(),
+                    finalized: true,
+                    txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
+                })
+                update = await user.updateOne({ wallet: wallet }, datos);
+                console.log("Win coins: "+req.body.coins+" # "+req.params.wallet);
+                res.send("true");
+            }else{
+                res.send("false");
+            }
+    
         }else{
-            res.send("false");
-
+            console.log("usuario NO creado")
+            var users = new user({
+                wallet: wallet,    
+                active: true,
+                payAt: Date.now(),
+                balance: req.body.coins,
+                ingresado: req.body.coins,
+                retirado: 0,
+                deposit: [{amount: req.body.coins,
+                    date: Date.now(),
+                    finalized: true,
+                    txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
+                }],
+                retiro: [],
+                txs: []
+            });
+    
+            users.save().then(()=>{
+                console.log("Usuario creado exitodamente");
+                res.send("true");
+            })
+                
+            
         }
+
 
     }else{
         res.send("false");
     }
 		
 });
-
-async function quitarMonedas(coins,wallet,intentos){
-
-    await delay(Math.floor(Math.random() * 12000));
-
-    var gases = await web3.eth.getGasPrice(); 
-
-    var paso = false;
-
-    await contractMarket.methods
-        .gastarCoinsfrom(coins, wallet)
-        .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
-        .then(result => {
-            console.log("Monedas RETIRADAS en "+intentos+" intentos");
-            console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
-            paso = true;
-        })
-
-        .catch(async() => {
-            intentos++;
-            console.log(coins.dividedBy(10**18)+" - "+wallet+" : "+intentos)
-            await delay(Math.floor(Math.random() * 12000));
-            paso = await quitarMonedas(coins,wallet,intentos);
-        })
-
-    return paso;
-
-}
 
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
@@ -300,13 +333,75 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     if(req.body.token == TOKEN){
 
+        usuario = await user.find({ wallet: wallet });
+
+        if (usuario.length >= 1) { 
+            var datos = usuario[0];
+            if(datos.active){
+                datos.balance =- req.body.coins;
+                if(datos.balance >= 0){
+
+                    datos.retirado =+ req.body.coins;
+                    datos.retiro.push({
+                        amount: req.body.coins,
+                        date: Date.now(),
+                        done: true,
+                        dateSend: Date.now(),
+                        txhash: "Lost coins: "+req.body.coins+" # "+req.params.wallet
+                  
+                      })
+                    update = await user.updateOne({ wallet: wallet }, datos);
+                    console.log("Lost coins: "+req.body.coins+" # "+req.params.wallet);
+                    res.send("true");
+
+                }else{
+                    res.send("false");
+                }
+                
+            }else{
+                res.send("false");
+            }
+    
+        }else{
+            console.log("creado usuario no creado")
+            var users = new user({
+                wallet: wallet,    
+                active: true,
+                payAt: Date.now(),
+                balance: 0,
+                ingresado: 0,
+                retirado: 0,
+                deposit: [],
+                retiro: [],
+                txs: []
+            });
+    
+            users.save().then(()=>{
+                console.log("Usuario creado exitodamente");
+                res.send("false");
+            })
+                
+            
+        }
+
+    }else{
+        res.send("false");
+    }
+		
+    
+});
+
+app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+    if(req.body.token == TOKEN){
+
         await delay(Math.floor(Math.random() * 12000));
 
-        var coins = new BigNumber(req.body.coins);
-        coins = coins.multipliedBy(10**18);
 
-        if(await quitarMonedas(coins, wallet,1)){
-            console.log("Lost coins: "+req.body.coins+" # "+req.params.wallet);
+        if(await monedasAlJuego(req.body.coins, wallet,1)){
+            console.log("Coins TO GAME: "+req.body.coins+" # "+req.params.wallet);
             res.send("true");
 
         }else{
@@ -320,6 +415,179 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 		
     
 });
+
+async function monedasAlJuego(coins,wallet,intentos){
+
+    coins = new BigNumber(coins).multipliedBy(10**18);
+
+    var gases = await web3.eth.getGasPrice(); 
+
+    await delay(Math.floor(Math.random() * 12000));
+
+    var paso = true;
+
+    var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+    
+    await contractMarket.methods
+        .gastarCoinsfrom(coins, wallet)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
+        .then(result => {
+            console.log("Monedas ENVIADAS AL JUEGO en "+intentos+" intentos");
+            console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+            
+            user.find({ wallet: wallet }).then(usuario =>{
+
+                if (usuario.length >= 1) {
+                    var datos = usuario[0];
+                    if(datos.active){
+                        datos.balance = coins.dividedBy(10**18).plus(datos.balance);
+                        datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado);
+                        datos.txs.push("https://testnet.bscscan.com/tx/"+result.transactionHash)
+                        update = user.updateOne({ wallet: wallet }, datos)
+                        .then(console.log("Coins SEND: "+coins.dividedBy(10**18)+" # "+wallet))
+                        .catch(console.error())
+                        
+                    }
+            
+                }else{
+                    console.log("usuario NO creado")
+                    var users = new user({
+                        wallet: wallet,    
+                        active: true,
+                        payAt: Date.now(),
+                        balance: coins,
+                        ingresado: coins,
+                        retirado: 0,
+                        deposit: [],
+                        retiro: [],
+                        txs: ["https://testnet.bscscan.com/tx/"+result.transactionHash]
+                    });
+            
+                    users.save().then(()=>{
+                        console.log("Usuario creado exitodamente");
+                    })
+                        
+                    
+                }
+            })
+
+            paso = true;
+        })
+
+        .catch(async() => {
+            intentos++;
+            console.log(coins.dividedBy(10**18)+" ->  "+wallet+" : "+intentos)
+            await delay(Math.floor(Math.random() * 12000));
+            paso = await monedasAlJuego(coins,wallet,intentos);
+        })
+
+    return paso;
+
+}
+
+
+app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+    if(req.body.token == TOKEN){
+
+        await delay(Math.floor(Math.random() * 12000));
+
+
+        if(await monedasAlMarket(req.body.coins, wallet,1)){
+            console.log("Coins TO MARKET: "+req.body.coins+" # "+req.params.wallet);
+            res.send("true");
+
+        }else{
+            res.send("false");
+
+        }
+
+    }else{
+        res.send("false");
+    }
+		
+    
+});
+
+async function monedasAlMarket(coins,wallet,intentos){
+
+    coins = new BigNumber(coins).multipliedBy(10**18);
+
+    var gases = await web3.eth.getGasPrice(); 
+
+    await delay(Math.floor(Math.random() * 12000));
+
+    var paso = false;
+
+    var usuario = await user.find({ wallet: wallet });
+
+    if (usuario.length >= 1) {
+        var datos = usuario[0];
+        if(Date.now() < datos.payAt+1 * 86400*1000)return false ;
+    }else{
+        return false;
+    }
+    
+
+    await contractMarket.methods
+        .asignarCoinsTo(coins, wallet)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
+        .then(result => {
+            console.log("Monedas ENVIADAS A MARKET en "+intentos+" intentos");
+            console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+            
+            user.find({ wallet: wallet }).then(usuario =>{
+
+                if (usuario.length >= 1) {
+                    var datos = usuario[0];
+                    if(datos.active){
+                        datos.payAt = Date.now();
+                        datos.balance = BigNumber(datos.balance).minus(coins.dividedBy(10**18));
+                        datos.retirado = coins.dividedBy(10**18).plus(datos.retirado);
+                        datos.txs.push("https://testnet.bscscan.com/tx/"+result.transactionHash)
+                        update = user.updateOne({ wallet: wallet }, datos)
+                        .then(console.log("Coins SEND: "+coins.dividedBy(10**18)+" # "+wallet))
+                        .catch(console.error())
+                        
+                    }
+            
+                }else{
+                    console.log("usuario NO creado")
+                    var users = new user({
+                        wallet: wallet,    
+                        active: true,
+                        payAt: Date.now(),
+                        balance: 0,
+                        ingresado: 0,
+                        retirado: 0,
+                        deposit: [],
+                        retiro: [],
+                        txs: ["https://testnet.bscscan.com/tx/"+result.transactionHash]
+                    });
+            
+                    users.save().then(()=>{
+                        console.log("Usuario creado exitodamente");
+                    })
+                        
+                    
+                }
+            })
+
+            paso = true;
+        })
+
+        .catch(async() => {
+            intentos++;
+            console.log(coins.dividedBy(10**18)+" ->  "+wallet+" : "+intentos)
+            await delay(Math.floor(Math.random() * 12000));
+            paso = await monedasAlMarket(coins,wallet,intentos);
+        })
+
+    return paso;
+
+}
 
 
 app.get('/', (req, res, next) => {
