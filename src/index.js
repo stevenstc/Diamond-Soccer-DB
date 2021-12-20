@@ -246,6 +246,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
             var users = new user({
                 wallet: wallet,    
                 active: true,
+                payAt: Date.now(),
                 balance: 0,
                 ingresado: 0,
                 retirado: 0,
