@@ -239,11 +239,10 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
-            console.log("usuario creado")
             res.send(usuario.balance+"");
 
         }else{
-            console.log("creado USUARIO al consultar monedas")
+            console.log("creado USUARIO al consultar monedas"+wallet)
             var users = new user({
                 wallet: wallet,    
                 active: true,
@@ -295,7 +294,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
             }
     
         }else{
-            console.log("creado USUARIO al Asignar")
+            console.log("creado USUARIO al Asignar"+wallet)
             var users = new user({
                 wallet: wallet,    
                 active: true,
@@ -363,7 +362,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
             }
     
         }else{
-            console.log("creado usuario no creado")
+            console.log("usuario creado al retirar monedas"+wallet)
             var users = new user({
                 wallet: wallet,    
                 active: true,
@@ -450,7 +449,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                     }
             
                 }else{
-                    console.log("creado USUARIO monedas al juego")
+                    console.log("creado USUARIO monedas al juego"+wallet)
                     var users = new user({
                         wallet: wallet,    
                         active: true,
@@ -556,7 +555,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                     }
             
                 }else{
-                    console.log("creado USUARIO monedas al Market")
+                    console.log("creado USUARIO monedas al Market"+wallet)
                     var users = new user({
                         wallet: wallet,    
                         active: true,
