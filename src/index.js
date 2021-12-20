@@ -440,8 +440,8 @@ async function monedasAlJuego(coins,wallet,intentos){
                 if (usuario.length >= 1) {
                     var datos = usuario[0];
                     if(datos.active){
-                        datos.balance = coins.dividedBy(10**18).plus(datos.balance);
-                        datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado);
+                        datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(0).toNumber();
+                        datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(0).toNumber();
                         datos.txs.push("https://testnet.bscscan.com/tx/"+result.transactionHash)
                         update = user.updateOne({ wallet: wallet }, datos)
                         .then(console.log("Coins SEND: "+coins.dividedBy(10**18)+" # "+wallet))
