@@ -243,7 +243,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
             res.send(usuario.balance+"");
 
         }else{
-            console.log("usuario NO creado")
+            console.log("creado USUARIO al consultar monedas")
             var users = new user({
                 wallet: wallet,    
                 active: true,
@@ -295,7 +295,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
             }
     
         }else{
-            console.log("usuario NO creado")
+            console.log("creado USUARIO al Asignar")
             var users = new user({
                 wallet: wallet,    
                 active: true,
@@ -450,7 +450,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                     }
             
                 }else{
-                    console.log("usuario NO creado")
+                    console.log("creado USUARIO monedas al juego")
                     var users = new user({
                         wallet: wallet,    
                         active: true,
@@ -463,9 +463,11 @@ async function monedasAlJuego(coins,wallet,intentos){
                         txs: ["https://testnet.bscscan.com/tx/"+result.transactionHash]
                     });
             
-                    users.save().then(()=>{
+                    async() => {
+                        await users.save();
                         console.log("Usuario creado exitodamente");
-                    })
+                    };
+                    
                         
                     
                 }
@@ -554,7 +556,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                     }
             
                 }else{
-                    console.log("usuario NO creado")
+                    console.log("creado USUARIO monedas al Market")
                     var users = new user({
                         wallet: wallet,    
                         active: true,
