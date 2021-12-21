@@ -7,7 +7,10 @@ var cors = require('cors')
 require('dotenv').config();
 var moment = require('moment');
 const BigNumber = require('bignumber.js');
-var uc = require('upper-case');
+const uc = require('upper-case');
+const lc = require('lower-case');
+
+
 
 const Cryptr = require('cryptr');
 
@@ -144,19 +147,21 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
     let wallet = req.params.wallet;
     let emailApp = req.query.email;
 
-    emailApp = uc.lowerCase(emailApp)
+    emailApp = lc.lowerCase(emailApp);
+
 
     var investor =
       await  contractMarket.methods
         .investors(wallet)
         .call({ from: cuenta.address });
 
-    var email = uc.lowerCase(investor.correo);
+    var email = investor.correo;
+
 
     if (email === "") {
         res.send("false");
     }else{
-        email = cryptr.decrypt(email);
+        email = lc.lowerCase(cryptr.decrypt(email));
 
         if(emailApp === email){
             res.send("true");
