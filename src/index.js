@@ -422,11 +422,11 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     coins = new BigNumber(coins).multipliedBy(10**18);
 
-    var balance = await contractToken.methods
-    .balanceOf(this.props.currentAccount)
-    .call({ from: this.props.currentAccount });
+    var usuario = await contractMarket.methods
+    .investors(wallet)
+    .call({ from: web3.eth.accounts.wallet[0].address });
 
-    balance = new BigNumber(balance);
+    balance = new BigNumber(usuario.balance);
     balance = balance.shiftedBy(-18);
     balance = balance.decimalPlaces(0).toNumber();
 
@@ -437,8 +437,8 @@ async function monedasAlJuego(coins,wallet,intentos){
     var paso = true;
 
     var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
-    
-    if(balance - coins.toNumber() >= 0 ){
+
+    if(balance - coins.shiftedBy(-18).toNumber() >= 0 ){
         await contractMarket.methods
             .gastarCoinsfrom(coins, wallet)
             .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
