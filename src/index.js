@@ -7,6 +7,7 @@ var cors = require('cors')
 require('dotenv').config();
 var moment = require('moment');
 const BigNumber = require('bignumber.js');
+var uc = require('upper-case');
 
 const Cryptr = require('cryptr');
 
@@ -229,12 +230,12 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+    wallet = uc.upperCase(wallet);
 
     if(!web3.utils.isAddress(wallet)){
         console.log("wallet incorrecta")
         res.send("0");
     }else{
-
             usuario = await user.find({ wallet: wallet });
 
         if (usuario.length >= 1) {
@@ -272,6 +273,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+    wallet = uc.upperCase(wallet);
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
@@ -330,6 +332,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+    wallet = uc.upperCase(wallet);
 
     if(req.body.token == TOKEN){
 
@@ -394,6 +397,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+    wallet = uc.upperCase(wallet);
 
     if(req.body.token == TOKEN){
 
@@ -491,6 +495,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+    wallet = uc.upperCase(wallet);
 
     if(req.body.token == TOKEN){
 
