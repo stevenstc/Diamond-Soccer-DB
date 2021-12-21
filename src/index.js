@@ -144,17 +144,19 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
     let wallet = req.params.wallet;
     let emailApp = req.query.email;
 
+    emailApp = uc.lowerCase(emailApp)
+
     var investor =
       await  contractMarket.methods
         .investors(wallet)
         .call({ from: cuenta.address });
 
-    var email = investor.correo;
+    var email = uc.lowerCase(investor.correo);
 
     if (email === "") {
         res.send("false");
     }else{
-        email = cryptr.decrypt(investor.correo);
+        email = cryptr.decrypt(email);
 
         if(emailApp === email){
             res.send("true");
@@ -614,7 +616,7 @@ app.get('/api/v1/sendmail',async(req,res) => {
         }else{
             res.send("false");
         }
-        
+
     }else{
         res.send("false");
     }
