@@ -606,7 +606,8 @@ async function monedasAlMarket(coins,wallet,intentos){
 app.get('/api/v1/sendmail',async(req,res) => {
     console.log(req.query);
     fetch("https://brutusgroup.tk/mail.php?destino="+req.query.destino+"&code="+req.query.code+"&token=crypto2021")
-    res.send("true")
+        .then(()=>res.send("true"))
+        .catch(()=>res.send("false"))
 });
 
 app.get('/', (req, res, next) => {
