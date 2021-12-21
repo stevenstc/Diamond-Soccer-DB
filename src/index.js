@@ -230,13 +230,12 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
-    wallet = uc.upperCase(wallet);
 
     if(!web3.utils.isAddress(wallet)){
         console.log("wallet incorrecta")
         res.send("0");
     }else{
-            usuario = await user.find({ wallet: wallet });
+            usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
@@ -245,7 +244,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         }else{
             console.log("creado USUARIO al consultar monedas"+wallet)
             var users = new user({
-                wallet: wallet,    
+                wallet: uc.upperCase(wallet),    
                 active: true,
                 payAt: Date.now(),
                 balance: 0,
@@ -273,11 +272,10 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
-    wallet = uc.upperCase(wallet);
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: wallet });
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
         if (usuario.length >= 1) {
             var datos = usuario[0];
@@ -299,7 +297,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
         }else{
             console.log("creado USUARIO al Asignar"+wallet)
             var users = new user({
-                wallet: wallet,    
+                wallet: uc.upperCase(wallet),    
                 active: true,
                 payAt: Date.now(),
                 balance: req.body.coins,
@@ -332,11 +330,10 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
-    wallet = uc.upperCase(wallet);
 
-    if(req.body.token == TOKEN){
+    if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: wallet });
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
         if (usuario.length >= 1) { 
             var datos = usuario[0];
@@ -368,7 +365,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
         }else{
             console.log("usuario creado al retirar monedas"+wallet)
             var users = new user({
-                wallet: wallet,    
+                wallet: uc.upperCase(wallet),    
                 active: true,
                 payAt: Date.now(),
                 balance: 0,
@@ -396,15 +393,13 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
 app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
-    wallet = uc.upperCase(wallet);
 
-    if(req.body.token == TOKEN){
+    if(req.body.token == TOKEN  && web3.utils.isAddress(req.params.wallet)){
 
         await delay(Math.floor(Math.random() * 12000));
 
 
-        if(await monedasAlJuego(req.body.coins, wallet,1)){
+        if(await monedasAlJuego(req.body.coins, req.params.wallet,1)){
             console.log("Coins TO GAME: "+req.body.coins+" # "+req.params.wallet);
             res.send("true");
 
@@ -439,7 +434,7 @@ async function monedasAlJuego(coins,wallet,intentos){
             console.log("Monedas ENVIADAS AL JUEGO en "+intentos+" intentos");
             console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
             
-            user.find({ wallet: wallet }).then(usuario =>{
+            user.find({ wallet: uc.upperCase(wallet) }).then(usuario =>{
 
                 if (usuario.length >= 1) {
                     var datos = usuario[0];
@@ -456,7 +451,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                 }else{
                     console.log("creado USUARIO monedas al juego"+wallet)
                     var users = new user({
-                        wallet: wallet,    
+                        wallet: uc.upperCase(wallet),    
                         active: true,
                         payAt: Date.now(),
                         balance: coins,
@@ -494,10 +489,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
 app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
-    wallet = uc.upperCase(wallet);
-
-    if(req.body.token == TOKEN){
+    if(req.body.token == TOKEN && web3.utils.isAddress(req.params.wallet)){
 
         await delay(Math.floor(Math.random() * 12000));
 
@@ -528,7 +520,7 @@ async function monedasAlMarket(coins,wallet,intentos){
 
     var paso = false;
 
-    var usuario = await user.find({ wallet: wallet });
+    var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
     if (usuario.length >= 1) {
         var datos = usuario[0];
@@ -545,7 +537,7 @@ async function monedasAlMarket(coins,wallet,intentos){
             console.log("Monedas ENVIADAS A MARKET en "+intentos+" intentos");
             console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
             
-            user.find({ wallet: wallet }).then(usuario =>{
+            user.find({ wallet: uc.upperCase(wallet) }).then(usuario =>{
 
                 if (usuario.length >= 1) {
                     var datos = usuario[0];
@@ -563,7 +555,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                 }else{
                     console.log("creado USUARIO monedas al Market"+wallet)
                     var users = new user({
-                        wallet: wallet,    
+                        wallet: uc.upperCase(wallet),    
                         active: true,
                         payAt: Date.now(),
                         balance: 0,
