@@ -287,7 +287,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                     finalized: true,
                     txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
                 })
-                update = await user.updateOne({ wallet: wallet }, datos);
+                update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                 console.log("Win coins: "+req.body.coins+" # "+req.params.wallet);
                 res.send("true");
             }else{
@@ -350,7 +350,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                         txhash: "Lost coins: "+req.body.coins+" # "+req.params.wallet
                   
                       })
-                    update = await user.updateOne({ wallet: wallet }, datos);
+                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                     console.log("Lost coins: "+req.body.coins+" # "+req.params.wallet);
                     res.send("true");
 
@@ -442,7 +442,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                         datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(0).toNumber();
                         datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(0).toNumber();
                         datos.txs.push("https://testnet.bscscan.com/tx/"+result.transactionHash)
-                        update = user.updateOne({ wallet: wallet }, datos)
+                        update = user.updateOne({ wallet: uc.upperCase(wallet) }, datos)
                         .then(console.log("Coins SEND: "+coins.dividedBy(10**18)+" # "+wallet))
                         .catch(console.error())
                         
@@ -546,7 +546,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                         datos.balance = BigNumber(datos.balance).minus(coins.dividedBy(10**18));
                         datos.retirado = coins.dividedBy(10**18).plus(datos.retirado);
                         datos.txs.push("https://testnet.bscscan.com/tx/"+result.transactionHash)
-                        update = user.updateOne({ wallet: wallet }, datos)
+                        update = user.updateOne({ wallet: uc.upperCase(wallet) }, datos)
                         .then(console.log("Coins SEND: "+coins.dividedBy(10**18)+" # "+wallet))
                         .catch(console.error())
                         
