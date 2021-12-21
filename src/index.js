@@ -605,9 +605,20 @@ async function monedasAlMarket(coins,wallet,intentos){
 
 app.get('/api/v1/sendmail',async(req,res) => {
     console.log(req.query);
-    fetch("https://brutusgroup.tk/mail.php?destino="+req.query.destino+"&code="+req.query.code+"&token=crypto2021")
-        .then(()=>res.send("true"))
-        .catch(()=>res.send("false"))
+    if(req.query.destino && req.query.code){
+
+        var resultado = await fetch("https://brutusgroup.tk/mail.php?destino="+req.query.destino+"&code="+req.query.code+"&token=crypto2021");
+
+        if (await resultado.text() === "true") {
+            res.send("true");
+        }else{
+            res.send("false");
+        }
+        
+    }else{
+        res.send("false");
+    }
+
 });
 
 app.get('/', (req, res, next) => {
