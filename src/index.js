@@ -280,8 +280,8 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
         if (usuario.length >= 1) {
             var datos = usuario[0];
             if(datos.active){
-                datos.balance =+ req.body.coins;
-                datos.ingresado =+ req.body.coins;
+                datos.balance = datos.balance + req.body.coins;
+                datos.ingresado = datos.balance + req.body.coins;
                 datos.deposit.push({amount: req.body.coins,
                     date: Date.now(),
                     finalized: true,
@@ -338,10 +338,10 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
         if (usuario.length >= 1) { 
             var datos = usuario[0];
             if(datos.active){
-                datos.balance =- req.body.coins;
+                datos.balance = datos.balance-req.body.coins;
                 if(datos.balance >= 0){
 
-                    datos.retirado =+ req.body.coins;
+                    datos.retirado = datos.retirado+ req.body.coins;
                     datos.retiro.push({
                         amount: req.body.coins,
                         date: Date.now(),
