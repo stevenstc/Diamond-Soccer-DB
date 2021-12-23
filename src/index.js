@@ -284,6 +284,8 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+
+    req.body.coins = parseInt(req.body.coins);
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
@@ -342,6 +344,8 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     let wallet = req.params.wallet;
+
+    req.body.coins = parseInt(req.body.coins);
 
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
