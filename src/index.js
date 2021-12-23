@@ -35,6 +35,8 @@ const uri = process.env.APP_URI;
 
 const COMISION = process.env.APP_COMISION || 60000;
 
+const explorador = "https://testnet.bscscan.com/tx/";
+
 const RED = "https://data-seed-prebsc-1-s1.binance.org:8545/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 const addressContractToken = "0x038987095f309d3640f51644430dc6c7c4e2e409";
@@ -451,7 +453,7 @@ async function monedasAlJuego(coins,wallet,intentos){
             .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
             .then(result => {
                 console.log("Monedas ENVIADAS AL JUEGO en "+intentos+" intentos");
-                console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+                console.log(explorador+result.transactionHash);
                 
                 user.find({ wallet: uc.upperCase(wallet) }).then(usuario =>{
 
@@ -460,7 +462,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                         if(datos.active){
                             datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(0).toNumber();
                             datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(0).toNumber();
-                            datos.txs.push("https://testnet.bscscan.com/tx/"+result.transactionHash)
+                            datos.txs.push(explorador+result.transactionHash)
                             update = user.updateOne({ wallet: uc.upperCase(wallet) }, datos)
                             .then(console.log("Coins SEND: "+coins.dividedBy(10**18)+" # "+wallet))
                             .catch(console.error())
@@ -473,12 +475,16 @@ async function monedasAlJuego(coins,wallet,intentos){
                             wallet: uc.upperCase(wallet),    
                             active: true,
                             payAt: Date.now(),
-                            balance: coins,
-                            ingresado: coins,
+                            balance: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                            ingresado: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
                             retirado: 0,
-                            deposit: [],
+                            deposit: [{amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                                date: Date.now(),
+                                finalized: true,
+                                txhash: "SEND: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # "+req.params.wallet+" Hash: "+explorador+result.transactionHash
+                            }],
                             retiro: [],
-                            txs: ["https://testnet.bscscan.com/tx/"+result.transactionHash]
+                            txs: [explorador+result.transactionHash]
                         });
                 
                         async() => {
@@ -557,7 +563,7 @@ async function monedasAlMarket(coins,wallet,intentos){
         .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
         .then(result => {
             console.log("Monedas ENVIADAS A MARKET en "+intentos+" intentos");
-            console.log("https://testnet.bscscan.com/tx/"+result.transactionHash);
+            console.log(explorador+result.transactionHash);
             
             user.find({ wallet: uc.upperCase(wallet) }).then(usuario =>{
 
@@ -567,7 +573,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                         datos.payAt = Date.now();
                         datos.balance = BigNumber(datos.balance).minus(coins.dividedBy(10**18));
                         datos.retirado = coins.dividedBy(10**18).plus(datos.retirado);
-                        datos.txs.push("https://testnet.bscscan.com/tx/"+result.transactionHash)
+                        datos.txs.push(explorador+result.transactionHash)
                         update = user.updateOne({ wallet: uc.upperCase(wallet) }, datos)
                         .then(console.log("Coins SEND: "+coins.dividedBy(10**18)+" # "+wallet))
                         .catch(console.error())
@@ -585,7 +591,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                         retirado: 0,
                         deposit: [],
                         retiro: [],
-                        txs: ["https://testnet.bscscan.com/tx/"+result.transactionHash]
+                        txs: [explorador+result.transactionHash]
                     });
             
                     users.save().then(()=>{
