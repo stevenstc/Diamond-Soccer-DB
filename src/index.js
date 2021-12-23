@@ -295,7 +295,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
             var datos = usuario[0];
             if(datos.active){
                 datos.balance = datos.balance + req.body.coins;
-                datos.ingresado = datos.balance + req.body.coins;
+                datos.ingresado = datos.ingresado + req.body.coins;
                 datos.deposit.push({amount: req.body.coins,
                     date: Date.now(),
                     finalized: true,
