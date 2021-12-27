@@ -1,6 +1,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const mongoose = require('mongoose');
+const mongoose2 = require('mongoose');
 const bodyParser = require("body-parser");
 const Web3 = require('web3');
 var cors = require('cors')
@@ -66,6 +67,11 @@ mongoose.connect(uri, options).then(
     err => { console.log(err); }
   );
 
+mongoose2.connect(uri, options).then(
+    () => { console.log("Conectado Exitodamente!");},
+    err => { console.log(err); }
+  );
+
 const user = mongoose.model('usuarios', {
     wallet: String,
     active: Boolean,
@@ -91,6 +97,8 @@ const user = mongoose.model('usuarios', {
     txs: [String]
 
 });
+
+const server = mongoose.model('servers', {linea: [Number]});
 
 
 
@@ -638,9 +646,59 @@ app.get('/api/v1/sendmail',async(req,res) => {
 
 });
 
+app.get('/api/v1/enlinea',async(req,res) => {
+    console.log(req.query);
+
+    if(req.query.rango){
+
+        var estado = await server.find({});
+        estado = estado[0]
+
+        for (let index = 0; index < estado.linea.length; index++) {
+
+            if(parseInt(req.query.rango) == index){
+                if (req.query.activo == "true") {
+                    estado.linea[index] += 1;
+                }else{
+                    estado.linea[index] -= 1;
+                }
+                
+            }
+            
+        }
+
+        datos = {};
+        datos.linea = estado.linea;
+
+        update = await server.updateOne({ _id: estado._id }, datos)
+
+        res.send("true");
+
+    }else{
+        var estado = await server.find({});
+        estado = estado[0];
+
+        res.send((estado.linea).toString());
+
+    }
+
+    /*
+    servers.save().then(()=>{
+        console.log("Usuario creado exitodamente");
+        res.send("true");
+    })
+    */
+        
+    
+
+
+});
+
 app.get('/', (req, res, next) => {
 
     res.send(req.query);
+
+    
 
 });
 
