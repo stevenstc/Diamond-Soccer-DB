@@ -657,10 +657,8 @@ app.get('/api/v1/enlinea',async(req,res) => {
         for (let index = 0; index < estado.linea.length; index++) {
 
             if(parseInt(req.query.rango) == index){
-                if (req.query.activo == "true") {
-                    estado.linea[index] += 1;
-                }else{
-                    estado.linea[index] -= 1;
+                if (req.query.activo) {
+                    estado.linea[index] = parseInt(req.query.activo);
                 }
                 
             }
