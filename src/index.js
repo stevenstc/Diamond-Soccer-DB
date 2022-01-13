@@ -198,7 +198,7 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
     var email = investor.correo;
 
 
-    if (email === "") {
+    if (email === "" || email.length < 100) {
         res.send("false");
     }else{
         email = lc.lowerCase(cryptr.decrypt(email));
@@ -285,7 +285,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
         
     }
 
-    console.log(inventario);
+    //console.log(inventario);
 
     res.send(inventario.toString());
 });
