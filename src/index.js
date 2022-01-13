@@ -215,6 +215,7 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
             }
         
         }
+    }
 
 });
 
