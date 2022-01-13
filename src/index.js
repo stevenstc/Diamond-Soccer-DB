@@ -187,29 +187,34 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
     let wallet = req.params.wallet;
     let emailApp = req.query.email;
 
-    emailApp = lc.lowerCase(emailApp);
-
-
-    var investor =
-      await  contractMarket.methods
-        .investors(wallet)
-        .call({ from: cuenta.address });
-
-    var email = investor.correo;
-
-
-    if (email === "" || email.length < 100) {
+    if(!web3.utils.isAddress(wallet)){
+        console.log("wallet incorrecta")
         res.send("false");
     }else{
-        email = lc.lowerCase(cryptr.decrypt(email));
 
-        if(emailApp === email){
-            res.send("true");
-        }else{
+        emailApp = lc.lowerCase(emailApp);
+
+
+        var investor =
+        await  contractMarket.methods
+            .investors(wallet)
+            .call({ from: cuenta.address });
+
+        var email = investor.correo;
+
+
+        if (email === "" || email.length < 100) {
             res.send("false");
+        }else{
+            email = lc.lowerCase(cryptr.decrypt(email));
+
+            if(emailApp === email){
+                res.send("true");
+            }else{
+                res.send("false");
+            }
+        
         }
-      
-    }
 
 });
 
