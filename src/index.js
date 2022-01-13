@@ -77,7 +77,9 @@ web3.eth.accounts.wallet.add(PEKEY);
 const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
 //const contractToken = new web3.eth.Contract(abiToken,addressContractToken);
 
-//console.log(web3.eth.accounts.wallet);
+//console.log(web3.eth.accounts.wallet[0].address);
+
+//console.log(await web3.eth.accounts.wallet);
 //tx web3.eth.accounts.signTransaction(tx, privateKey);
 /*web3.eth.sendTransaction({
     from: "0xEB014f8c8B418Db6b45774c326A0E64C78914dC0",
