@@ -103,6 +103,8 @@ mongoose.connect(uri, options).then(
 
 const user = mongoose.model('usuarios', {
     wallet: String,
+    email: String,
+    username: String,
     active: Boolean,
     payAt: Number,
     checkpoint: Number,
@@ -336,7 +338,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
     let wallet = req.params.wallet;
 
     if(!web3.utils.isAddress(wallet)){
-        console.log("wallet incorrecta")
+        console.log("wallet incorrecta: "+wallet)
         res.send("0");
     }else{
             usuario = await user.find({ wallet: uc.upperCase(wallet) });
@@ -348,7 +350,9 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         }else{
             console.log("creado USUARIO al consultar monedas"+wallet)
             var users = new user({
-                wallet: uc.upperCase(wallet),    
+                wallet: uc.upperCase(wallet),   
+                email: "",
+                username: "", 
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
@@ -403,7 +407,9 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
         }else{
             console.log("creado USUARIO al Asignar"+wallet)
             var users = new user({
-                wallet: uc.upperCase(wallet),    
+                wallet: uc.upperCase(wallet),
+                email: "",
+                username: "", 
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
@@ -474,7 +480,9 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
         }else{
             console.log("usuario creado al retirar monedas"+wallet)
             var users = new user({
-                wallet: uc.upperCase(wallet),    
+                wallet: uc.upperCase(wallet),  
+                email: "",
+                username: "",   
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
@@ -567,9 +575,11 @@ async function monedasAlJuego(coins,wallet,intentos){
                         }
                 
                     }else{
-                        console.log("creado USUARIO monedas al juego"+wallet)
+                        console.log("creado USUARIO monedas al juego: "+wallet)
                         var users = new user({
                             wallet: uc.upperCase(wallet),    
+                            email: "",
+                            username: "", 
                             active: true,
                             payAt: Date.now(),
                             checkpoint: 0,
@@ -692,7 +702,9 @@ async function monedasAlMarket(coins,wallet,intentos){
                 }else{
                     console.log("creado USUARIO monedas al Market"+wallet)
                     var users = new user({
-                        wallet: uc.upperCase(wallet),    
+                        wallet: uc.upperCase(wallet),
+                        email: "",
+                        username: "", 
                         active: true,
                         payAt: Date.now(),
                         checkpoint: 0,
@@ -1008,6 +1020,155 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
         res.send("false");
     }
 
+});
+
+app.get('/api/v1/user/exist/:wallet',async(req,res) => {
+    let wallet = req.params.wallet;
+     
+    if(web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            res.send("true");
+        }else{
+            res.send("false");
+        }
+    }else{
+        res.send("false");
+    }
+});
+
+app.get('/api/v1/user/active/:wallet',async(req,res) => {
+    let wallet = req.params.wallet;
+     
+    if(web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+            res.send(""+usuario.active);
+        }else{
+            res.send("false");
+        }
+    }else{
+        res.send("false");
+    }
+});
+
+app.get('/api/v1/user/email/:wallet',async(req,res) => {
+    let wallet = req.params.wallet;
+     
+    if(web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            res.send(usuario.email);
+        }else{
+            res.send("false");
+        }
+    }else{
+        res.send("false");
+    }
+});
+
+app.get('/api/v1/user/username/:wallet',async(req,res) => {
+    let wallet = req.params.wallet;
+     
+    if(web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            res.send(usuario.username);
+        }else{
+            res.send("false");
+        }
+    }else{
+        res.send("false");
+    }
+});
+
+app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
+
+    let wallet = req.params.wallet;
+
+    req.body.email = lc.lowerCase(req.body.email);
+
+    req.body.username = lc.lowerCase(req.body.username);
+    
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            var datos = usuario[0];
+            if(datos.active){
+                if (req.body.email) {
+                    datos.email = req.body.email;
+                }
+
+                if (req.body.username) {
+                    datos.username = req.body.username;
+                }
+                if (req.body.email || req.body.username){
+                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                }
+                res.send("true");
+            }else{
+                res.send("false");
+            }
+    
+        }else{
+            console.log("creado USUARIO al actualizar info: "+wallet)
+            var email = "";
+            var username = "";
+
+            if (req.body.email) {
+                email = req.body.email;
+            }
+
+            if (req.body.username) {
+                username = req.body.username;
+            }
+            var users = new user({
+                wallet: uc.upperCase(wallet),
+                email: email,
+                username: username, 
+                active: true,
+                payAt: Date.now(),
+                checkpoint: 0,
+                balance: req.body.coins,
+                ingresado: req.body.coins,
+                retirado: 0,
+                deposit: [{amount: req.body.coins,
+                    date: Date.now(),
+                    finalized: true,
+                    txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
+                }],
+                retiro: [],
+                txs: []
+            });
+    
+            users.save().then(()=>{
+                console.log("Usuario creado exitodamente");
+                res.send("true");
+            })
+                
+            
+        }
+
+
+    }else{
+        res.send("false");
+    }
+		
 });
 
 
