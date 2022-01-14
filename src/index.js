@@ -52,9 +52,9 @@ const habilitarMisionDiaria = process.env.APP_DAYMISION || false;
 
 const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
-const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || false;
-const quitarEpicos = process.env.APP_QUIT_EPICOS || true;
-const quitarComunes = process.env.APP_QUIT_COMUNES || true;
+const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
+const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
+const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
 
 const testNet = false; //quita todos los equipos y formaciones comprados deja solo los equpos testnet
 
@@ -262,7 +262,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
     }
 
-    if (quitarLegandarios) { // quitar legendarios
+    if (quitarLegandarios === "true") { // quitar legendarios
         for (let index = 0; index < 3; index++) {
 
             inventario[index] = 0;
@@ -271,7 +271,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
     }
 
-    if (quitarEpicos) { // quitar epicos
+    if (quitarEpicos === "true") { // quitar epicos
 
         for (let index = 3; index < 10; index++) {
 
@@ -281,7 +281,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
         
     }
 
-    if (quitarComunes) { // quitar Comunes
+    if (quitarComunes === "true") { // quitar Comunes
 
         for (let index = 10; index < cantidad; index++) {
 
