@@ -45,6 +45,8 @@ const port = process.env.PORT || 3004;
 const PEKEY = process.env.APP_PRIVATEKEY;
 const TOKEN = process.env.APP_TOKEN;
 const cryptr = new Cryptr(process.env.APP_MAIL);
+
+const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
 
 const DaylyTime = process.env.APP_DAYTIME || 86400;
@@ -190,7 +192,7 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
     let emailApp = req.query.email;
 
     if(!web3.utils.isAddress(wallet)){
-        console.log("wallet incorrecta")
+        console.log("wallet incorrecta: "+wallet)
         res.send("false");
     }else{
 
@@ -348,7 +350,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
             res.send(usuario.balance+"");
 
         }else{
-            console.log("creado USUARIO al consultar monedas"+wallet)
+            console.log("creado USUARIO al consultar monedas: "+wallet)
             var users = new user({
                 wallet: uc.upperCase(wallet),   
                 email: "",
@@ -1057,25 +1059,6 @@ app.get('/api/v1/user/active/:wallet',async(req,res) => {
     }
 });
 
-app.get('/api/v1/user/email/:wallet',async(req,res) => {
-    let wallet = req.params.wallet;
-     
-    if(web3.utils.isAddress(wallet)){
-
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
-
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
-
-            res.send(usuario.email);
-        }else{
-            res.send("false");
-        }
-    }else{
-        res.send("false");
-    }
-});
-
 app.get('/api/v1/user/username/:wallet',async(req,res) => {
     let wallet = req.params.wallet;
      
@@ -1087,6 +1070,25 @@ app.get('/api/v1/user/username/:wallet',async(req,res) => {
             usuario = usuario[0];
 
             res.send(usuario.username);
+        }else{
+            res.send("false");
+        }
+    }else{
+        res.send("false");
+    }
+});
+
+app.get('/api/v1/user/email/:wallet',async(req,res) => {
+    let wallet = req.params.wallet;
+     
+    if( req.params.tokenemail === TokenEmail && web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            res.send(usuario.email);
         }else{
             res.send("false");
         }
