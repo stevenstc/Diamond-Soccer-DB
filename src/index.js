@@ -900,7 +900,7 @@ app.get('/api/v1/sendmail',async(req,res) => {
 
 app.get('/api/v1/enlinea',async(req,res) => {
 
-    var appstatus = await appstatus.find({});
+    var appstatus = await appstatuses.find({});
         appstatus = appstatus[0]
 
     if(req.query.rango){
@@ -935,7 +935,7 @@ app.get('/api/v1/enlinea',async(req,res) => {
 
 app.get('/api/v1/ben10',async(req,res) => {
 
-    var aplicacion = await appstatus.find({ });
+    var aplicacion = await appstatuses.find({ });
     aplicacion = aplicacion[0];
 
     if(req.query.ganado){
