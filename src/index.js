@@ -1,3 +1,4 @@
+
 const express = require('express');
 const fetch = require('node-fetch');
 const mongoose = require('mongoose');
@@ -8,7 +9,10 @@ require('dotenv').config();
 var moment = require('moment');
 const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
-const lc = require('lower-case');
+
+
+console.log(("HolA Que Haze").toLowerCase())
+
 
 
 
@@ -198,16 +202,13 @@ app.get('/api/v1/datefuture',async(req,res) => {
 
 app.get('/api/v1/user/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
-    let emailApp = req.query.email;
+    let wallet = req.params.wallet.toLowerCase();
+    let emailApp = req.query.email.toLowerCase();
 
     if(!web3.utils.isAddress(wallet)){
-        console.log("wallet incorrecta: "+wallet)
+        console.log("wallet incorrecta: "+wallet+ " email: "+emailApp )
         res.send("false");
     }else{
-
-        emailApp = lc.lowerCase(emailApp);
-
 
         var investor =
         await  contractMarket.methods
@@ -220,7 +221,7 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
         if (email === "" || email.length < 100) {
             res.send("false");
         }else{
-            email = lc.lowerCase(cryptr.decrypt(email));
+            email = cryptr.decrypt(email).toLowerCase();
 
             if(emailApp === email){
                 res.send("true");
@@ -235,7 +236,7 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
 
 app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
+    var wallet =  req.params.wallet.toLowerCase();
 
     var result = await contractMarket.methods
         .largoInventario(wallet)
@@ -312,7 +313,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
 app.get('/api/v1/formations/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
+    var wallet =  req.params.wallet.toLowerCase();
 
     var result = await contractMarket.methods
         .largoInventario(wallet)
@@ -347,7 +348,7 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
+    let wallet =  req.params.wallet.toLowerCase();
 
     if(!web3.utils.isAddress(wallet)){
         console.log("wallet incorrecta: "+wallet)
@@ -391,7 +392,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
+    var wallet =  req.params.wallet.toLowerCase();
 
     req.body.coins = parseInt(req.body.coins);
     
@@ -454,7 +455,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
+    var wallet =  req.params.wallet.toLowerCase();
 
     req.body.coins = parseInt(req.body.coins);
 
@@ -523,15 +524,16 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
 app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
+    var wallet =  req.params.wallet.toLowerCase();
 
-    if(req.body.token == TOKEN  && web3.utils.isAddress(req.params.wallet)){
+    if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
         await delay(Math.floor(Math.random() * 12000));
 
         coins = new BigNumber(req.body.coins).multipliedBy(10**18);
 
-        if(await monedasAlJuego(coins, req.params.wallet,1)){
-            console.log("Coins TO GAME: "+req.body.coins+" # "+req.params.wallet);
+        if(await monedasAlJuego(wallet,1)){
+            console.log("Coins TO GAME: "+req.body.coins+" # "+wallet);
             res.send("true");
 
         }else{
@@ -636,14 +638,16 @@ async function monedasAlJuego(coins,wallet,intentos){
 
 app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
-    if(req.body.token == TOKEN && web3.utils.isAddress(req.params.wallet)){
+    var wallet =  req.params.wallet.toLowerCase();
+
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
         coins = new BigNumber(req.body.coins).multipliedBy(10**18);
 
         await delay(Math.floor(Math.random() * 12000));
 
-        if(await monedasAlMarket(coins, req.params.wallet,1)){
-            console.log("Coins TO MARKET: "+req.body.coins+" # "+req.params.wallet);
+        if(await monedasAlMarket(coins, wallet,1)){
+            console.log("Coins TO MARKET: "+req.body.coins+" # "+wallet);
             res.send("true");
 
         }else{
@@ -833,18 +837,20 @@ async function recompensaDiaria(wallet){
 
 app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
-    if(req.body.token == TOKEN  && web3.utils.isAddress(req.params.wallet)){
+    var wallet =  req.params.wallet.toLowerCase();
+
+    if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
         if(req.body.control == "true"){
 
-            var usuario = await user.find({ wallet: uc.upperCase(req.params.wallet) });
+            var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
             if (usuario.length >= 1) {
                 var datos = usuario[0];
 
                 if(datos.active && (Date.now() >= datos.checkpoint + DaylyTime*1000 || datos.checkpoint === 0) ){
 
-                    var coins = await recompensaDiaria(req.params.wallet);
+                    var coins = await recompensaDiaria(wallet);
                     datos.checkpoint = Date.now();
 
                     datos.balance = datos.balance + coins;
@@ -852,12 +858,12 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                     datos.deposit.push({amount: coins,
                         date: Date.now(),
                         finalized: true,
-                        txhash: "Daily mision coins: "+coins+" # "+req.params.wallet
+                        txhash: "Daily mision coins: "+coins+" # "+wallet
                     })
                     
-                    update = await user.updateOne({ wallet: uc.upperCase(req.params.wallet) }, datos);
+                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
 
-                    console.log("Daily mision coins: "+coins+" # "+req.params.wallet);
+                    console.log("Daily mision coins: "+coins+" # "+wallet);
                     res.send(coins+"");
                 }else{
                     res.send("0");
@@ -969,9 +975,11 @@ app.get('/api/v1/ben10',async(req,res) => {
 
 app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
-    if(web3.utils.isAddress(req.params.wallet) && habilitarMisionDiaria){
+    var wallet =  req.params.wallet.toLowerCase();
 
-        var usuario = await user.find({ wallet: uc.upperCase(req.params.wallet) });
+    if(web3.utils.isAddress(wallet) && habilitarMisionDiaria){
+
+        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
@@ -1002,7 +1010,8 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 });
 
 app.get('/api/v1/user/exist/:wallet',async(req,res) => {
-    let wallet = req.params.wallet;
+
+    var wallet =  req.params.wallet.toLowerCase();
      
     if(web3.utils.isAddress(wallet)){
 
@@ -1019,7 +1028,8 @@ app.get('/api/v1/user/exist/:wallet',async(req,res) => {
 });
 
 app.get('/api/v1/user/active/:wallet',async(req,res) => {
-    let wallet = req.params.wallet;
+    
+    var wallet =  req.params.wallet.toLowerCase();
      
     if(web3.utils.isAddress(wallet)){
 
@@ -1037,7 +1047,7 @@ app.get('/api/v1/user/active/:wallet',async(req,res) => {
 });
 
 app.get('/api/v1/user/username/:wallet',async(req,res) => {
-    let wallet = req.params.wallet;
+    var wallet =  req.params.wallet.toLowerCase();
      
     if(web3.utils.isAddress(wallet)){
 
@@ -1056,7 +1066,7 @@ app.get('/api/v1/user/username/:wallet',async(req,res) => {
 });
 
 app.get('/api/v1/user/email/:wallet',async(req,res) => {
-    let wallet = req.params.wallet;
+    var wallet =  req.params.wallet.toLowerCase();
      
     if( req.params.tokenemail === TokenEmail && web3.utils.isAddress(wallet)){
 
@@ -1076,11 +1086,11 @@ app.get('/api/v1/user/email/:wallet',async(req,res) => {
 
 app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
 
-    let wallet = req.params.wallet;
+    var wallet =  req.params.wallet.toLowerCase();
 
-    req.body.email = lc.lowerCase(req.body.email);
+    req.body.email =  req.body.email.toLowerCase();
 
-    req.body.username = lc.lowerCase(req.body.username);
+    req.body.username =  req.body.username.toLowerCase();
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
