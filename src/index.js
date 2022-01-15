@@ -10,11 +10,8 @@ var moment = require('moment');
 const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
 
-
+console.log(("HolA Que Haze").toUpperCase())
 console.log(("HolA Que Haze").toLowerCase())
-
-
-
 
 const Cryptr = require('cryptr');
 
@@ -110,6 +107,7 @@ mongoose.connect(uri, options).then(
 const user = mongoose.model('usuarios', {
     wallet: String,
     email: String,
+    password: String,
     username: String,
     active: Boolean,
     payAt: Number,
@@ -365,6 +363,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
             var users = new user({
                 wallet: uc.upperCase(wallet),   
                 email: "",
+                password: "",
                 username: "", 
                 active: true,
                 payAt: Date.now(),
@@ -422,6 +421,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
             var users = new user({
                 wallet: uc.upperCase(wallet),
                 email: "",
+                password: "",
                 username: "", 
                 active: true,
                 payAt: Date.now(),
@@ -495,6 +495,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
             var users = new user({
                 wallet: uc.upperCase(wallet),  
                 email: "",
+                password: "",
                 username: "",   
                 active: true,
                 payAt: Date.now(),
@@ -593,6 +594,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                         var users = new user({
                             wallet: uc.upperCase(wallet),    
                             email: "",
+                            password: "",
                             username: "", 
                             active: true,
                             payAt: Date.now(),
@@ -720,6 +722,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                     var users = new user({
                         wallet: uc.upperCase(wallet),
                         email: "",
+                        password: "",
                         username: "", 
                         active: true,
                         payAt: Date.now(),
@@ -1118,6 +1121,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
             console.log("creado USUARIO al actualizar info: "+wallet)
             var email = "";
             var username = "";
+            var password = "";
 
             if (req.body.email) {
                 email = req.body.email;
@@ -1126,9 +1130,14 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
             if (req.body.username) {
                 username = req.body.username;
             }
+
+            if (req.body.password) {
+                password = req.body.password;
+            }
             var users = new user({
                 wallet: uc.upperCase(wallet),
                 email: email,
+                password: password,
                 username: username, 
                 active: true,
                 payAt: Date.now(),
@@ -1150,6 +1159,46 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 res.send("true");
             })
                 
+            
+        }
+
+
+    }else{
+        res.send("false");
+    }
+		
+});
+
+app.post('/api/v1/user/auth/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    req.body.email =  req.body.email.toLowerCase();
+    
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            var usuario = usuario[0];
+
+            if(usuario.password === req.body.password && req.body.password != "" && req.body.password.length >= 8){
+
+                if(usuario.active && usuario.email === req.body.email){
+
+                    res.send("true");
+                    
+                    
+                }else{
+                    res.send("false");
+                }
+            }else{
+                res.send("false");
+            }
+    
+        }else{
+           
+            res.send("false");
             
         }
 
