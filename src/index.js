@@ -921,7 +921,7 @@ app.get('/api/v1/enlinea',async(req,res) => {
         datos = {};
         datos.linea = appstatus.linea;
 
-        update = await appstatus.updateOne({ _id: appstatus._id }, datos)
+        update = await appstatuses.updateOne({ _id: appstatus._id }, datos)
 
         res.send("true");
 
@@ -943,7 +943,7 @@ app.get('/api/v1/ben10',async(req,res) => {
         datos = {};
         datos.ganado = aplicacion.ganado+parseInt(req.query.ganado);
 
-        update = await appstatus.updateOne({ _id: aplicacion._id }, datos)
+        update = await appstatuses.updateOne({ _id: aplicacion._id }, datos)
 
         res.send("true");
 
@@ -954,7 +954,7 @@ app.get('/api/v1/ben10',async(req,res) => {
         datos = {};
         datos.entregado = aplicacion.entregado+parseInt(req.query.entregado);
 
-        update = await appstatus.updateOne({ _id: estado._id }, datos)
+        update = await appstatuses.updateOne({ _id: estado._id }, datos)
 
         res.send("true");
 
@@ -1153,7 +1153,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
-    var aplicacion = await appstatus.find({ });
+    var aplicacion = await appstatuses.find({ });
 
     if (aplicacion.length >= 1) {
         aplicacion = aplicacion[0];
