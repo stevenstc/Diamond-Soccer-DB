@@ -164,7 +164,7 @@ app.get('/api',async(req,res) => {
 
 app.get('/api/v1',async(req,res) => {
 
-    res.send("Conectado y funcionando");
+    res.send("true");
 });
 
 app.get('/api/v1/tiempo',async(req,res) => {
@@ -1097,12 +1097,14 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
         if (usuario.length >= 1) {
             usuario = usuario[0];
 
-            res.send(usuario.active+"");
+
+
+            res.send(!usuario.active+"");
         }else{
-            res.send("false");
+            res.send("true");
         }
     }else{
-        res.send("false");
+        res.send("true");
     }
 });
 
@@ -1163,13 +1165,13 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
-                balance: req.body.coins,
-                ingresado: req.body.coins,
+                balance: 0,
+                ingresado: 0,
                 retirado: 0,
                 deposit: [{amount: req.body.coins,
                     date: Date.now(),
                     finalized: true,
-                    txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
+                    txhash: "Acount Creation "
                 }],
                 retiro: [],
                 txs: []
