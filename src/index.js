@@ -899,32 +899,19 @@ app.get('/api/v1/sendmail',async(req,res) => {
 });
 
 app.get('/api/v1/enlinea',async(req,res) => {
-    //console.log(req.query);
-    /*
-    var cantidadserv = []
-    for (let index = 0; index < 14; index++) {
-        cantidadserv[index] = 0;
-    }
 
-    var servers = new server({
-        linea:cantidadserv
-    })
+    var appstatus = await appstatus.find({});
+        appstatus = appstatus[0]
 
-    await servers.save();
-        res.send("true");
-    */
     if(req.query.rango){
 
-        var estado = await server.find({});
-        estado = estado[0]
-
-        for (let index = 0; index < estado.linea.length; index++) {
+        for (let index = 0; index < appstatus.linea.length; index++) {
 
             if(parseInt(req.query.rango) == index){
                 if (parseInt(req.query.activo) >= 0 ) {
-                    estado.linea[index] = parseInt(req.query.activo);
+                    appstatus.linea[index] = parseInt(req.query.activo);
                 }else{
-                    estado.linea[index] = 0;
+                    appstatus.linea[index] = 0;
                 }
                 
             }
@@ -932,46 +919,31 @@ app.get('/api/v1/enlinea',async(req,res) => {
         }
 
         datos = {};
-        datos.linea = estado.linea;
+        datos.linea = appstatus.linea;
 
-        update = await server.updateOne({ _id: estado._id }, datos)
+        update = await appstatus.updateOne({ _id: appstatus._id }, datos)
 
         res.send("true");
 
     }else{
-        var estado = await server.find({});
-        estado = estado[0];
 
-        res.send((estado.linea).toString());
+        res.send((appstatus.linea).toString());
 
     }   
     
 });
 
 app.get('/api/v1/ben10',async(req,res) => {
-    /*var moneys = new money({
-        ganado: 0,    
-        entregado: 0
-    })
 
-    moneys.save().then(()=>{
-        console.log("Usuario creado exitodamente");
-        res.send("true");
-    })*/
-    //console.log(req.query);
-
-    //var estado = await money.find({});
-    //console.log(estado)
+    var aplicacion = await appstatus.find({ });
+    aplicacion = aplicacion[0];
 
     if(req.query.ganado){
 
-        var estado = await money.find({});
-        estado = estado[0];
-
         datos = {};
-        datos.ganado = estado.ganado+parseInt(req.query.ganado);
+        datos.ganado = aplicacion.ganado+parseInt(req.query.ganado);
 
-        update = await money.updateOne({ _id: estado._id }, datos)
+        update = await appstatus.updateOne({ _id: aplicacion._id }, datos)
 
         res.send("true");
 
@@ -979,21 +951,16 @@ app.get('/api/v1/ben10',async(req,res) => {
 
     if(req.query.entregado){
 
-        var estado = await money.find({});
-        estado = estado[0];
-
         datos = {};
-        datos.entregado = estado.entregado+parseInt(req.query.entregado);
+        datos.entregado = aplicacion.entregado+parseInt(req.query.entregado);
 
-        update = await money.updateOne({ _id: estado._id }, datos)
+        update = await appstatus.updateOne({ _id: estado._id }, datos)
 
         res.send("true");
 
     }else{
-
-        var estado = await money.find({});
-        estado = estado[0];
-        res.send(estado.ganado+","+estado.entregado);
+        
+        res.send(appstatus.ganado+","+appstatus.entregado);
 
 
     }
