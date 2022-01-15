@@ -1087,13 +1087,28 @@ app.get('/api/v1/user/email/:wallet',async(req,res) => {
     }
 });
 
+app.get('/api/v1/user/ban/:wallet',async(req,res) => {
+    var wallet =  req.params.wallet.toLowerCase();
+     
+    if(web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            res.send(usuario.active+"");
+        }else{
+            res.send("false");
+        }
+    }else{
+        res.send("false");
+    }
+});
+
 app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
-
-    req.body.email =  req.body.email.toLowerCase();
-
-    req.body.username =  req.body.username.toLowerCase();
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
@@ -1103,13 +1118,19 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
             var datos = usuario[0];
             if(datos.active){
                 if (req.body.email) {
+                    req.body.email =  req.body.email.toLowerCase();
                     datos.email = req.body.email;
                 }
 
                 if (req.body.username) {
                     datos.username = req.body.username;
                 }
-                if (req.body.email || req.body.username){
+
+                if (req.body.password) {
+                    datos.password = req.body.password;
+                }
+
+                if (req.body.email || req.body.username || req.body.password){
                     update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                 }
                 res.send("true");
