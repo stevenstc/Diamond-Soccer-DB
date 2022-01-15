@@ -132,9 +132,19 @@ const user = mongoose.model('usuarios', {
 
 });
 
-const server = mongoose.model('servers', {linea: [Number]});
+const appstatuses = mongoose.model('appstatuses', {
+    version: String,
+    torneo: String,
+    duelo: String,
+    liga: String,
+    mantenimiento: String,
+    link: String,
+    entregado: Number,
+    ganado: Number, 
+    entregado: Number,
+    linea: [Number]
+});
 
-const money = mongoose.model('estatuses', {ganado: Number, entregado: Number});
 
 app.get('/',async(req,res) => {
 
@@ -1171,6 +1181,40 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
         res.send("false");
     }
 		
+});
+
+
+app.get('/api/v1/app/init/',async(req,res) => {
+
+    var aplicacion = await appstatus.find({ });
+
+    if (aplicacion.length >= 1) {
+        aplicacion = aplicacion[0];
+        res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo);
+
+    }else{
+        aplicacion = new appstatuses({
+            version: "1.0.0.2",
+            torneo: "off",
+            duelo: "off",
+            liga: "on",
+            mantenimiento: "off",
+            link: "https://www.mediafire.com/file/luiugkki937cni7/Crypto_Soccer_Game_Official_1.0.0.2_x32_x64.zip/file",
+            ganado: 0, 
+            entregado: 0,
+            linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        });
+
+        aplicacion.save().then(()=>{
+            res.send("nueva version creada");
+        })
+            
+        
+    }
+
+    
+
+    
 });
 
 
