@@ -155,7 +155,7 @@ const appstatuses = mongoose.model('appstatuses', {
 const playerData = mongoose.model('playerdatas', {
     wallet: String,
     BallonSet: String,
-    CupsWin: String,
+    CupsWin: Number,
     DificultConfig: String,
     DiscountMomment: String,
     DuelsOnlineWins: String,
@@ -1523,7 +1523,7 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
         var playernewdata = new playerData({
             wallet: uc.upperCase(wallet),
             BallonSet: "0",
-            CupsWin: "0",
+            CupsWin: 0,
             DificultConfig:  "3",
             DiscountMomment:  "0",
             DuelsOnlineWins:  "0",
@@ -1682,7 +1682,7 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
             var playernewdata = new playerData({
                 wallet: uc.upperCase(wallet),
                 BallonSet: "0",
-                CupsWin: "0",
+                CupsWin: 0,
                 DificultConfig:  "3",
                 DiscountMomment:  "0",
                 DuelsOnlineWins:  "0",
