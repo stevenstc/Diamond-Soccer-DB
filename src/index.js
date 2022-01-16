@@ -1347,21 +1347,24 @@ app.get('/api/v1/app/init/',async(req,res) => {
 app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
     var cantidad = 10;
+    var lista = [];
+
+    for (let index = 0; index < cantidad; index++) {
+        lista[index] = "0X0000000000000000000000000000000000000000";
+        
+    }
 
     var aplicacion = await playerData.find({
         CupsWin: {$gte: 1},
-        sort: {CupsWin: 2},
-        //limit: cantidad
+        limit: cantidad
         
-      });
+      }).limit(cantidad).sort([['CupsWin', -1]]);
+
+      
 
 
     if (aplicacion.length >= 1) {
-        var lista = [];
-        for (let index = 0; index < cantidad; index++) {
-            lista[index] = "0X0000000000000000000000000000000000000000";
-            
-        }
+        
         for (let index = 0; index < aplicacion.length; index++) {
             lista[index] = aplicacion[index].wallet;
             
@@ -1369,7 +1372,7 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
         res.send(lista.toLocaleString());
 
     }else{
-        res.send("false");
+        res.send(lista.toLocaleString());
             
         
     }
