@@ -1558,6 +1558,164 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
     }
 
     
+});
+
+app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet;
+    
+    if(req.body.token == TOKEN ){
+
+        var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            var data = {};
+            
+            if(req.body.clave === "BallonSet"){
+                data.BallonSet = req.body.valor;
+            }
+
+            if(req.body.clave === "DificultConfig"){
+                data.DificultConfig = req.body.valor;
+            }
+
+            if(req.body.clave === "DiscountMomment"){
+                data.DiscountMomment = req.body.valor;
+            }
+
+            if(req.body.clave === "DuelsOnlineWins"){
+                data.DuelsOnlineWins = req.body.valor;
+            }
+
+            if(req.body.clave === "DuelsPlays"){
+                data.DuelsPlays = req.body.valor;
+            }
+
+            if(req.body.clave === "FriendLyWins"){
+                data.FriendLyWins = req.body.valor;
+            }
+
+            if(req.body.clave === "FriendlyTiming"){
+                data.FriendlyTiming = req.body.valor;
+            }
+
+            if(req.body.clave === "LastDate"){
+                data.LastDate = req.body.valor;
+            }
+
+            if(req.body.clave === "LastDate"){
+                data.LastDate = req.body.valor;
+            }
+                
+            if(req.body.clave === "LeagueOpport"){
+                data.LeagueOpport = req.body.valor;
+            }
+            
+            if(req.body.clave === "LeagueTimer"){
+                data.LeagueTimer = req.body.valor;
+            }
+
+            if(req.body.clave === "LeaguesOnlineWins"){
+                data.LeaguesOnlineWins = req.body.valor;
+            }
+            
+            if(req.body.clave === "MatchLose"){
+                data.MatchLose  = req.body.valor;
+            }
+            
+            if(req.body.clave === "MatchWins"){
+                data.MatchWins  = req.body.valor;
+            }
+            
+            if(req.body.clave === "MatchesOnlineWins"){
+                data.MatchesOnlineWins  = req.body.valor;
+            }
+            
+            if(req.body.clave === "Music"){
+                data.Music  = req.body.valor;
+            }
+            
+            if(req.body.clave === "PhotonDisconnected"){
+                data.PhotonDisconnected  = req.body.valor;
+            }
+            
+            if(req.body.clave === "PlaysOnlineTotal"){
+                data.PlaysOnlineTotal  = req.body.valor;
+            }
+            
+            if(req.body.clave === "PlaysTotal"){
+                data.PlaysTotal  = req.body.valor;
+            }
+            
+            if(req.body.clave === "QualityConfig"){
+                data.QualityConfig  = req.body.valor;
+            }
+            
+            if(req.body.clave === "StadiumSet"){
+                data.StadiumSet  = req.body.valor;
+            }
+            
+            if(req.body.clave === "TournamentsPlays"){
+                data.TournamentsPlays = req.body.valor;
+            }
+            
+            if(req.body.clave === "Version"){
+                data.Version = req.body.valor;
+            }
+            
+            if(req.body.clave === "VolumeConfig"){
+                data.VolumeConfig = req.body.valor;
+            }
+            
+            if(req.query.consulta === "CupsWin"){
+                data.CupsWin = req.body.valor;
+            }
+        
+            update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+
+            res.send("true");
+
+        }else{
+
+            var playernewdata = new playerData({
+                wallet: uc.upperCase(wallet),
+                BallonSet: "0",
+                CupsWin: "0",
+                DificultConfig:  "3",
+                DiscountMomment:  "0",
+                DuelsOnlineWins:  "0",
+                DuelsPlays:  "0",
+                FriendLyWins:  "0",
+                FriendlyTiming: "2",
+                LastDate:  "0",
+                LeagueDate:  "0",
+                LeagueOpport:  "0",
+                LeagueTimer:  "0",
+                LeaguesOnlineWins:  "0",
+                MatchLose:  "0",
+                MatchWins:  "0",
+                MatchesOnlineWins:  "0",
+                Music:  "0",
+                PhotonDisconnected:  "0",
+                PlaysOnlineTotal:  "0",
+                PlaysTotal:  "0",
+                QualityConfig:  "0",
+                StadiumSet:  "0",
+                TournamentsPlays:  "0",
+                Version:  "mainet",
+                VolumeConfig:  "0"
+                
+            })
+
+            playernewdata.save().then(()=>{
+                res.send("false");
+            })
+                
+            
+        }
+    }
 
     
 });
