@@ -416,9 +416,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 retirado: 0,
                 deposit: [],
                 retiro: [],
-                txs: [],
-                payerdata: String,
-                cupswin: Number
+                txs: []
             });
 
             users.save().then(()=>{
