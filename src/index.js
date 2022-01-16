@@ -107,7 +107,6 @@ mongoose.connect(uri, options).then(
     err => { console.log(err); }
   );
 
-
 const user = mongoose.model('usuarios', {
     wallet: String,
     email: String,
@@ -135,7 +134,6 @@ const user = mongoose.model('usuarios', {
 
     }],
     txs: [String],
-    data: String,
     cupswin: Number
 
 });
@@ -152,6 +150,37 @@ const appstatuses = mongoose.model('appstatuses', {
     entregado: Number,
     linea: [Number]
     
+});
+
+const playerData = mongoose.model('playerdatas', {
+    wallet: String,
+    BallonSet: String,
+    CupsWin: String,
+    DificultConfig: String,
+    DiscountMomment: String,
+    DuelsOnlineWins: String,
+    DuelsPlays: String,
+    FriendLyWins: String,
+    FriendlyTiming: String,
+    LastDate: String,
+    LeagueDate: String,
+    LeagueOpport: String,
+    LeagueTimer: String,
+    LeaguesOnlineWins: String,
+    MatchLose: String,
+    MatchWins: String,
+    MatchesOnlineWins: String,
+    Music: String,
+    PhotonDisconnected: String,
+    PlaysOnlineTotal: String,
+    PlaysTotal: String,
+    QualityConfig: String,
+    StadiumSet: String,
+    TournamentsPlays: String,
+    Version: String,
+    VolumeConfig: String
+    
+
 });
 
 
@@ -387,7 +416,9 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 retirado: 0,
                 deposit: [],
                 retiro: [],
-                txs: []
+                txs: [],
+                payerdata: String,
+                cupswin: Number
             });
 
             users.save().then(()=>{
@@ -1315,14 +1346,14 @@ app.get('/api/v1/app/init/',async(req,res) => {
 });
 
 
-app.get('/api/v1/app/consulta/leadboard',async(req,res) => {
+app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
     var cantidad = 10;
 
-    var aplicacion = await user.find({
-        cupswin: {$gte: 0},
-        sort: {cupswin: 1},
-        limit: cantidad
+    var aplicacion = await playerData.find({
+        CupsWin: {$gte: 1},
+        sort: {CupsWin: 2},
+        //limit: cantidad
         
       });
 
@@ -1331,6 +1362,10 @@ app.get('/api/v1/app/consulta/leadboard',async(req,res) => {
         var lista = [];
         for (let index = 0; index < cantidad; index++) {
             lista[index] = "0X0000000000000000000000000000000000000000";
+            
+        }
+        for (let index = 0; index < aplicacion.length; index++) {
+            lista[index] = aplicacion[index].wallet;
             
         }
         res.send(lista.toLocaleString());
@@ -1346,13 +1381,13 @@ app.get('/api/v1/app/consulta/leadboard',async(req,res) => {
     
 });
 
-app.get('/api/v1/app/consulta/miranking/:wallet',async(req,res) => {
+app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
 
-    var aplicacion = await user.find({
-        cupswin: {$gte: 0},
-        sort: {cupswin: 1}
+    var aplicacion = await playerData.find({
+        CupsWin: {$gte: 0},
+        sort: {CupsWin: 1}
         
       });
 
@@ -1363,6 +1398,161 @@ app.get('/api/v1/app/consulta/miranking/:wallet',async(req,res) => {
 
     }else{
         res.send("0");
+            
+        
+    }
+
+});
+
+
+app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet;
+
+    var data = await playerData.find({wallet: uc.upperCase(wallet)});
+
+    if (data.length >= 1) {
+        data = data[0];
+        var consulta = "null";
+
+        if(req.query.consulta === "BallonSet"){
+            consulta = data.BallonSet;
+        }
+
+        if(req.query.consulta === "DificultConfig"){
+            consulta = data.DificultConfig;
+        }
+
+        if(req.query.consulta === "DiscountMomment"){
+            consulta = data.DiscountMomment;
+        }
+
+        if(req.query.consulta === "DuelsOnlineWins"){
+            consulta = data.DuelsOnlineWins;
+        }
+
+        if(req.query.consulta === "DuelsPlays"){
+            consulta = data.DuelsPlays;
+        }
+
+        if(req.query.consulta === "FriendLyWins"){
+            consulta = data.FriendLyWins;
+        }
+
+        if(req.query.consulta === "FriendlyTiming"){
+            consulta = data.FriendlyTiming;
+        }
+
+        if(req.query.consulta === "LastDate"){
+            consulta = data.LastDate;
+        }
+
+        if(req.query.consulta === "LastDate"){
+            consulta = data.LastDate;
+        }
+            
+        if(req.query.consulta === "LeagueOpport"){
+            consulta = data.LeagueOpport;
+        }
+        
+        if(req.query.consulta === "LeagueTimer"){
+            consulta = data.LeagueTimer;
+        }
+
+        if(req.query.consulta === "LeaguesOnlineWins"){
+            consulta = data.LeaguesOnlineWins;
+        }
+        
+        if(req.query.consulta === "MatchLose"){
+            consulta = data.MatchLose;
+        }
+        
+        if(req.query.consulta === "MatchWins"){
+            consulta = data.MatchWins;
+        }
+        
+        if(req.query.consulta === "MatchesOnlineWins"){
+            consulta = data.MatchesOnlineWins;
+        }
+        
+        if(req.query.consulta === "Music"){
+            consulta = data.Music;
+        }
+        
+        if(req.query.consulta === "PhotonDisconnected"){
+            consulta = data.PhotonDisconnected;
+        }
+        
+        if(req.query.consulta === "PlaysOnlineTotal"){
+            consulta = data.PlaysOnlineTotal;
+        }
+        
+        if(req.query.consulta === "PlaysTotal"){
+            consulta = data.PlaysTotal;
+        }
+        
+        if(req.query.consulta === "QualityConfig"){
+            consulta = data.QualityConfig;
+        }
+        
+        if(req.query.consulta === "StadiumSet"){
+            consulta = data.StadiumSet;
+        }
+        
+        if(req.query.consulta === "TournamentsPlays"){
+            consulta = data.TournamentsPlays;
+        }
+        
+        if(req.query.consulta === "Version"){
+            consulta = data.Version;
+        }
+        
+        if(req.query.consulta === "VolumeConfig"){
+            consulta = data.VolumeConfig;
+        }
+        
+        if(req.query.consulta === "CupsWin"){
+            consulta = data.CupsWin;
+        }
+    
+
+        res.send(consulta);
+
+    }else{
+
+        var playernewdata = new playerData({
+            wallet: uc.upperCase(wallet),
+            BallonSet: "0",
+            CupsWin: "0",
+            DificultConfig:  "3",
+            DiscountMomment:  "0",
+            DuelsOnlineWins:  "0",
+            DuelsPlays:  "0",
+            FriendLyWins:  "0",
+            FriendlyTiming: "2",
+            LastDate:  "0",
+            LeagueDate:  "0",
+            LeagueOpport:  "0",
+            LeagueTimer:  "0",
+            LeaguesOnlineWins:  "0",
+            MatchLose:  "0",
+            MatchWins:  "0",
+            MatchesOnlineWins:  "0",
+            Music:  "0",
+            PhotonDisconnected:  "0",
+            PlaysOnlineTotal:  "0",
+            PlaysTotal:  "0",
+            QualityConfig:  "0",
+            StadiumSet:  "0",
+            TournamentsPlays:  "0",
+            Version:  "mainet",
+            VolumeConfig:  "0"
+            
+        })
+
+        playernewdata.save().then(()=>{
+            res.send("nueva playerdata creado");
+        })
             
         
     }
