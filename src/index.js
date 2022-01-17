@@ -1504,6 +1504,10 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
         if(req.query.consulta === "LastDate"){
             consulta = data.LastDate;
         }
+
+        if(req.query.consulta === "LeagueDate"){
+            consulta = data.LeagueDate;
+        }
             
         if(req.query.consulta === "LeagueOpport"){
             consulta = data.LeagueOpport;
@@ -1746,6 +1750,10 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 
             if(req.body.clave === "LeagueOpport"){
                 data.LeagueOpport = req.body.valor;
+            }
+
+            if(req.body.clave === "LeagueDate"){
+                data.LeagueDate = req.body.valor;
             }
             
             if(req.body.clave === "LeagueTimer"){
