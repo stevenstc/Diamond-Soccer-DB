@@ -1431,17 +1431,21 @@ app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
     var wallet =  req.params.wallet;
 
     var aplicacion = await playerData.find({
-        CupsWin: {$gte: 0},
-        sort: {CupsWin: 1}
+        CupsWin: {$gte: 1},
         
-      });
+      }).sort([['CupsWin', -1]]);
 
 
     if (aplicacion.length >= 1) {
 
         var posicion = aplicacion.findIndex(item => item.wallet === uc.upperCase(wallet))+1;
 
-        res.send(posicion+","+aplicacion[posicion-1].CupsWin);
+        if (posicion > 0) {
+            res.send(posicion+","+aplicacion[posicion-1].CupsWin);
+        }else{
+            res.send("0,0");
+        }
+        
 
     }else{
         res.send("0,0");
