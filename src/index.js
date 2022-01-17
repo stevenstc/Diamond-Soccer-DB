@@ -1589,6 +1589,61 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
     
 });
 
+
+app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet;
+
+    var data = await playerData.find({wallet: uc.upperCase(wallet)});
+
+    if (data.length >= 1) {
+        data = data[0];
+    
+        res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins);
+
+    }else{
+
+        var playernewdata = new playerData({
+            wallet: uc.upperCase(wallet),
+            BallonSet: "0",
+            CupsWin: 0,
+            DificultConfig:  "3",
+            DiscountMomment:  "0",
+            DuelsOnlineWins:  "0",
+            DuelsPlays:  "0",
+            FriendLyWins:  "0",
+            FriendlyTiming: "2",
+            LastDate:  "0",
+            LeagueDate:  "0",
+            LeagueOpport:  "0",
+            LeagueTimer:  "0",
+            LeaguesOnlineWins:  "0",
+            MatchLose:  "0",
+            MatchWins:  "0",
+            MatchesOnlineWins:  "0",
+            Music:  "0",
+            PhotonDisconnected:  "0",
+            PlaysOnlineTotal:  "0",
+            PlaysTotal:  "0",
+            QualityConfig:  "0",
+            StadiumSet:  "0",
+            TournamentsPlays:  "0",
+            Version:  "mainet",
+            VolumeConfig:  "0",
+            Plataforma: "null",
+            
+        })
+
+        playernewdata.save().then(()=>{
+            res.send("nueva playerdata creado");
+        })
+            
+        
+    }
+
+    
+});
+
 app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
