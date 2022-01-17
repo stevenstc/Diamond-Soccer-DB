@@ -1620,7 +1620,7 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             TournamentsPlays:  "0",
             Version:  "mainet",
             VolumeConfig:  "0",
-            Plataforma: "null",
+            Plataforma: "pc",
             GolesEnContra: "0",
             GolesAFavor: "0",
             FirstTime: "0"
@@ -1678,7 +1678,7 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             TournamentsPlays:  "0",
             Version:  "mainet",
             VolumeConfig:  "0",
-            Plataforma: "null",
+            Plataforma: "pc",
             GolesEnContra: "0",
             GolesAFavor: "0",
             FirstTime: "0"
@@ -1859,9 +1859,9 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 QualityConfig:  "0",
                 StadiumSet:  "0",
                 TournamentsPlays:  "0",
-                Version:  "null",
+                Version:  "mainet",
                 VolumeConfig:  "0",
-                Plataforma: "null",
+                Plataforma: "PC",
                 GolesEnContra: "0",
                 GolesAFavor: "0",
                 FirstTime: "0"
