@@ -1393,11 +1393,6 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
     var cantidad = 10;
     var lista = [];
 
-    for (let index = 0; index < cantidad; index++) {
-        lista[index] = "0X0000000000000000000000000000000000000000";
-        
-    }
-
     var aplicacion = await playerData.find({
         CupsWin: {$gte: 1},
         limit: cantidad
@@ -1405,8 +1400,6 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
       }).limit(cantidad).sort([['CupsWin', -1]]);
 
       
-
-
     if (aplicacion.length >= 1) {
         
         for (let index = 0; index < aplicacion.length; index++) {
@@ -1416,7 +1409,7 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
         res.send(lista.toLocaleString());
 
     }else{
-        res.send(lista.toLocaleString());
+        res.send("null");
             
         
     }
