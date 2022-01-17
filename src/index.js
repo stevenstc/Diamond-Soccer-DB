@@ -1426,6 +1426,10 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             consulta = data.BallonSet;
         }
 
+        if(req.query.consulta === "CupsWin"){
+            consulta = data.CupsWin;
+        }
+
         if(req.query.consulta === "DificultConfig"){
             consulta = data.DificultConfig;
         }
@@ -1517,9 +1521,13 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
         if(req.query.consulta === "VolumeConfig"){
             consulta = data.VolumeConfig;
         }
-        
-        if(req.query.consulta === "CupsWin"){
-            consulta = data.CupsWin;
+
+        if(req.query.consulta === "Plataforma"){
+            consulta = data.Plataforma;
+        }
+
+        if(req.query.consulta === "Pais"){
+            consulta = data.Pais;
         }
     
 
@@ -1553,7 +1561,9 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             StadiumSet:  "0",
             TournamentsPlays:  "0",
             Version:  "mainet",
-            VolumeConfig:  "0"
+            VolumeConfig:  "0",
+            Plataforma: "null",
+            Pais: "null"
             
         })
 
@@ -1582,6 +1592,10 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
             
             if(req.body.clave === "BallonSet"){
                 data.BallonSet = req.body.valor;
+            }
+
+            if(req.query.consulta === "CupsWin"){
+                data.CupsWin = req.body.valor;
             }
 
             if(req.body.clave === "DificultConfig"){
@@ -1675,11 +1689,15 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
             if(req.body.clave === "VolumeConfig"){
                 data.VolumeConfig = req.body.valor;
             }
-            
-            if(req.query.consulta === "CupsWin"){
-                data.CupsWin = req.body.valor;
+
+            if(req.body.clave === "Plataforma"){
+                data.Plataforma = req.body.valor;
             }
-        
+    
+            if(req.body.clave === "Pais"){
+                data.Pais = req.body.valor;
+            }
+            
             update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, datos);
 
             res.send("true");
@@ -1711,8 +1729,10 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 QualityConfig:  "0",
                 StadiumSet:  "0",
                 TournamentsPlays:  "0",
-                Version:  "mainet",
-                VolumeConfig:  "0"
+                Version:  "null",
+                VolumeConfig:  "0",
+                Plataforma: "null",
+                Pais: "null"
                 
             })
 
