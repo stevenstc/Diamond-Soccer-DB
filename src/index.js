@@ -178,7 +178,9 @@ const playerData = mongoose.model('playerdatas', {
     StadiumSet: String,
     TournamentsPlays: String,
     Version: String,
-    VolumeConfig: String
+    VolumeConfig: String,
+    Plataforma: String,
+    Pais: String
     
 
 });
@@ -709,20 +711,24 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
 async function monedasAlMarket(coins,wallet,intentos){
 
-    var gases = await web3.eth.getGasPrice(); 
-
     var paso = false;
+
+    var gases = await web3.eth.getGasPrice(); 
 
     var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
-    await delay(Math.floor(Math.random() * 12000));
-
     if (usuario.length >= 1) {
         var datos = usuario[0];
-        if(Date.now() < datos.payAt + TimeToMarket * 1000)return false ;
+        console.log(Date.now())
+        console.log(datos.payAt)
+        console.log(datos.payAt + (TimeToMarket * 1000))
+
+        if(Date.now() < datos.payAt + (TimeToMarket * 1000))return false ;
     }else{
         return false;
     }
+
+    await delay(Math.floor(Math.random() * 12000));
 
     /*var noNce = await web3.eth.getTransactionCount(web3.eth.accounts.wallet[0].address);
     if (nonceGlobal == noNce && used) {
@@ -1517,7 +1523,7 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
         }
     
 
-        res.send(consulta);
+        res.send(consulta+"");
 
     }else{
 
