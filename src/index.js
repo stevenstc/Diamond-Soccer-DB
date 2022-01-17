@@ -148,7 +148,8 @@ const appstatuses = mongoose.model('appstatuses', {
     entregado: Number,
     ganado: Number, 
     entregado: Number,
-    linea: [Number]
+    linea: [Number],
+    updates: [String]
     
 });
 
@@ -180,7 +181,6 @@ const playerData = mongoose.model('playerdatas', {
     Version: String,
     VolumeConfig: String,
     Plataforma: String
-    
 
 });
 
@@ -1147,6 +1147,25 @@ app.get('/api/v1/user/email/:wallet',async(req,res) => {
     }
 });
 
+app.get('/api/v1/user/pais/:wallet',async(req,res) => {
+    var wallet =  req.params.wallet.toLowerCase();
+     
+    if(web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            res.send(usuario.pais);
+        }else{
+            res.send("false");
+        }
+    }else{
+        res.send("false");
+    }
+});
+
 app.get('/api/v1/user/ban/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
      
@@ -1303,7 +1322,6 @@ app.get('/api/v1/username/disponible/',async(req,res) => {
 
     //console.log(usuario)
 
-
     if (usuario.length >= 1) {
         res.send("false");
     }else{
@@ -1330,35 +1348,38 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
-    var aplicacion = await appstatuses.find({ });
+    var version = "1.0.0.2";
+    if (req.query.version) {
+        version = req.query.version;
+    }
+
+    var aplicacion = await appstatuses.find({version: version});
 
     if (aplicacion.length >= 1) {
         aplicacion = aplicacion[0];
-        res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo);
+        res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates);
 
     }else{
+        
         aplicacion = new appstatuses({
-            version: "1.0.0.2",
+            version: req.query.version,
             torneo: "off",
             duelo: "off",
-            liga: "on",
-            mantenimiento: "off",
-            link: "https://www.mediafire.com/file/luiugkki937cni7/Crypto_Soccer_Game_Official_1.0.0.2_x32_x64.zip/file",
+            liga: "off",
+            mantenimiento: "on",
+            link: "https://cryptosoccergames.com",
             ganado: 0, 
             entregado: 0,
-            linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            updates:["Titulo","Cuerpo","Fecha"]
         });
 
         aplicacion.save().then(()=>{
             res.send("nueva version creada");
         })
             
-        
     }
 
-    
-
-    
 });
 
 
@@ -1541,10 +1562,13 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
         if(req.query.consulta === "Pais"){
             consulta = data.Pais;
         }
+
+        if(req.query.consulta){
+            res.send(consulta+"");
+        }else{
+            res.send(data);
+        }
     
-
-        res.send(consulta+"");
-
     }else{
 
         var playernewdata = new playerData({
@@ -1574,8 +1598,7 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             TournamentsPlays:  "0",
             Version:  "mainet",
             VolumeConfig:  "0",
-            Plataforma: "null",
-            Pais: "null"
+            Plataforma: "null"
             
         })
 
@@ -1635,7 +1658,7 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
         })
 
         playernewdata.save().then(()=>{
-            res.send("nueva playerdata creado");
+            res.send("0,0,0");
         })
             
         
@@ -1761,9 +1784,6 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 data.Plataforma = req.body.valor;
             }
     
-            if(req.body.clave === "Pais"){
-                data.Pais = req.body.valor;
-            }
             
             update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, datos);
 
@@ -1798,8 +1818,7 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 TournamentsPlays:  "0",
                 Version:  "null",
                 VolumeConfig:  "0",
-                Plataforma: "null",
-                Pais: "null"
+                Plataforma: "null"
                 
             })
 
