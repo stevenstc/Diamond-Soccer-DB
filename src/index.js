@@ -99,6 +99,8 @@ const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
 //console.log(web3.eth.accounts.wallet);
 const options = { useNewUrlParser: true, useUnifiedTopology: true };
 
+var formatoliga = 'MDYYYY';
+
 mongoose.connect(uri, options).then(
     async() => { console.log("Conectado Exitodamente!");
     console.log("nonce: "+await web3.eth.getTransactionCount(web3.eth.accounts.wallet[0].address));
@@ -1559,6 +1561,14 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             consulta = data.Plataforma;
         }
 
+        if(req.query.consulta === "GolesEnContra"){
+            consulta = data.GolesEnContra;
+        }
+
+        if(req.query.consulta === "GolesAFavor"){
+            consulta = data.GolesEnContra;
+        }
+
         if(req.query.consulta){
             res.send(consulta+"");
         }else{
@@ -1578,9 +1588,9 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             FriendLyWins:  "0",
             FriendlyTiming: "2",
             LastDate:  "0",
-            LeagueDate:  "0",
+            LeagueDate:  moment(Date.now()).format(formatoliga),
             LeagueOpport:  "0",
-            LeagueTimer:  "0",
+            LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
             LeaguesOnlineWins:  "0",
             MatchLose:  "0",
             MatchWins:  "0",
@@ -1594,7 +1604,9 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             TournamentsPlays:  "0",
             Version:  "mainet",
             VolumeConfig:  "0",
-            Plataforma: "null"
+            Plataforma: "null",
+            GolesEnContra: "0",
+            GolesAFavor: "0"
             
         })
 
@@ -1633,9 +1645,9 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             FriendLyWins:  "0",
             FriendlyTiming: "2",
             LastDate:  "0",
-            LeagueDate:  "0",
+            LeagueDate:  moment(Date.now()).format(formatoliga),
             LeagueOpport:  "0",
-            LeagueTimer:  "0",
+            LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
             LeaguesOnlineWins:  "0",
             MatchLose:  "0",
             MatchWins:  "0",
@@ -1650,6 +1662,8 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             Version:  "mainet",
             VolumeConfig:  "0",
             Plataforma: "null",
+            GolesEnContra: "0",
+            GolesAFavor: "0"
             
         })
 
@@ -1779,8 +1793,15 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
             if(req.body.clave === "Plataforma"){
                 data.Plataforma = req.body.valor;
             }
-    
-            
+
+            if(req.body.clave === "GolesEnContra"){
+                data.GolesEnContra = req.body.valor;
+            }
+
+            if(req.body.clave === "GolesAFavor"){
+                data.GolesAFavor = req.body.valor;
+            }
+
             update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, datos);
 
             res.send("true");
@@ -1798,9 +1819,9 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 FriendLyWins:  "0",
                 FriendlyTiming: "2",
                 LastDate:  "0",
-                LeagueDate:  "0",
+                LeagueDate:  moment(Date.now()).format(formatoliga),
                 LeagueOpport:  "0",
-                LeagueTimer:  "0",
+                LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
                 LeaguesOnlineWins:  "0",
                 MatchLose:  "0",
                 MatchWins:  "0",
@@ -1814,7 +1835,9 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 TournamentsPlays:  "0",
                 Version:  "null",
                 VolumeConfig:  "0",
-                Plataforma: "null"
+                Plataforma: "null",
+                GolesEnContra: "0",
+                GolesAFavor: "0"
                 
             })
 
