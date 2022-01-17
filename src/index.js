@@ -578,7 +578,7 @@ app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
         coins = new BigNumber(req.body.coins).multipliedBy(10**18);
 
-        if(await monedasAlJuego(wallet,1)){
+        if(await monedasAlJuego(coins,wallet,1)){
             console.log("Coins TO GAME: "+req.body.coins+" # "+wallet);
             res.send("true");
 
