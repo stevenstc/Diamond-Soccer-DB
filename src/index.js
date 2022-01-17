@@ -134,7 +134,7 @@ const user = mongoose.model('usuarios', {
 
     }],
     txs: [String],
-    Pais: String
+    pais: String
 
 });
 
@@ -418,7 +418,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 deposit: [],
                 retiro: [],
                 txs: [],
-                Pais: "null"
+                pais: "null"
             });
 
             users.save().then(()=>{
@@ -481,7 +481,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                 }],
                 retiro: [],
                 txs: [],
-                Pais: "null"
+                pais: "null"
             });
     
             users.save().then(()=>{
@@ -552,7 +552,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 deposit: [],
                 retiro: [],
                 txs: [],
-                Pais: "null"
+                pais: "null"
             });
     
             users.save().then(()=>{
@@ -1254,7 +1254,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 }],
                 retiro: [],
                 txs: [],
-                Pais: "null"
+                pais: "null"
             });
     
             users.save().then(()=>{
@@ -1557,10 +1557,6 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
 
         if(req.query.consulta === "Plataforma"){
             consulta = data.Plataforma;
-        }
-
-        if(req.query.consulta === "Pais"){
-            consulta = data.Pais;
         }
 
         if(req.query.consulta){
