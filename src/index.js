@@ -134,7 +134,7 @@ const user = mongoose.model('usuarios', {
 
     }],
     txs: [String],
-    cupswin: Number
+    Pais: String
 
 });
 
@@ -179,8 +179,7 @@ const playerData = mongoose.model('playerdatas', {
     TournamentsPlays: String,
     Version: String,
     VolumeConfig: String,
-    Plataforma: String,
-    Pais: String
+    Plataforma: String
     
 
 });
@@ -418,7 +417,8 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 retirado: 0,
                 deposit: [],
                 retiro: [],
-                txs: []
+                txs: [],
+                Pais: "null"
             });
 
             users.save().then(()=>{
@@ -480,7 +480,8 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                     txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
                 }],
                 retiro: [],
-                txs: []
+                txs: [],
+                Pais: "null"
             });
     
             users.save().then(()=>{
@@ -550,7 +551,8 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 retirado: 0,
                 deposit: [],
                 retiro: [],
-                txs: []
+                txs: [],
+                Pais: "null"
             });
     
             users.save().then(()=>{
@@ -1232,7 +1234,8 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                     txhash: "Acount Creation "
                 }],
                 retiro: [],
-                txs: []
+                txs: [],
+                Pais: "null"
             });
     
             users.save().then(()=>{
