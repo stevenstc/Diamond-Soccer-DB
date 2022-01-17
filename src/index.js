@@ -182,7 +182,10 @@ const playerData = mongoose.model('playerdatas', {
     TournamentsPlays: String,
     Version: String,
     VolumeConfig: String,
-    Plataforma: String
+    Plataforma: String,
+    GolesEnContra: String,
+    GolesAFavor: String,
+    FirstTime: String
 
 });
 
@@ -1436,11 +1439,12 @@ app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 
     if (aplicacion.length >= 1) {
 
-        res.send((aplicacion.findIndex(item => item.wallet === uc.upperCase(wallet))+1)+"");
+        var posicion = aplicacion.findIndex(item => item.wallet === uc.upperCase(wallet))+1;
+
+        res.send(posicion+","+aplicacion[posicion-1].CupsWin);
 
     }else{
-        res.send("0");
-            
+        res.send("0,0");
         
     }
 
@@ -1569,6 +1573,10 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             consulta = data.GolesEnContra;
         }
 
+        if(req.query.consulta === "FirstTime"){
+            consulta = data.FirstTime;
+        }
+
         if(req.query.consulta){
             res.send(consulta+"");
         }else{
@@ -1606,7 +1614,8 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             VolumeConfig:  "0",
             Plataforma: "null",
             GolesEnContra: "0",
-            GolesAFavor: "0"
+            GolesAFavor: "0",
+            FirstTime: "0"
             
         })
 
@@ -1663,7 +1672,8 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             VolumeConfig:  "0",
             Plataforma: "null",
             GolesEnContra: "0",
-            GolesAFavor: "0"
+            GolesAFavor: "0",
+            FirstTime: "0"
             
         })
 
@@ -1802,6 +1812,10 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 data.GolesAFavor = req.body.valor;
             }
 
+            if(req.body.clave === "FirstTime"){
+                data.FirstTime = req.body.valor;
+            }
+
             update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, datos);
 
             res.send("true");
@@ -1837,7 +1851,8 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 VolumeConfig:  "0",
                 Plataforma: "null",
                 GolesEnContra: "0",
-                GolesAFavor: "0"
+                GolesAFavor: "0",
+                FirstTime: "0"
                 
             })
 
