@@ -1825,7 +1825,7 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 data.FirstTime = req.body.valor;
             }
 
-            update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+            update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
 
             res.send("true");
 
