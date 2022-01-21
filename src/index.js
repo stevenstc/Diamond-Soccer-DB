@@ -199,6 +199,12 @@ const playerData = mongoose.model('playerdatas', {
 });
 
 
+const userplayonline = mongoose.model('userplayonline', {
+    wallet: String,
+    sesionPlayID: [String]
+});
+
+
 app.get('/',async(req,res) => {
 
     res.send("Conectado y funcionando");
@@ -243,6 +249,80 @@ app.get('/api/v1/datefuture',async(req,res) => {
     data = ""+data;
 
     res.send(data); 
+});
+
+app.get('/api/v1/sesion/active/:wallet',async(req,res) => {
+
+    let wallet =  req.params.wallet.toLowerCase();
+    let sesion = req.query.sesion;
+
+    if(!web3.utils.isAddress(wallet)){
+        console.log("wallet incorrecta: "+wallet)
+        res.send("0");
+    }else{
+            usuario = await userplayonline.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            var respuesta = "false"
+
+            for (let index = 0; index < usuario.sesionPlayID.length; index++) {
+                if(sesion === usuario.sesionPlayID[index]){
+                   
+                    respuesta = "true"
+                }
+                
+            }
+
+            res.send(respuesta);
+
+
+        }else{
+            res.send("false");    
+            
+        }
+
+    }
+
+    
+});
+
+app.post('/api/v1/sesion/create/:wallet',async(req,res) => {
+
+    let wallet =  req.params.wallet.toLowerCase();
+    let sesion = req.query.sesion;
+
+    if(!web3.utils.isAddress(wallet)){
+        console.log("wallet incorrecta: "+wallet)
+        res.send("0");
+    }else{
+            usuario = await userplayonline.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            usuario = usuario[0];
+
+            var respuesta = "false"
+
+            for (let index = 0; index < usuario.sesionPlayID.length; index++) {
+                if(sesion === usuario.sesionPlayID[index]){
+                   
+                    respuesta = "true"
+                }
+                
+            }
+
+            res.send(respuesta);
+
+
+        }else{
+            res.send("false");    
+            
+        }
+
+    }
+
+    
 });
 
 app.get('/api/v1/user/:wallet',async(req,res) => {
@@ -1007,9 +1087,9 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 
                 }
 
-                console.log(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
+                console.log(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY H:m A'));
 
-                res.send(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
+                res.send(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY H:m A'));
                 
             }else{
                 res.send(moment(Date.now() + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
@@ -1339,10 +1419,22 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                     datos.pais = req.body.pais;
                 }
 
-                if (req.body.email || req.body.username || req.body.password || req.body.pais){
-                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                if (req.body.ban) {
+                    if(req.body.ban === "true"){
+                        datos.active = false;
+                    }else{
+                        datos.active = false;
+                    }
+                    
                 }
-                res.send("true");
+
+                if (req.body.email || req.body.username || req.body.password || req.body.pais || req.body.ban){
+                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                    res.send("true");
+                }else{
+                    res.send("false");
+                }
+                
             }else{
                 res.send("false");
             }
