@@ -994,6 +994,33 @@ app.get('/api/v1/ben10',async(req,res) => {
     
 });
 
+app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    if(web3.utils.isAddress(wallet)){
+
+            var usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+            if (usuario.length >= 1) {
+                var usuario = usuario[0];
+
+                if(usuario.checkpoint === 0){
+                    usuario.checkpoint=Date.now()- DaylyTime*1000;
+
+                }
+
+                console.log(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
+
+                res.send(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
+                
+            }else{
+                res.send(moment(Date.now() + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
+            }
+        
+    }
+});
+
 app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
@@ -1020,7 +1047,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             data = data[0];
             usuario = usuario[0];
     
-            if(parseint(data.TournamentsPlays) >= 0 && parseint(data.DuelsPlays) >= 4 && parseint(data.FriendLyWins) >= 10){
+            if(parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 4 && parseInt(data.FriendLyWins) >= 10){
               
                 if(usuario.active && ( Date.now() >= usuario.checkpoint + DaylyTime*1000 || usuario.checkpoint === 0)){
     
@@ -1041,8 +1068,6 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
         }else{
             res.send("false")
         }
-
-        
 
     }else{
         res.send("false");
@@ -1123,6 +1148,8 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
                     usuario.checkpoint=Date.now()- DaylyTime*1000;
 
                 }
+
+                console.log(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
 
                 res.send(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
                 
@@ -1830,10 +1857,6 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 data.LeagueDate = req.body.valor;
             }
 
-            if(req.body.clave === "LeagueTimer"){
-                data.LeagueTimer = req.body.valor;
-            }
-
             if(req.body.clave === "Music"){
                 data.Music  = req.body.valor;
             }
@@ -2358,6 +2381,11 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
             if(req.body.clave && req.body.valor){
 
                 //console.log(data)
+
+                if( Date.now() >= parseInt(data.LeagueTimer) + 86400*1000){
+                    data.LeagueOpport = "0";
+                    data.LeagueTimer = Date.now();
+                }
 
                 var playernewdata = new playerData(data)
                 await playernewdata.save();
