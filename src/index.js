@@ -73,6 +73,8 @@ const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 
+const versionAPP = process.env.APP_VERSIONAPP || "1.0.0.4";
+
 let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY);
 
@@ -191,7 +193,8 @@ const playerData = mongoose.model('playerdatas', {
     DrawMatchsOnline: String,
     LeaguePlay: String,
     Analiticas: String,
-    Fxs: String
+    Fxs: String,
+    UserOnline: Number
 
 });
 
@@ -962,7 +965,12 @@ app.get('/api/v1/enlinea',async(req,res) => {
 
 app.get('/api/v1/ben10',async(req,res) => {
 
-    var aplicacion = await appstatuses.find({ });
+    var version = versionAPP;
+    if (req.query.version) {
+        version = req.query.version;
+    }
+
+    var aplicacion = await appstatuses.find({version: version });
     aplicacion = aplicacion[0];
 
     if(req.query.ganado){
@@ -971,17 +979,6 @@ app.get('/api/v1/ben10',async(req,res) => {
         datos.ganado = aplicacion.ganado+parseInt(req.query.ganado);
 
         update = await appstatuses.updateOne({ _id: aplicacion._id }, datos)
-
-        res.send("true");
-
-    }else
-
-    if(req.query.entregado){
-
-        datos = {};
-        datos.entregado = aplicacion.entregado+parseInt(req.query.entregado);
-
-        update = await appstatuses.updateOne({ _id: estado._id }, datos)
 
         res.send("true");
 
@@ -1024,7 +1021,7 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
-    var version = "1.0.0.2";
+    var version = versionAPP;
     var MisionDiaria = false;
     if (req.query.version) {
         version = req.query.version;
@@ -1057,7 +1054,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     
                 }else{
     
-                    console.log("no cumple mision diaria");
+                    console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                     res.send("false");
     
                 }
@@ -1078,7 +1075,14 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
+    var version = versionAPP;
 
+    if (req.query.version) {
+        version = req.query.version;
+    }
+    var aplicacion = await appstatuses.find({version: version });
+    aplicacion = aplicacion[0];
+    
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
         if(req.body.control == "true"){
@@ -1106,7 +1110,10 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                     dataPlay.DuelsPlays = "0";
                     dataPlay.FriendLyWins = "0";
                     dataPlay.TournamentsPlays = "0";
-                    
+
+                    aplicacion.entregado += coins;
+
+                    await appstatuses.updateOne({ version: version }, aplicacion)
                     await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                     await playerData.updateOne({ wallet: uc.upperCase(wallet) }, dataPlay);
 
@@ -1468,7 +1475,7 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
-    var version = "1.0.0.2";
+    var version = versionAPP;
     if (req.query.version) {
         version = req.query.version;
     }
@@ -1702,6 +1709,15 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             consulta = data.Fxs;
         }
 
+        if(req.query.consulta === "UserOnline"){
+            if( data.UserOnline + 300*1000 > Date.now()){
+                consulta = "true"
+            }else{
+                consulta = "false"
+            }
+            
+        }
+
         if(req.query.consulta){
             res.send(consulta+"");
         }else{
@@ -1745,7 +1761,8 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             DrawMatchsOnline: "0",
             LeaguePlay: "0",
             Analiticas: "0",
-            Fxs: "0"
+            Fxs: "0",
+            UserOnline: Date.now()
             
         })
 
@@ -1808,7 +1825,8 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             DrawMatchsOnline: "0",
             LeaguePlay: "0",
             Analiticas: "0",
-            Fxs: "0"
+            Fxs: "0",
+            UserOnline: Date.now()
             
         })
 
@@ -2375,12 +2393,13 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
                     data.LeaguePlay = accionar+"";
                 }
-          
 
 
             if(req.body.clave && req.body.valor){
 
                 //console.log(data)
+
+                data.UserOnline = Date.now();
 
                 if( Date.now() >= parseInt(data.LeagueTimer) + 86400*1000){
                     data.LeagueOpport = "0";
@@ -2453,7 +2472,8 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 DrawMatchsOnline: "0",
                 LeaguePlay: "0",
                 Analiticas: "0",
-                Fxs: "0"
+                Fxs: "0",
+                UserOnline: Date.now()
                 
             })
 
