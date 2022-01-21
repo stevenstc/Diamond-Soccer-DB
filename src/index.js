@@ -1063,28 +1063,42 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
+        var data = await playerData.find({wallet: uc.upperCase(wallet)});
 
-
-            if(usuario.active && ( Date.now() >= usuario.checkpoint + DaylyTime*1000 || usuario.checkpoint === 0)){
-
-                console.log("consulta mision diaria");
-
-                res.send("true");
-
+        if (data.length >= 1) {
+            data = data[0];
+    
+            if(parseint(data.TournamentsPlays) >= 2 && parseint(data.DuelsPlays) >= 2 && parseint(data.FriendLyWins) >= 10){
+                if (usuario.length >= 1) {
+                    usuario = usuario[0];
+        
+        
+                    if(usuario.active && ( Date.now() >= usuario.checkpoint + DaylyTime*1000 || usuario.checkpoint === 0)){
+        
+                        console.log("asignar mision diaria");
+        
+                        res.send("true");
+        
+                    }else{
+        
+                        console.log("no cumple mision diaria");
+                        res.send("false");
+        
+                    }
+        
+        
+                }else{
+                    res.send("false");
+        
+                }
             }else{
-
-                console.log("consulta no es tiempo mision diaria");
-                res.send("false");
-
+                res.send("false")
             }
-
-
         }else{
-            res.send("false");
-
+            res.send("false")
         }
+
+        
 
     }else{
         res.send("false");
