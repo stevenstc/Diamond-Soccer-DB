@@ -74,6 +74,8 @@ const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 
 const versionAPP = process.env.APP_VERSIONAPP || "1.0.0.4";
+const imgDefault = "https://img.search.brave.com/mjNYz4Hs6rASzAtlu8QSs6VLhmO4oqhb1VZyf2X4_BM/fit/500/500/ce/1/aHR0cHM6Ly9wdWJs/aWNkb21haW52ZWN0/b3JzLm9yZy9waG90/b3MvYWJzdHJhY3Qt/dXNlci1mbGF0LTMu/cG5n";
+
 
 let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY);
@@ -138,7 +140,8 @@ const user = mongoose.model('usuarios', {
 
     }],
     txs: [String],
-    pais: String
+    pais: String,
+    imagen: String
 
 });
 
@@ -508,7 +511,8 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 deposit: [],
                 retiro: [],
                 txs: [],
-                pais: "null"
+                pais: "null",
+                imagen: imgDefault
             });
 
             users.save().then(()=>{
@@ -571,7 +575,8 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                 }],
                 retiro: [],
                 txs: [],
-                pais: "null"
+                pais: "null",
+                imagen: imgDefault
             });
     
             users.save().then(()=>{
@@ -642,7 +647,8 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 deposit: [],
                 retiro: [],
                 txs: [],
-                pais: "null"
+                pais: "null",
+                imagen: imgDefault
             });
     
             users.save().then(()=>{
@@ -1342,15 +1348,15 @@ app.get('/api/v1/user/imagen/:username',async(req,res) => {
     if (usuario.length >= 1) {
         usuario = usuario[0];
 
-        //res.send(usuario.imagen);
+        console.log(usuario.imagen);
         if(usuario.imagen){
             res.send(usuario.imagen);
         }else{
-            res.send("https://img.search.brave.com/mjNYz4Hs6rASzAtlu8QSs6VLhmO4oqhb1VZyf2X4_BM/fit/500/500/ce/1/aHR0cHM6Ly9wdWJs/aWNkb21haW52ZWN0/b3JzLm9yZy9waG90/b3MvYWJzdHJhY3Qt/dXNlci1mbGF0LTMu/cG5n");
+            res.send(imgDefault);
 
         }
     }else{
-        res.send("https://img.search.brave.com/mjNYz4Hs6rASzAtlu8QSs6VLhmO4oqhb1VZyf2X4_BM/fit/500/500/ce/1/aHR0cHM6Ly9wdWJs/aWNkb21haW52ZWN0/b3JzLm9yZy9waG90/b3MvYWJzdHJhY3Qt/dXNlci1mbGF0LTMu/cG5n");
+        res.send(imgDefault);
     }
 
 });
@@ -1461,7 +1467,8 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 }],
                 retiro: [],
                 txs: [],
-                pais: "null"
+                pais: "null",
+                imagen: imgDefault
             });
     
             users.save().then(()=>{
