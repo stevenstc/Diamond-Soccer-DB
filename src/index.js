@@ -291,33 +291,33 @@ app.get('/api/v1/sesion/active/:wallet',async(req,res) => {
 app.post('/api/v1/sesion/create/:wallet',async(req,res) => {
 
     let wallet =  req.params.wallet.toLowerCase();
-    let sesion = req.query.sesion;
 
-    if(!web3.utils.isAddress(wallet)){
-        console.log("wallet incorrecta: "+wallet)
-        res.send("0");
-    }else{
+    if( req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+
             usuario = await userplayonline.find({ wallet: uc.upperCase(wallet) });
+
+            var respuesta = "CSC:"+Math.floor(Math.random() * 999)+":"+Math.floor(Math.random() * 999)+":"+Math.floor(Math.random() * 999)+":"+versionAPP;
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
 
-            var respuesta = "false"
-
-            for (let index = 0; index < usuario.sesionPlayID.length; index++) {
-                if(sesion === usuario.sesionPlayID[index]){
-                   
-                    respuesta = "true"
-                }
-                
-            }
-
+            usuario.sesionPlayID.push(respuesta);
+        
+            await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+        
             res.send(respuesta);
 
 
         }else{
-            res.send("false");    
-            
+
+            var users = new userplayonline({
+                wallet: uc.upperCase(wallet),   
+                sesionPlayID: [respuesta]
+            });
+
+            await users.save();
+   
+            res.send(respuesta);
         }
 
     }
@@ -780,6 +780,25 @@ async function monedasAlJuego(coins,wallet,intentos){
 
 }
 
+app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
+    var wallet =  req.params.wallet.toLowerCase();
+
+    if(web3.utils.isAddress(wallet)){
+
+        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            var datos = usuario[0];
+
+            res.send((datos.payAt + (TimeToMarket * 1000)).toString())
+        }else{
+            res.send((Date.now()+(TimeToMarket * 1000)).toString())
+        }
+    }else{
+        res.send((Date.now()+(TimeToMarket * 1000)).toString())
+    }
+});
+
 app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
@@ -817,9 +836,6 @@ async function monedasAlMarket(coins,wallet,intentos){
 
     if (usuario.length >= 1) {
         var datos = usuario[0];
-        console.log(Date.now())
-        console.log(datos.payAt)
-        console.log(datos.payAt + (TimeToMarket * 1000))
 
         if(Date.now() < datos.payAt + (TimeToMarket * 1000))return false ;
     }else{
