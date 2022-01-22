@@ -1103,12 +1103,10 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 
                 }
 
-                console.log(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY H:m A'));
-
-                res.send(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY H:m A'));
+                res.send(moment(usuario.checkpoint + DaylyTime*1000).format('D/M/YY HH:mm:ss'));
                 
             }else{
-                res.send(moment(Date.now() + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
+                res.send(moment(Date.now() + DaylyTime*1000).format('D/M/YY HH:mm:ss'));
             }
         
     }
@@ -1236,33 +1234,6 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
 });
 
-app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    if(web3.utils.isAddress(wallet)){
-
-            var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-
-            if (usuario.length >= 1) {
-                var usuario = usuario[0];
-
-                if(usuario.checkpoint === 0){
-                    usuario.checkpoint=Date.now()- DaylyTime*1000;
-
-                }
-
-                console.log(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
-
-                res.send(moment(usuario.checkpoint + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
-                
-            }else{
-                res.send(moment(Date.now() + DaylyTime*1000).format('DD/MM/YYYY HH:mm A'));
-            }
-        
-    }
-});
-
 app.get('/api/v1/user/exist/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
@@ -1364,28 +1335,24 @@ app.get('/api/v1/user/pais/:wallet',async(req,res) => {
 });
 
 app.get('/api/v1/user/imagen/:username',async(req,res) => {
-    var wallet =  req.params.username;
+    var username =  req.params.username;
      
-    if(web3.utils.isAddress(wallet)){
+    usuario = await user.find({ username: username });
 
-        usuario = await user.find({ username: username });
+    if (usuario.length >= 1) {
+        usuario = usuario[0];
 
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
-
-            //res.send(usuario.imagen);
-            if(usuario.imagen){
-                res.send(usuario.imagen);
-            }else{
-                res.send("https://img.search.brave.com/mjNYz4Hs6rASzAtlu8QSs6VLhmO4oqhb1VZyf2X4_BM/fit/500/500/ce/1/aHR0cHM6Ly9wdWJs/aWNkb21haW52ZWN0/b3JzLm9yZy9waG90/b3MvYWJzdHJhY3Qt/dXNlci1mbGF0LTMu/cG5n");
-
-            }
+        //res.send(usuario.imagen);
+        if(usuario.imagen){
+            res.send(usuario.imagen);
         }else{
             res.send("https://img.search.brave.com/mjNYz4Hs6rASzAtlu8QSs6VLhmO4oqhb1VZyf2X4_BM/fit/500/500/ce/1/aHR0cHM6Ly9wdWJs/aWNkb21haW52ZWN0/b3JzLm9yZy9waG90/b3MvYWJzdHJhY3Qt/dXNlci1mbGF0LTMu/cG5n");
+
         }
     }else{
         res.send("https://img.search.brave.com/mjNYz4Hs6rASzAtlu8QSs6VLhmO4oqhb1VZyf2X4_BM/fit/500/500/ce/1/aHR0cHM6Ly9wdWJs/aWNkb21haW52ZWN0/b3JzLm9yZy9waG90/b3MvYWJzdHJhY3Qt/dXNlci1mbGF0LTMu/cG5n");
     }
+
 });
 
 app.get('/api/v1/user/ban/:wallet',async(req,res) => {
@@ -1435,6 +1402,10 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                     datos.pais = req.body.pais;
                 }
 
+                if (req.body.imagen) {
+                    datos.imagen = req.body.imagen;
+                }
+
                 if (req.body.ban) {
                     if(req.body.ban === "true"){
                         datos.active = false;
@@ -1444,7 +1415,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                     
                 }
 
-                if (req.body.email || req.body.username || req.body.password || req.body.pais || req.body.ban){
+                if (req.body.email || req.body.username || req.body.password || req.body.pais || req.body.ban || req.body.imagen){
                     update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                     res.send("true");
                 }else{
