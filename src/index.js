@@ -1340,8 +1340,8 @@ app.get('/api/v1/user/pais/:wallet',async(req,res) => {
     }
 });
 
-app.get('/api/v1/user/imagen/:username',async(req,res) => {
-    var username =  req.params.username;
+app.get('/api/v1/imagen/user',async(req,res) => {
+    var username =  req.query.username;
      
     usuario = await user.find({ username: username });
 
