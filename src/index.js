@@ -1573,16 +1573,16 @@ app.get('/api/v1/app/init/',async(req,res) => {
         
         aplicacion = new appstatuses({
             version: req.query.version,
-            torneo: "off",
-            duelo: "off",
-            liga: "off",
-            mantenimiento: "on",
-            link: "https://cryptosoccergames.com",
+            torneo: "on",
+            duelo: "on",
+            liga: "on",
+            mantenimiento: "off",
+            link: "https://cryptosoccermarket.com/download",
             ganado: 0, 
             entregado: 0,
             linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-            updates:["V"+req.query.version+" READY!","thanks for downloading",moment(Date.now()).format('DD/MM/YYYY HH:mm A')],
-            misiondiaria: false
+            updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
+            misiondiaria: true
         });
 
         aplicacion.save().then(()=>{
