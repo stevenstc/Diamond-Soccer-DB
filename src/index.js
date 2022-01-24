@@ -1507,10 +1507,11 @@ app.post('/api/v1/user/auth/:wallet',async(req,res) => {
                     
                     
                 }else{
-                    console.log(req.body.password + " : "+uc.upperCase(wallet))
+                    
                     res.send("false");
                 }
             }else{
+                console.log("Error Loggin: "+uc.upperCase(wallet)+" : "+req.body.password +" : "+req.body.email.toLowerCase());
                 res.send("false");
             }
     
