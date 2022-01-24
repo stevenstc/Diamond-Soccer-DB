@@ -1487,7 +1487,6 @@ app.post('/api/v1/user/auth/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    req.body.email =  req.body.email.toLowerCase();
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
@@ -1498,12 +1497,13 @@ app.post('/api/v1/user/auth/:wallet',async(req,res) => {
 
             if(usuario.password === req.body.password && req.body.password != "" && req.body.password.length >= 8){
 
-                if(usuario.active && usuario.email === req.body.email){
+                if(usuario.active && usuario.email.toLowerCase() === req.body.email.toLowerCase()){
 
                     res.send("true");
                     
                     
                 }else{
+                    console.log(req.body.password + " : "+uc.upperCase(wallet))
                     res.send("false");
                 }
             }else{
