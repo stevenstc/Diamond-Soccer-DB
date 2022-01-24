@@ -1345,9 +1345,13 @@ app.get('/api/v1/imagen/user',async(req,res) => {
     if (usuario.length >= 1) {
         usuario = usuario[0];
 
-        console.log(usuario.imagen);
         if(usuario.imagen){
-            res.send(usuario.imagen);
+            if(usuario.imagen.indexOf('https://')>0){
+                res.send(usuario.imagen);
+            }else{
+                res.send(imgDefault);
+
+            }
         }else{
             res.send(imgDefault);
 
