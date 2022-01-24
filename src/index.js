@@ -1346,7 +1346,7 @@ app.get('/api/v1/imagen/user',async(req,res) => {
         usuario = usuario[0];
 
         if(usuario.imagen){
-            if(usuario.imagen.indexOf('https://')>0){
+            if(usuario.imagen.indexOf('https://')>=0){
                 res.send(usuario.imagen);
             }else{
                 res.send(imgDefault);
