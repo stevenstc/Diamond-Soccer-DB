@@ -194,7 +194,9 @@ const playerData = mongoose.model('playerdatas', {
     LeaguePlay: String,
     Analiticas: String,
     Fxs: String,
-    UserOnline: Number
+    UserOnline: Number,
+    Resolucion: String,
+    Fullscreen: String
 
 });
 
@@ -1850,7 +1852,9 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             LeaguePlay: "0",
             Analiticas: "0",
             Fxs: "0",
-            UserOnline: Date.now()
+            UserOnline: Date.now(),
+            Resolucion: "0",
+            Fullscreen: "0"
             
         })
 
@@ -1914,7 +1918,9 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             LeaguePlay: "0",
             Analiticas: "0",
             Fxs: "0",
-            UserOnline: Date.now()
+            UserOnline: Date.now(),
+            Resolucion: "0",
+            Fullscreen: "0"
             
         })
 
@@ -2561,7 +2567,9 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 LeaguePlay: "0",
                 Analiticas: "0",
                 Fxs: "0",
-                UserOnline: Date.now()
+                UserOnline: Date.now(),
+                Resolucion: "0",
+                Fullscreen: "0"
                 
             })
 
