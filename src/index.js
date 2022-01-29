@@ -812,11 +812,19 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         coins = new BigNumber(req.body.coins).multipliedBy(10**18);
 
-        await delay(Math.floor(Math.random() * 12000));
+        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
-        if(await monedasAlMarket(coins, wallet,1)){
-            res.send("true");
+        if (usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0) {
+            
+            await delay(Math.floor(Math.random() * 12000));
 
+            if(await monedasAlMarket(coins, wallet,1)){
+                res.send("true");
+
+            }else{
+                res.send("false");
+
+            }
         }else{
             res.send("false");
 
@@ -830,6 +838,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 });
 
 async function monedasAlMarket(coins,wallet,intentos){
+
 
     await delay(Math.floor(Math.random() * 12000));
 
@@ -847,19 +856,6 @@ async function monedasAlMarket(coins,wallet,intentos){
         return false;
     }
 
-    /*var noNce = await web3.eth.getTransactionCount(web3.eth.accounts.wallet[0].address);
-    if (nonceGlobal == noNce && used) {
-
-        intentos++;
-        console.log(coins.dividedBy(10**18)+" ->  "+wallet+" : "+intentos+" Nonce:"+await web3.eth.getTransactionCount(web3.eth.accounts.wallet[0].address))
-        //await delay(Math.floor(Math.random() * 12000));
-        paso = await monedasAlMarket(coins,wallet,intentos);
-        
-    }else{
-        nonceGlobal = noNce;
-        used = true;
-    }*/
-
     await contractMarket.methods
         .asignarCoinsTo(coins, wallet)
         .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
@@ -871,10 +867,10 @@ async function monedasAlMarket(coins,wallet,intentos){
 
                 if (usuario.length >= 1) {
                     var datos = usuario[0];
-                    if(datos.active){
+                    if(datos.active ){
                         datos.payAt = Date.now();
-                        datos.balance = BigNumber(datos.balance).minus(coins.dividedBy(10**18));
-                        datos.retirado = coins.dividedBy(10**18).plus(datos.retirado);
+                        datos.balance = datos.balance-coins.dividedBy(10**18).toNumber();
+                        datos.retirado = coins.dividedBy(10**18).toNumber()+datos.retirado;
                         datos.retiro.push({
                             amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
                             date: Date.now(),
