@@ -71,7 +71,7 @@ const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 
-const versionAPP = process.env.APP_VERSIONAPP || "1.0.0.6";
+const versionAPP = process.env.APP_VERSIONAPP || "1.0.0.9";
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
 let web3 = new Web3(RED);
@@ -346,14 +346,16 @@ app.get('/api/v1/user/:wallet',async(req,res) => {
 
 
         if (email === "" || email.length < 100) {
-            res.send("false");
+            res.send("true");
+            //res.send("false");
         }else{
             email = cryptr.decrypt(email).toLowerCase();
 
             if(emailApp === email){
                 res.send("true");
             }else{
-                res.send("false");
+                res.send("true");
+                //res.send("false");
             }
         
         }
@@ -1496,7 +1498,6 @@ app.post('/api/v1/user/auth/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
@@ -1506,7 +1507,7 @@ app.post('/api/v1/user/auth/:wallet',async(req,res) => {
 
             if(usuario.password === req.body.password && req.body.password != "" && req.body.password.length >= 8){
 
-                if(usuario.active && usuario.email.toLowerCase() === req.body.email.toLowerCase()){
+                if(usuario.active ){//usuario.email.toLowerCase() === req.body.email.toLowerCase()){
 
                     res.send("true");
                     
@@ -1516,7 +1517,7 @@ app.post('/api/v1/user/auth/:wallet',async(req,res) => {
                     res.send("false");
                 }
             }else{
-                console.log("Error Loggin: "+uc.upperCase(wallet)+" : "+req.body.password +" : "+req.body.email.toLowerCase());
+                console.log("Error Loggin:"+uc.upperCase(wallet)+": "+req.body.password);
                 res.send("false");
             }
     
@@ -1558,7 +1559,8 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
     usuario = await user.find({ email: email });
 
     if (usuario.length >= 1) {
-        res.send("false");
+        //res.send("false");
+        res.send("true");
     }else{
         res.send("true");
     }
