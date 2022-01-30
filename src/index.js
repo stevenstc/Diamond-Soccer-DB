@@ -2596,4 +2596,10 @@ app.get('/', (req, res, next) => {
 
 });
 
+app.post('/prueba/', (req, res, next) => {
+
+    res.send(req.body);
+
+});
+
 app.listen(port, ()=> console.log('Escuchando Puerto: ' + port))
