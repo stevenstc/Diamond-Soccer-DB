@@ -44,6 +44,8 @@ app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(bodyParser.raw());
+app.use(bodyParser.text());
 
 const port = process.env.PORT || 3004;
 const PEKEY = process.env.APP_PRIVATEKEY;
@@ -118,6 +120,7 @@ const user = mongoose.model('usuarios', {
     active: Boolean,
     payAt: Number,
     checkpoint: Number,
+    reclamado: Boolean,
     balance: Number,
     ingresado: Number,
     retirado: Number,
@@ -196,7 +199,8 @@ const playerData = mongoose.model('playerdatas', {
     Fxs: String,
     UserOnline: Number,
     Resolucion: String,
-    Fullscreen: String
+    Fullscreen: String,
+    Soporte: String
 
 });
 
@@ -506,6 +510,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
+                reclamado: false,
                 balance: 0,
                 ingresado: 0,
                 retirado: 0,
@@ -566,6 +571,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
+                reclamado: false,
                 balance: req.body.coins,
                 ingresado: req.body.coins,
                 retirado: 0,
@@ -642,6 +648,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
+                reclamado: false,
                 balance: 0,
                 ingresado: 0,
                 retirado: 0,
@@ -748,6 +755,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                             active: true,
                             payAt: Date.now(),
                             checkpoint: 0,
+                            reclamado: false,
                             balance: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
                             ingresado: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
                             retirado: 0,
@@ -903,6 +911,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                         active: true,
                         payAt: Date.now(),
                         checkpoint: 0,
+                        reclamado: false,
                         balance: 0,
                         ingresado: 0,
                         retirado: 0,
@@ -1109,14 +1118,14 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
                 var usuario = usuario[0];
 
                 if(usuario.checkpoint === 0){
-                    usuario.checkpoint=Date.now()- DaylyTime*1000;
+                    usuario.checkpoint=Date.now();
 
                 }
 
-                res.send(moment(usuario.checkpoint + DaylyTime*1000).format('D/M/YY HH:mm:ss [UTC]'));
+                res.send(moment(usuario.checkpoint).format('D/M/YY HH:mm:ss [UTC]'));
                 
             }else{
-                res.send(moment(Date.now() + DaylyTime*1000).format('D/M/YY HH:mm:ss [UTC]'));
+                res.send(moment(Date.now()).format('D/M/YY HH:mm:ss [UTC]'));
             }
         
     }
@@ -1150,11 +1159,35 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     
             if(parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 4 && parseInt(data.FriendLyWins) >= 10){
               
-                if(usuario.active && ( Date.now() >= usuario.checkpoint + DaylyTime*1000 || usuario.checkpoint === 0)){
+                if(usuario.active ){
+                    
+                    if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0) && !usuario.reclamado ){
     
-                    console.log("asignar mision diaria");
-    
-                    res.send("true");
+                        console.log("asignar mision diaria");
+        
+                        res.send("true");
+                    }else{
+
+                        if(Date.now() >= usuario.checkpoint){
+
+                            // resetear datos y tiempo
+
+                            usuario.checkpoint =  datos.checkpoint + DaylyTime*1000;
+                            usuario.reclamado = false;
+
+                            data.DuelsPlays = "0";
+                            data.FriendLyWins = "0";
+                            data.TournamentsPlays = "0";
+
+                            await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                            await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
+
+                        }
+
+                        res.send("false");
+
+
+                    }
     
                 }else{
     
@@ -1198,10 +1231,13 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                 var datos = usuario[0];
                 var dataPlay = player[0];
 
-                if(datos.active && (Date.now() >= datos.checkpoint + DaylyTime*1000 || datos.checkpoint === 0) ){
+                if(datos.active ){
 
                     var coins = await recompensaDiaria(wallet);
-                    datos.checkpoint = Date.now();
+                    if(Date.now() >= datos.checkpoint){
+                        datos.checkpoint = datos.checkpoint+ DaylyTime*1000;
+                    }
+                    datos.reclamado = false;
 
                     datos.balance = datos.balance + coins;
                     datos.ingresado = datos.ingresado + coins;
@@ -1465,6 +1501,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 active: true,
                 payAt: Date.now(),
                 checkpoint: 0,
+                reclamado: false,
                 balance: 0,
                 ingresado: 0,
                 retirado: 0,
@@ -1507,14 +1544,14 @@ app.post('/api/v1/user/auth/:wallet',async(req,res) => {
 
             if(usuario.password === req.body.password && req.body.password != "" && req.body.password.length >= 8){
 
-                if(usuario.active ){//usuario.email.toLowerCase() === req.body.email.toLowerCase()){
+                if(usuario.active ){
 
                     res.send("true");
-                    
                     
                 }else{
                     
                     res.send("false");
+                    
                 }
             }else{
                 console.log("Error Loggin:"+uc.upperCase(wallet)+": "+req.body.password);
@@ -1658,166 +1695,19 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
 
-    var data = await playerData.find({wallet: uc.upperCase(wallet)});
+    var data = await playerData.find({wallet: uc.upperCase(wallet)},{_id:0,wallet:0,__v:0,UserOnline:0});
 
     if (data.length >= 1) {
         data = data[0];
-        var consulta = "null";
 
-        if(req.query.consulta === "BallonSet"){
-            consulta = data.BallonSet;
-        }
-
-        if(req.query.consulta === "CupsWin"){
-            consulta = data.CupsWin;
-        }
-
-        if(req.query.consulta === "DificultConfig"){
-            consulta = data.DificultConfig;
-        }
-
-        if(req.query.consulta === "DiscountMomment"){
-            consulta = data.DiscountMomment;
-        }
-
-        if(req.query.consulta === "DuelsOnlineWins"){
-            consulta = data.DuelsOnlineWins;
-        }
-
-        if(req.query.consulta === "DuelsPlays"){
-            consulta = data.DuelsPlays;
-        }
-
-        if(req.query.consulta === "FriendLyWins"){
-            consulta = data.FriendLyWins;
-        }
-
-        if(req.query.consulta === "FriendlyTiming"){
-            consulta = data.FriendlyTiming;
-        }
-
-        if(req.query.consulta === "LastDate"){
-            consulta = data.LastDate;
-        }
-
-        if(req.query.consulta === "LastDate"){
-            consulta = data.LastDate;
-        }
-
-        if(req.query.consulta === "LeagueDate"){
-            consulta = data.LeagueDate;
-        }
-            
-        if(req.query.consulta === "LeagueOpport"){
-            consulta = data.LeagueOpport;
-        }
-        
-        if(req.query.consulta === "LeagueTimer"){
-            consulta = data.LeagueTimer;
-        }
-
-        if(req.query.consulta === "LeaguesOnlineWins"){
-            consulta = data.LeaguesOnlineWins;
-        }
-        
-        if(req.query.consulta === "MatchLose"){
-            consulta = data.MatchLose;
-        }
-        
-        if(req.query.consulta === "MatchWins"){
-            consulta = data.MatchWins;
-        }
-        
-        if(req.query.consulta === "MatchesOnlineWins"){
-            consulta = data.MatchesOnlineWins;
-        }
-        
-        if(req.query.consulta === "Music"){
-            consulta = data.Music;
-        }
-        
-        if(req.query.consulta === "PhotonDisconnected"){
-            consulta = data.PhotonDisconnected;
-        }
-        
-        if(req.query.consulta === "PlaysOnlineTotal"){
-            consulta = data.PlaysOnlineTotal;
-        }
-        
-        if(req.query.consulta === "PlaysTotal"){
-            consulta = data.PlaysTotal;
-        }
-        
-        if(req.query.consulta === "QualityConfig"){
-            consulta = data.QualityConfig;
-        }
-        
-        if(req.query.consulta === "StadiumSet"){
-            consulta = data.StadiumSet;
-        }
-        
-        if(req.query.consulta === "TournamentsPlays"){
-            consulta = data.TournamentsPlays;
-        }
-        
-        if(req.query.consulta === "Version"){
-            consulta = data.Version;
-        }
-        
-        if(req.query.consulta === "VolumeConfig"){
-            consulta = data.VolumeConfig;
-        }
-
-        if(req.query.consulta === "Plataforma"){
-            consulta = data.Plataforma;
-        }
-
-        if(req.query.consulta === "GolesEnContra"){
-            consulta = data.GolesEnContra;
-        }
-
-        if(req.query.consulta === "GolesAFavor"){
-            consulta = data.GolesEnContra;
-        }
-
-        if(req.query.consulta === "FirstTime"){
-            consulta = data.FirstTime;
-        }
-
-        if(req.query.consulta === "DrawMatchs"){
-            consulta = data.DrawMatchs;
-        }
-
-        if(req.query.consulta === "DrawMatchsOnline"){
-            consulta = data.DrawMatchsOnline;
-        }
-
-        if(req.query.consulta === "LeaguePlay"){
-            consulta = data.LeaguePlay;
-        }
-
-        if(req.query.consulta === "Analiticas"){
-            consulta = data.Analiticas;
-        }
-
-        if(req.query.consulta === "Fxs"){
-            consulta = data.Fxs;
-        }
-
-        if(req.query.consulta === "UserOnline"){
-            if( data.UserOnline + 300*1000 > Date.now()){
-                consulta = "true"
-            }else{
-                consulta = "false"
-            }
-            
-        }
-
-        if(req.query.consulta){
-            res.send(consulta+"");
-        }else{
+        if(!req.query.consulta){
             res.send(data);
+        }else{
+            res.send(data[req.query.consulta]+"");
         }
+        
+        
+        
     
     }else{
 
@@ -1859,78 +1749,13 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             Fxs: "0",
             UserOnline: Date.now(),
             Resolucion: "0",
-            Fullscreen: "0"
+            Fullscreen: "0",
+            Soporte: "J&S"
             
         })
 
         playernewdata.save().then(()=>{
             res.send("nueva playerdata creado");
-        })
-            
-        
-    }
-
-    
-});
-
-
-app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet;
-
-    var data = await playerData.find({wallet: uc.upperCase(wallet)});
-
-    if (data.length >= 1) {
-        data = data[0];
-    
-        res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins);
-
-    }else{
-
-        var playernewdata = new playerData({
-            wallet: uc.upperCase(wallet),
-            BallonSet: "0",
-            CupsWin: 0,
-            DificultConfig:  "3",
-            DiscountMomment:  "0",
-            DuelsOnlineWins:  "0",
-            DuelsPlays:  "0",
-            FriendLyWins:  "0",
-            FriendlyTiming: "2",
-            LastDate:  "0",
-            LeagueDate:  moment(Date.now()).format(formatoliga),
-            LeagueOpport:  "0",
-            LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
-            LeaguesOnlineWins:  "0",
-            MatchLose:  "0",
-            MatchWins:  "0",
-            MatchesOnlineWins:  "0",
-            Music:  "0",
-            PhotonDisconnected:  "0",
-            PlaysOnlineTotal:  "0",
-            PlaysTotal:  "0",
-            QualityConfig:  "0",
-            StadiumSet:  "0",
-            TournamentsPlays:  "0",
-            Version:  "mainet",
-            VolumeConfig:  "0",
-            Plataforma: "pc",
-            GolesEnContra: "0",
-            GolesAFavor: "0",
-            FirstTime: "0",
-            DrawMatchs: "0",
-            DrawMatchsOnline: "0",
-            LeaguePlay: "0",
-            Analiticas: "0",
-            Fxs: "0",
-            UserOnline: Date.now(),
-            Resolucion: "0",
-            Fullscreen: "0"
-            
-        })
-
-        playernewdata.save().then(()=>{
-            res.send("0,0,0");
         })
             
         
@@ -2574,7 +2399,8 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 Fxs: "0",
                 UserOnline: Date.now(),
                 Resolucion: "0",
-                Fullscreen: "0"
+                Fullscreen: "0",
+                Soporte: "J&S"
                 
             })
 
@@ -2589,6 +2415,205 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
     
 });
 
+app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet;
+
+    var json = req.body;
+
+    json = Buffer.from(json);
+    json = json.toString('utf8');
+    json = JSON.parse(json);
+    
+    if( json.misDat ){
+
+        json = json.misDat;
+
+        console.log(json)
+
+        var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
+        
+        if (usuario.length >= 1) {
+            var usuario = usuario[0];
+        
+            for (let index = 0; index < json.length; index++) {
+
+                switch (json[index].action) {
+                    case "sumar":
+                        usuario[json[index].variable] = (parseFloat(usuario[json[index].variable].replace(",", "."))+parseFloat(json[index].valorS.replace(",", ".")))+"";
+                     
+                        break;
+
+                    case "restar":
+                        usuario[json[index].variable] = (parseFloat(usuario[json[index].variable].replace(",", "."))-parseFloat(json[index].valorS.replace(",", ".")))+"";
+  
+                        break;
+
+                    case "setear":
+                            usuario[json[index].variable] = (json[index].valorS).replace(",", ".");
+                         
+                        break;
+
+                
+                    default:
+                        
+                        break;
+                }
+                
+                
+            }
+        
+            usuario.UserOnline = Date.now();
+
+            if( Date.now() >= parseInt(usuario.LeagueTimer) + 86400*1000){
+                usuario.LeagueOpport = "0";
+                usuario.LeagueTimer = Date.now();
+            }
+
+            var playernewdata = new playerData(usuario)
+            await playernewdata.save();
+
+            //update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
+            //console.log(update);
+
+            var consulta = await playerData.find({wallet: uc.upperCase(wallet)},{_id:0,wallet:0,__v:0,UserOnline:0});
+            consulta = consulta[0];
+
+            console.log(consulta)
+
+
+            res.send(consulta);
+        
+                
+
+        }else{
+            res.send("false");
+        }
+
+    }else{
+
+            var playernewdata = new playerData({
+                wallet: uc.upperCase(wallet),
+                BallonSet: "0",
+                CupsWin: 0,
+                DificultConfig:  "3",
+                DiscountMomment:  "0",
+                DuelsOnlineWins:  "0",
+                DuelsPlays:  "0",
+                FriendLyWins:  "0",
+                FriendlyTiming: "2",
+                LastDate:  "0",
+                LeagueDate:  moment(Date.now()).format(formatoliga),
+                LeagueOpport:  "0",
+                LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
+                LeaguesOnlineWins:  "0",
+                MatchLose:  "0",
+                MatchWins:  "0",
+                MatchesOnlineWins:  "0",
+                Music:  "0",
+                PhotonDisconnected:  "0",
+                PlaysOnlineTotal:  "0",
+                PlaysTotal:  "0",
+                QualityConfig:  "0",
+                StadiumSet:  "0",
+                TournamentsPlays:  "0",
+                Version:  "mainet",
+                VolumeConfig:  "0",
+                Plataforma: "PC",
+                GolesEnContra: "0",
+                GolesAFavor: "0",
+                FirstTime: "0",
+                DrawMatchs: "0",
+                DrawMatchsOnline: "0",
+                LeaguePlay: "0",
+                Analiticas: "0",
+                Fxs: "0",
+                UserOnline: Date.now(),
+                Resolucion: "0",
+                Fullscreen: "0",
+                Soporte: "J&S"
+                
+            })
+
+            playernewdata.save().then(()=>{
+                res.send("false");
+            })
+                
+            
+        
+    }
+
+});
+
+
+app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet;
+
+    var data = await playerData.find({wallet: uc.upperCase(wallet)});
+
+    if (data.length >= 1) {
+        data = data[0];
+    
+        res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins);
+
+    }else{
+
+        var playernewdata = new playerData({
+            wallet: uc.upperCase(wallet),
+            BallonSet: "0",
+            CupsWin: 0,
+            DificultConfig:  "3",
+            DiscountMomment:  "0",
+            DuelsOnlineWins:  "0",
+            DuelsPlays:  "0",
+            FriendLyWins:  "0",
+            FriendlyTiming: "2",
+            LastDate:  "0",
+            LeagueDate:  moment(Date.now()).format(formatoliga),
+            LeagueOpport:  "0",
+            LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
+            LeaguesOnlineWins:  "0",
+            MatchLose:  "0",
+            MatchWins:  "0",
+            MatchesOnlineWins:  "0",
+            Music:  "0",
+            PhotonDisconnected:  "0",
+            PlaysOnlineTotal:  "0",
+            PlaysTotal:  "0",
+            QualityConfig:  "0",
+            StadiumSet:  "0",
+            TournamentsPlays:  "0",
+            Version:  "mainet",
+            VolumeConfig:  "0",
+            Plataforma: "pc",
+            GolesEnContra: "0",
+            GolesAFavor: "0",
+            FirstTime: "0",
+            DrawMatchs: "0",
+            DrawMatchsOnline: "0",
+            LeaguePlay: "0",
+            Analiticas: "0",
+            Fxs: "0",
+            UserOnline: Date.now(),
+            Resolucion: "0",
+            Fullscreen: "0",
+            Soporte: "J&S"
+            
+        })
+
+        playernewdata.save().then(()=>{
+            res.send("0,0,0");
+        })
+            
+        
+    }
+
+    
+});
+
+
+
 
 app.get('/', (req, res, next) => {
 
@@ -2598,7 +2623,118 @@ app.get('/', (req, res, next) => {
 
 app.post('/prueba/', (req, res, next) => {
 
+    console.log(req.body)
+
     res.send(req.body);
+
+});
+
+app.put('/prueba/', (req, res, next) => {
+
+    var json = req.body;
+
+    json = Buffer.from(json);
+    json = json.toString('utf8');
+    json = JSON.parse(json);
+    //console.log(json);
+/*
+    var json = {
+        misDat: [
+         { variable: 'BallonSet', action: 'setear', valorS: '1' },
+         { variable: 'CupsWin', action: 'nada', valorS: '0' },
+         { variable: 'DificultConfig', action: 'nada', valorS: '0' },
+         { variable: 'DiscountMomment', action: 'nada', valorS: '0' },
+         { variable: 'DuelsOnlineWins', action: 'nada', valorS: '0' },
+         { variable: 'DuelsPlays', action: 'nada', valorS: '0' },
+         { variable: 'FriendLyWins', action: 'nada', valorS: '0' },
+         { variable: 'FriendlyTiming', action: 'nada', valorS: '0' },
+            { variable: 'LastDate', action: 'nada', valorS: '0' },
+            { variable: 'LeagueOpport', action: 'nada', valorS: '0' },
+            { variable: 'LeaguesOnlineWins', action: 'nada', valorS: '0' },
+            { variable: 'MatchLose', action: 'nada', valorS: '0' },
+            { variable: 'MatchWins', action: 'nada', valorS: '0' },
+            { variable: 'MatchesOnlineWins', action: 'nada', valorS: '0' },
+            { variable: 'Music', action: 'nada', valorS: '0' },
+            { variable: 'PhotonDisconnected', action: 'nada', valorS: '0' },
+            { variable: 'PlaysOnlineTotal', action: 'nada', valorS: '0' },
+            { variable: 'PlaysTotal', action: 'nada', valorS: '0' },
+            { variable: 'QualityConfig', action: 'nada', valorS: '0' },
+            { variable: 'StadiumSet', action: 'nada', valorS: '0' },
+            { variable: 'TournamentsPlays', action: 'nada', valorS: '0' },
+            { variable: 'Version', action: 'nada', valorS: '0' },
+            { variable: 'VolumeConfig', action: 'nada', valorS: '0' },
+            { variable: 'Plataforma', action: 'nada', valorS: '0' },
+            { variable: 'GolesEnContra', action: 'nada', valorS: '0' },
+            { variable: 'GolesAFavor', action: 'nada', valorS: '0' },
+            { variable: 'FirstTime', action: 'nada', valorS: '0' },
+            { variable: 'DrawMatchs', action: 'nada', valorS: '0' },
+            { variable: 'DrawMatchsOnline', action: 'nada', valorS: '0' },
+            { variable: 'LeaguePlay', action: 'nada', valorS: '0' },
+            { variable: 'Analiticas', action: 'nada', valorS: '0' },
+            { variable: 'Fxs', action: 'nada', valorS: '0' },
+            { variable: 'Resolucion', action: 'nada', valorS: '3465678789567' },
+            { variable: 'Fullscreen', action: 'nada', valorS: '32' }
+          ]
+       }*/
+
+       json = json.misDat;
+
+       console.log(json);
+
+    const respuesta = {
+        BallonSet: 0,
+        CupsWin: 0,
+        DificultConfig: 3,
+        DiscountMomment: 3,
+        DuelsOnlineWins: 0,
+        DuelsPlays: 0,
+        FriendLyWins: 0,
+        FriendlyTiming: 2,
+        LastDate: 0,
+        LeagueOpport: 0,
+        LeaguesOnlineWins: 0,
+        MatchLose: 0,
+        MatchWins: 0,
+        MatchesOnlineWins: 0,
+        Music: 0,
+        PhotonDisconnected: 0,
+        PlaysOnlineTotal: 0,
+        PlaysTotal: 0,
+        QualityConfig: 0,
+        StadiumSet: 0,
+        TournamentsPlays: 0,
+        Version: "mainet",
+        VolumeConfig: 0,
+        Plataforma: "PC",
+        GolesEnContra: 0,
+        GolesAFavor: 0,
+        FirstTime: 0,
+        DrawMatchs: 0,
+        DrawMatchsOnline: 0,
+        LeaguePlay: 0,
+        Analiticas: 0,
+        Fxs: 0,
+        Resolucion: 0,
+        Fullscreen: 0,
+        Soporte: "J&S"
+    }
+
+        for (let index = 0; index < json.length; index++) {
+
+            if (json[index].action !== "nada") {
+
+                Object.defineProperty(respuesta, json[index].variable, {
+                    value: json[index].valorS,
+                    writable: true
+                  });  
+                
+            }    
+            
+        }
+
+        console.log(respuesta)
+
+    res.send(respuesta);
 
 });
 
