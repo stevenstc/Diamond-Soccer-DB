@@ -1046,7 +1046,7 @@ app.get('/api/v1/sendmail',async(req,res) => {
 app.get('/api/v1/enlinea',async(req,res) => {
 
     var appstatus = await appstatuses.find({});
-        appstatus = appstatus[0]
+    appstatus = appstatus[appstatus.length-1]
 
     if(req.query.rango){
 
@@ -1080,13 +1080,8 @@ app.get('/api/v1/enlinea',async(req,res) => {
 
 app.get('/api/v1/ben10',async(req,res) => {
 
-    var version = versionAPP;
-    if (req.query.version) {
-        version = req.query.version;
-    }
-
-    var aplicacion = await appstatuses.find({version: version });
-    aplicacion = aplicacion[0];
+    var appstatus = await appstatuses.find({});
+    appstatus = appstatus[appstatus.length-1]
 
     if(req.query.ganado){
 
@@ -1204,20 +1199,18 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     console.log(version)
     var MisionDiaria = false;
 
-    var aplicacion = await appstatuses.find({version: version});
+    var aplicacion = await appstatuses.find({});
+    
+    if(aplicacion.length >= 1 && web3.utils.isAddress(wallet) && habilitarMisionDiaria === "true"){
 
-    if (aplicacion.length >= 1) {
-        aplicacion = aplicacion[0];
+        aplicacion = aplicacion[aplicacion.length-1]
         MisionDiaria = aplicacion.misiondiaria;
-    }
-
-    if(web3.utils.isAddress(wallet) && MisionDiaria && habilitarMisionDiaria === "true"){
 
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
 
-        if (data.length >= 1 && usuario.length >= 1) {
+        if (data.length >= 1 && usuario.length >= 1 && MisionDiaria ) {
             data = data[0];
             usuario = usuario[0];
     
@@ -1276,13 +1269,9 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
-    var version = versionAPP;
 
-    if (req.query.version) {
-        version = req.query.version;
-    }
-    var aplicacion = await appstatuses.find({version: version });
-    aplicacion = aplicacion[0];
+    var aplicacion = await appstatuses.find({});
+    aplicacion = aplicacion[aplicacion.length-1]
     
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
@@ -1317,7 +1306,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
                     aplicacion.entregado += coins;
 
-                    await appstatuses.updateOne({ version: version }, aplicacion)
+                    await appstatuses.updateOne({ version: aplicacion.version }, aplicacion)
                     await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                     await playerData.updateOne({ wallet: uc.upperCase(wallet) }, dataPlay);
 
@@ -1668,15 +1657,10 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
-    var version = versionAPP;
-    if (req.query.version) {
-        version = req.query.version;
-    }
-
-    var aplicacion = await appstatuses.find({version: version});
-
+    var aplicacion = await appstatuses.find({});
+    
     if (aplicacion.length >= 1) {
-        aplicacion = aplicacion[0];
+        aplicacion = aplicacion[aplicacion.length-1]
         res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates);
 
     }else{
