@@ -309,7 +309,7 @@ app.post('/api/v1/sesion/create/:wallet',async(req,res) => {
 
             usuario.sesionPlayID.push(respuesta);
         
-            await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+            await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
         
             res.send(respuesta);
 
