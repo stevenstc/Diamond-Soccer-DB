@@ -73,7 +73,7 @@ const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 
-const versionAPP = process.env.APP_VERSIONAPP || "1.0.0.9";
+const versionAPP = process.env.APP_VERSIONAPP || "1.0.1.0";
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
 let web3 = new Web3(RED);
@@ -1201,10 +1201,8 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
     var version = versionAPP;
+    console.log(version)
     var MisionDiaria = false;
-    if (req.query.version) {
-        version = req.query.version;
-    }
 
     var aplicacion = await appstatuses.find({version: version});
 
