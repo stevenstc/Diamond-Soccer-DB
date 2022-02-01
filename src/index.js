@@ -1236,7 +1236,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                             data.FriendLyWins = "0";
                             data.TournamentsPlays = "0";
 
-                            await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                            await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
                             await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
 
                         }
