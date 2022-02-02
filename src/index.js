@@ -1199,10 +1199,11 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 });
 
 async function restChecpoint(wallet){
+    var usuario = await user.find({ wallet: uc.upperCase(wallet) });
     if(Date.now() >= usuario.checkpoint){
 
         // resetear datos y tiempo
-        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
 
         usuario.checkpoint =  usuario.checkpoint  + DaylyTime*1000;
