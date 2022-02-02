@@ -1656,6 +1656,7 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 app.get('/api/v1/app/init/',async(req,res) => {
 
     
+
     var aplicacion = await appstatuses.find({version: req.query.version});
     
     if (aplicacion.length >= 1) {
@@ -1663,24 +1664,33 @@ app.get('/api/v1/app/init/',async(req,res) => {
         res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates);
 
     }else{
-        
-        aplicacion = new appstatuses({
-            version: req.query.version,
-            torneo: "on",
-            duelo: "on",
-            liga: "on",
-            mantenimiento: "off",
-            link: "https://cryptosoccermarket.com/download",
-            ganado: 0, 
-            entregado: 0,
-            linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-            updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
-            misiondiaria: true
-        });
 
-        aplicacion.save().then(()=>{
-            res.send("nueva version creada");
-        })
+        if(!req.query.version){
+            aplicacion = await appstatuses.find({});
+            aplicacion = aplicacion[aplicacion.length-1]
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates);
+    
+        }else{
+            aplicacion = new appstatuses({
+                version: req.query.version,
+                torneo: "on",
+                duelo: "on",
+                liga: "on",
+                mantenimiento: "off",
+                link: "https://cryptosoccermarket.com/download",
+                ganado: 0, 
+                entregado: 0,
+                linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
+                misiondiaria: true
+            });
+    
+            aplicacion.save().then(()=>{
+                res.send("nueva version creada");
+            })
+        }
+        
+        
             
     }
 
