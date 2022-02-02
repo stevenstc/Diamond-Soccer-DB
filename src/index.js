@@ -1221,7 +1221,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                     
                     if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0) && !usuario.reclamado ){
     
-                        console.log("si cumple mision diaria");
+                        //console.log("si cumple mision diaria");
         
                         res.send("true");
                     }else{
@@ -1252,7 +1252,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     
                 }else{
     
-                    console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
+                    //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                     res.send("false");
     
                 }
