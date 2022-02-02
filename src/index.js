@@ -13,9 +13,9 @@ const uc = require('upper-case');
 //console.log(("HolA Que Haze").toUpperCase())
 //console.log(("HolA Que Haze").toLowerCase())
 
-var cosa = {cosita: "1,23456"}
+//var cosa = {cosita: "1,23456"}
 
-console.log(cosa["cosita"].replace(",","."))
+//console.log(cosa["cosita"].replace(",","."))
 
 const Cryptr = require('cryptr');
 
