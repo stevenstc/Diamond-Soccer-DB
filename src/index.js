@@ -60,7 +60,6 @@ const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
 
 const DaylyTime = process.env.APP_DAYTIME || 86400;
-const habilitarMisionDiaria = process.env.APP_DAYMISION || false;
 
 const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
@@ -1228,7 +1227,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     var aplicacion = await appstatuses.find({});
     
-    if(aplicacion.length >= 1 && web3.utils.isAddress(wallet) && habilitarMisionDiaria === "true"){
+    if(aplicacion.length >= 1 && web3.utils.isAddress(wallet)){
 
         aplicacion = aplicacion[aplicacion.length-1]
         MisionDiaria = aplicacion.misiondiaria;
