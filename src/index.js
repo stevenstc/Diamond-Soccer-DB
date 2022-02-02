@@ -1713,7 +1713,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
 app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
-    var cantidad = 10;
+    var cantidad = 20;
     var lista = [];
 
     var aplicacion = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
