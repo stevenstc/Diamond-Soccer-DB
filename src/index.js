@@ -1230,7 +1230,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
                             // resetear datos y tiempo
 
-                            usuario.checkpoint =  Date.now() + DaylyTime*1000;
+                            usuario.checkpoint =  usuario.checkpoint  + DaylyTime*1000;
                             usuario.reclamado = false;
 
                             data.DuelsPlays = "0";
@@ -1290,9 +1290,9 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
                     var coins = await recompensaDiaria(wallet);
                     if(Date.now() >= datos.checkpoint){
-                        datos.checkpoint = Date.now()+ DaylyTime*1000;
+                        //datos.checkpoint = datos.checkpoint+ DaylyTime*1000;
                     }
-                    datos.reclamado = false;
+                    datos.reclamado = true;
 
                     datos.balance = datos.balance + coins;
                     datos.ingresado = datos.ingresado + coins;
