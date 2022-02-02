@@ -1080,8 +1080,8 @@ app.get('/api/v1/enlinea',async(req,res) => {
 
 app.get('/api/v1/ben10',async(req,res) => {
 
-    var appstatus = await appstatuses.find({});
-    appstatus = appstatus[appstatus.length-1]
+    var aplicacion = await appstatuses.find({});
+    aplicacion = aplicacion[aplicacion.length-1]
 
     if(req.query.ganado){
 
@@ -2482,7 +2482,7 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
         json = json.misDat;
 
-        console.log(json)
+        //console.log(json)
 
         var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
         
@@ -2532,8 +2532,7 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
             var consulta = await playerData.find({wallet: uc.upperCase(wallet)},{_id:0,wallet:0,__v:0,UserOnline:0});
             consulta = consulta[0];
 
-            console.log(consulta)
-
+            //console.log(consulta)
 
             res.send(consulta);
         
