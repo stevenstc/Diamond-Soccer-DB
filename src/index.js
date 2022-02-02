@@ -13,6 +13,10 @@ const uc = require('upper-case');
 //console.log(("HolA Que Haze").toUpperCase())
 //console.log(("HolA Que Haze").toLowerCase())
 
+var cosa = {cosita: "1,23456"}
+
+console.log(cosa["cosita"].replace(",","."))
+
 const Cryptr = require('cryptr');
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -2493,12 +2497,12 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
                 switch (json[index].action) {
                     case "sumar":
-                        usuario[json[index].variable] = (parseFloat(usuario[json[index].variable].replace(",", "."))+parseFloat(json[index].valorS.replace(",", ".")))+"";
+                        usuario[json[index].variable] = (parseFloat((usuario[json[index].variable]).replace(",", "."))+parseFloat((json[index].valorS).replace(",", ".")))+"";
                      
                         break;
 
                     case "restar":
-                        usuario[json[index].variable] = (parseFloat(usuario[json[index].variable].replace(",", "."))-parseFloat(json[index].valorS.replace(",", ".")))+"";
+                        usuario[json[index].variable] = (parseFloat((usuario[json[index].variable]).replace(",", "."))-parseFloat((json[index].valorS).replace(",", ".")))+"";
   
                         break;
 
