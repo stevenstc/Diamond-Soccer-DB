@@ -1817,6 +1817,657 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
     
 });
 
+app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet;
+    
+    if(req.body.token == TOKEN ){
+
+        var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
+        
+        if (usuario.length >= 1) {
+            var data = usuario[0];
+            
+            if(req.body.clave === "BallonSet"){
+                data.BallonSet = req.body.valor;
+            }
+
+            if(req.body.clave === "DificultConfig"){
+                data.DificultConfig = req.body.valor;
+            }
+
+            if(req.body.clave === "LastDate"){
+                data.LastDate = req.body.valor;
+            }
+
+            if(req.body.clave === "LastDate"){
+                data.LastDate = req.body.valor;
+            }
+
+            if(req.body.clave === "FriendlyTiming"){
+                data.FriendlyTiming = req.body.valor;
+            }
+
+            if(req.body.clave === "LeagueDate"){
+                data.LeagueDate = req.body.valor;
+            }
+
+            if(req.body.clave === "Music"){
+                data.Music  = req.body.valor;
+            }
+
+            if(req.body.clave === "QualityConfig"){
+                data.QualityConfig  = req.body.valor;
+            }
+            
+            if(req.body.clave === "StadiumSet"){
+                data.StadiumSet  = req.body.valor;
+            }
+
+            if(req.body.clave === "Version"){
+                data.Version = req.body.valor;
+            }
+            
+            if(req.body.clave === "VolumeConfig"){
+                data.VolumeConfig = req.body.valor;
+            }
+
+            if(req.body.clave === "Plataforma"){
+                data.Plataforma = req.body.valor;
+            }
+
+            if(req.body.clave === "FirstTime"){
+                data.FirstTime = req.body.valor;
+            }
+
+            if(req.body.clave === "Analiticas"){
+                data.Analiticas = req.body.valor;
+            }
+
+            if(req.body.clave === "Fxs"){
+                data.Fxs = req.body.valor;
+            }
+
+            //// las de arriba solo textos /|\
+
+            var accionar; 
+            var respuesta = "true";
+
+                if(req.body.clave === "CupsWin"){
+
+                    accionar = data.CupsWin;
+
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.CupsWin = accionar;
+                    
+                }
+
+                if(req.body.clave === "DiscountMomment"){
+                    accionar = data.DiscountMomment;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.DiscountMomment = accionar+"";
+                }
+
+                if(req.body.clave === "DuelsOnlineWins"){
+                    accionar = data.DuelsOnlineWins;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.DuelsOnlineWins = accionar+"";
+                }
+
+                if(req.body.clave === "DuelsPlays"){
+                    accionar = data.DuelsPlays;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.DuelsPlays = accionar+"";
+                }
+
+                if(req.body.clave === "FriendLyWins"){
+                    accionar = data.FriendLyWins;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.FriendLyWins = accionar+"";
+                }
+
+                if(req.body.clave === "LeagueOpport"){
+                    accionar = data.LeagueOpport;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.LeagueOpport = accionar+"";
+                }
+                
+                if(req.body.clave === "LeaguesOnlineWins"){
+                    accionar = data.LeaguesOnlineWins;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.LeaguesOnlineWins = accionar+"";
+                }
+                
+                if(req.body.clave === "MatchLose"){
+                    accionar = data.MatchLose;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.MatchLose = accionar+"";
+                }
+                
+                if(req.body.clave === "MatchWins"){
+                    accionar = data.MatchWins;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.MatchWins = accionar+"";
+                }
+                
+                if(req.body.clave === "MatchesOnlineWins"){
+                    accionar = data.MatchesOnlineWins;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.MatchesOnlineWins = accionar+"";
+                }
+                
+                if(req.body.clave === "PhotonDisconnected"){
+                    accionar = data.PhotonDisconnected;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.PhotonDisconnected = accionar+"";
+                }
+                
+                if(req.body.clave === "PlaysOnlineTotal"){
+                    accionar = data.PlaysOnlineTotal;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.PlaysOnlineTotal = accionar+"";
+                }
+                
+                if(req.body.clave === "PlaysTotal"){
+                    accionar = data.PlaysTotal;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.PlaysTotal = accionar+"";
+                }
+                
+                if(req.body.clave === "TournamentsPlays"){
+                    accionar = data.TournamentsPlays;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.TournamentsPlays = accionar+"";
+                }
+
+                if(req.body.clave === "GolesEnContra"){
+                    accionar = data.GolesEnContra;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.GolesEnContra = accionar+"";
+                }
+
+                if(req.body.clave === "GolesAFavor"){
+                    accionar = data.GolesAFavor;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.GolesAFavor = accionar+"";
+                }
+
+                if(req.body.clave === "DrawMatchs"){
+                    accionar = data.DrawMatchs;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.DrawMatchs = accionar+"";
+                }
+
+                if(req.body.clave === "DrawMatchsOnline"){
+                    accionar = data.DrawMatchsOnline;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.DrawMatchsOnline = accionar+"";
+                }
+
+                if(req.body.clave === "LeaguePlay"){
+                    accionar = data.LeaguePlay;
+
+                    switch (req.body.accion) {
+                        case "sumar":
+                            accionar = parseInt(accionar)+parseInt(req.body.valor);
+                            break;
+
+                        case "restar":
+                            accionar = parseInt(accionar)-parseInt(req.body.valor);
+                            break;
+
+                        case "setear":
+                            accionar = parseInt(req.body.valor);
+                            break;
+
+                    
+                        default:
+                            respuesta = "false";
+                            break;
+                    }
+
+                    data.LeaguePlay = accionar+"";
+                }
+
+
+            if(req.body.clave && req.body.valor){
+
+                //console.log(data)
+
+                data.UserOnline = Date.now();
+
+                if( Date.now() >= parseInt(data.LeagueTimer) + 86400*1000){
+                    data.LeagueOpport = "0";
+                    data.LeagueTimer = Date.now();
+                }
+
+                var playernewdata = new playerData(data)
+                await playernewdata.save();
+
+                //update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
+
+                //console.log(update);
+
+                switch (req.body.clave) {
+                    case "LeagueOpport":
+                        if(respuesta === "false"){
+                            res.send("false");
+                        }else{
+                            res.send(data.LeagueOpport+"");
+                        }
+                        break;
+                
+                    default:
+                        if(respuesta === "false"){
+                            res.send("false");
+                        }else{
+                            res.send("true");
+                        }
+                        break;
+                }
+
+            }else{
+                res.send("false");
+            }
+
+        }else{
+
+            var playernewdata = new playerData({
+                wallet: uc.upperCase(wallet),
+                BallonSet: "0",
+                CupsWin: 0,
+                DificultConfig:  "3",
+                DiscountMomment:  "0",
+                DuelsOnlineWins:  "0",
+                DuelsPlays:  "0",
+                FriendLyWins:  "0",
+                FriendlyTiming: "2",
+                LastDate:  "0",
+                LeagueDate:  moment(Date.now()).format(formatoliga),
+                LeagueOpport:  "0",
+                LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
+                LeaguesOnlineWins:  "0",
+                MatchLose:  "0",
+                MatchWins:  "0",
+                MatchesOnlineWins:  "0",
+                Music:  "0",
+                PhotonDisconnected:  "0",
+                PlaysOnlineTotal:  "0",
+                PlaysTotal:  "0",
+                QualityConfig:  "0",
+                StadiumSet:  "0",
+                TournamentsPlays:  "0",
+                Version:  "mainet",
+                VolumeConfig:  "0",
+                Plataforma: "PC",
+                GolesEnContra: "0",
+                GolesAFavor: "0",
+                FirstTime: "0",
+                DrawMatchs: "0",
+                DrawMatchsOnline: "0",
+                LeaguePlay: "0",
+                Analiticas: "0",
+                Fxs: "0",
+                UserOnline: Date.now(),
+                Resolucion: "0",
+                Fullscreen: "0",
+                Soporte: "J&S"
+                
+            })
+
+            playernewdata.save().then(()=>{
+                res.send("false");
+            })
+                
+            
+        }
+    }
+
+    
+});
+
 app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
