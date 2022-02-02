@@ -1195,8 +1195,6 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
-    var version = versionAPP;
-    console.log(version)
     var MisionDiaria = false;
 
     var aplicacion = await appstatuses.find({});
@@ -1657,7 +1655,8 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
-    var aplicacion = await appstatuses.find({});
+    
+    var aplicacion = await appstatuses.find({version: req.query.version});
     
     if (aplicacion.length >= 1) {
         aplicacion = aplicacion[aplicacion.length-1]
