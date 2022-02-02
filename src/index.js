@@ -1209,20 +1209,19 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
         MisionDiaria = aplicacion.misiondiaria;
 
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
 
         if (data.length >= 1 && usuario.length >= 1 && MisionDiaria ) {
+
             data = data[0];
             usuario = usuario[0];
     
-            if(parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 4 && parseInt(data.FriendLyWins) >= 10){
+            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 4 && parseInt(data.FriendLyWins) >= 10){
               
-                if(usuario.active ){
                     
                     if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0) && !usuario.reclamado ){
     
-                        console.log("asignar mision diaria");
+                        console.log("si cumple mision diaria");
         
                         res.send("true");
                     }else{
@@ -1238,15 +1237,18 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                             data.FriendLyWins = "0";
                             data.TournamentsPlays = "0";
 
-                            await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
-                            await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
+                            var nuevoUsuario = new user(usuario)
+                            await nuevoUsuario.save();
 
+                            //await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
+                            await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
                         }
 
                         res.send("false");
 
-
                     }
+
+                      
     
                 }else{
     
@@ -1255,9 +1257,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     
                 }
         
-            }else{
-                res.send("false")
-            }
+
         }else{
             res.send("false")
         }
@@ -1309,7 +1309,9 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                     aplicacion.entregado += coins;
 
                     await appstatuses.updateOne({ version: aplicacion.version }, aplicacion)
-                    await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                    var nuevoUsuario = new user(datos)
+                    await nuevoUsuario.save();
+                    //await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                     await playerData.updateOne({ wallet: uc.upperCase(wallet) }, dataPlay);
 
                     console.log("Daily mision coins: "+coins+" # "+wallet);
@@ -2478,9 +2480,13 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
     var json = req.body;
 
-    json = Buffer.from(json);
-    json = json.toString('utf8');
-    json = JSON.parse(json);
+    if(!json.misDat){
+
+        json = Buffer.from(json);
+        json = json.toString('utf8');
+        json = JSON.parse(json);
+
+    }
     
     if( json.misDat ){
 
