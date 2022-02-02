@@ -1182,7 +1182,7 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
             if (usuario.length >= 1) {
                 var usuario = usuario[0];
 
-                restChecpoint(usuario);
+                restChecpoint(wallet);
 
                 if(usuario.checkpoint === 0){
                     usuario.checkpoint=Date.now();
@@ -1198,10 +1198,12 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
     }
 });
 
-async function restChecpoint(usuario){
+async function restChecpoint(wallet){
     if(Date.now() >= usuario.checkpoint){
 
         // resetear datos y tiempo
+        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        var data = await playerData.find({wallet: uc.upperCase(wallet)});
 
         usuario.checkpoint =  usuario.checkpoint  + DaylyTime*1000;
         usuario.reclamado = false;
@@ -1248,7 +1250,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                         res.send("true");
                     }else{
 
-                        restChecpoint(usuario);
+                        restChecpoint(wallet);
 
                         res.send("false");
 
@@ -1451,7 +1453,7 @@ app.get('/api/v1/imagen/user',async(req,res) => {
     if (usuario.length >= 1) {
         usuario = usuario[0];
 
-        restChecpoint(usuario);
+        restChecpoint(usuario.wallet);
 
         if(usuario.imagen){
             if(usuario.imagen.indexOf('https://')>=0){
