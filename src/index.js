@@ -1238,6 +1238,8 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
         if (data.length >= 1 && usuario.length >= 1 && MisionDiaria ) {
 
+            restChecpoint(wallet);
+
             data = data[0];
             usuario = usuario[0];
     
@@ -1250,8 +1252,6 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
         
                         res.send("true");
                     }else{
-
-                        restChecpoint(wallet);
 
                         res.send("false");
 
@@ -1298,9 +1298,6 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                 if(datos.active ){
 
                     var coins = await recompensaDiaria(wallet);
-                    if(Date.now() >= datos.checkpoint){
-                        //datos.checkpoint = datos.checkpoint+ DaylyTime*1000;
-                    }
                     datos.reclamado = true;
 
                     datos.balance = datos.balance + coins;
