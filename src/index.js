@@ -1713,7 +1713,15 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
 app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
-    var cantidad = 20;
+    var cantidad;
+
+    if(!req.query.cantidad){
+        cantidad = 20;
+    }else{
+        cantidad = parseInt(req.query.cantidad);
+    }
+
+    
     var lista = [];
 
     var aplicacion = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
