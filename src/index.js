@@ -1182,6 +1182,8 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
             if (usuario.length >= 1) {
                 var usuario = usuario[0];
 
+                restChecpoint(usuario);
+
                 if(usuario.checkpoint === 0){
                     usuario.checkpoint=Date.now();
 
@@ -1195,6 +1197,26 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
         
     }
 });
+
+async function restChecpoint(usuario){
+    if(Date.now() >= usuario.checkpoint){
+
+        // resetear datos y tiempo
+
+        usuario.checkpoint =  usuario.checkpoint  + DaylyTime*1000;
+        usuario.reclamado = false;
+
+        data.DuelsPlays = "0";
+        data.FriendLyWins = "0";
+        data.TournamentsPlays = "0";
+
+        var nuevoUsuario = new user(usuario)
+        await nuevoUsuario.save();
+
+        //await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
+        await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
+    }
+}
 
 app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
@@ -1226,23 +1248,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                         res.send("true");
                     }else{
 
-                        if(Date.now() >= usuario.checkpoint){
-
-                            // resetear datos y tiempo
-
-                            usuario.checkpoint =  usuario.checkpoint  + DaylyTime*1000;
-                            usuario.reclamado = false;
-
-                            data.DuelsPlays = "0";
-                            data.FriendLyWins = "0";
-                            data.TournamentsPlays = "0";
-
-                            var nuevoUsuario = new user(usuario)
-                            await nuevoUsuario.save();
-
-                            //await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
-                            await playerData.updateOne({ wallet: uc.upperCase(wallet) }, data);
-                        }
+                        restChecpoint(usuario);
 
                         res.send("false");
 
@@ -1444,6 +1450,8 @@ app.get('/api/v1/imagen/user',async(req,res) => {
 
     if (usuario.length >= 1) {
         usuario = usuario[0];
+
+        restChecpoint(usuario);
 
         if(usuario.imagen){
             if(usuario.imagen.indexOf('https://')>=0){
