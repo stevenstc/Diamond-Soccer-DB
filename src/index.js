@@ -1406,6 +1406,21 @@ app.get('/api/v1/user/username/:wallet',async(req,res) => {
     }
 });
 
+app.get('/api/v1/user/wallet/',async(req,res) => {
+    var username =  req.query.username;
+     
+    usuario = await user.find({ username: username });
+
+    if (usuario.length >= 1) {
+        usuario = usuario[0];
+
+        res.send(usuario.wallet);
+    }else{
+        res.send("false");
+    }
+    
+});
+
 app.get('/api/v1/user/email/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
      
