@@ -334,42 +334,6 @@ app.post('/api/v1/sesion/create/:wallet',async(req,res) => {
     
 });
 
-app.get('/api/v1/user/:wallet',async(req,res) => {
-
-    let wallet = req.params.wallet.toLowerCase();
-    let emailApp = req.query.email.toLowerCase();
-
-    if(!web3.utils.isAddress(wallet)){
-        console.log("wallet incorrecta: "+wallet+ " email: "+emailApp )
-        res.send("false");
-    }else{
-
-        var investor =
-        await  contractMarket.methods
-            .investors(wallet)
-            .call({ from: cuenta.address });
-
-        var email = investor.correo;
-
-
-        if (email === "" || email.length < 100) {
-            res.send("true");
-            //res.send("false");
-        }else{
-            email = cryptr.decrypt(email).toLowerCase();
-
-            if(emailApp === email){
-                res.send("true");
-            }else{
-                res.send("true");
-                //res.send("false");
-            }
-        
-        }
-    }
-
-});
-
 app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
