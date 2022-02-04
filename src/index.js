@@ -1142,6 +1142,8 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 
             var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
+            var cuando = "Earlier than";
+
             if (usuario.length >= 1) {
                 var usuario = usuario[0];
 
@@ -1152,10 +1154,14 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 
                 }
 
-                res.send(moment(usuario.checkpoint).format('D/M/YY HH:mm:ss [UTC]'));
+                if(usuario.reclamado){
+                    cuando = "Later than";
+                }
+
+                res.send(moment(usuario.checkpoint).format('['+cuando+'] D/M/YY HH:mm:ss [UTC]'));
                 
             }else{
-                res.send(moment(Date.now()).format('D/M/YY HH:mm:ss [UTC]'));
+                res.send(moment(Date.now()).format('['+cuando+'] D/M/YY HH:mm:ss [UTC]'));
             }
         
     }
