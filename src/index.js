@@ -76,7 +76,6 @@ const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 
-const versionAPP = process.env.APP_VERSIONAPP || "1.0.1.0";
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
 let web3 = new Web3(RED);
@@ -306,7 +305,7 @@ app.post('/api/v1/sesion/create/:wallet',async(req,res) => {
 
             usuario = await userplayonline.find({ wallet: uc.upperCase(wallet) });
 
-            var respuesta = "CSC:"+Math.floor(Math.random() * 999)+":"+Math.floor(Math.random() * 999)+":"+Math.floor(Math.random() * 999)+":"+versionAPP;
+            var respuesta = "CSC:"+Math.floor(Math.random() * 999)+":"+Math.floor(Math.random() * 999)+":"+Math.floor(Math.random() * 999);
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
@@ -330,6 +329,8 @@ app.post('/api/v1/sesion/create/:wallet',async(req,res) => {
             res.send(respuesta);
         }
 
+    }else{
+        res.send("false");
     }
 
     
@@ -1013,7 +1014,7 @@ app.get('/api/v1/sendmail',async(req,res) => {
 
 app.get('/api/v1/enlinea',async(req,res) => {
 
-    var appstatus = await appstatuses.find({});
+    var appstatus = await appstatuses.find({version: req.query.version});
     appstatus = appstatus[appstatus.length-1]
 
     if(req.query.rango){
@@ -2531,6 +2532,10 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 
             
         }
+    }else{
+        
+        res.send("false");
+        
     }
 
     
