@@ -1226,7 +1226,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     
             }else{
 
-                console.log("f2");
+                //console.log("f2");
     
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                 res.send("false");
@@ -1237,12 +1237,12 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
         
 
         }else{
-            console.log("f3");
+            //console.log("f3");
             res.send("false")
         }
 
     }else{
-        console.log("f4");
+        //console.log("f4");
         res.send("false");
     }
 
@@ -2483,6 +2483,8 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
     var json = req.body;
 
     if(!json.misDat){
+
+        console.log("recibiendo data desde el juego: "+uc.upperCase(wallet))
 
         json = Buffer.from(json);
         json = json.toString('utf8');
