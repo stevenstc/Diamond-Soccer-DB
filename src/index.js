@@ -1725,31 +1725,54 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
-    var appData = await appdatos.find({});
-
-    if (appData.length >= 1) {
-        appData = appData[appData.length-1]
-    }else{
-
-        appData = new appdatos({
-            entregado: 0,
-            ganado: 0, 
-            ganadoliga: 0,
-            misiondiaria: true,
-            finliga: Date.now() + 86400 * 1000 * 30 
-        });
-    
-        await appData.save();
-
-    }
-
-
     if(req.query.version){
         var aplicacion = await appstatuses.find({version: req.query.version});
-        
+
         if (aplicacion.length >= 1) {
+
             aplicacion = aplicacion[aplicacion.length-1]
-            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
+
+            var appData = await appdatos.find({});
+
+            if (appData.length >= 1) {
+                appData = appData[appData.length-1]
+
+                appData.finliga = parseInt((appData.finliga-Date.now())/(86400*1000));
+
+                if(appData.finliga < 0){
+                    appData.finliga = 0;
+
+                    aplicacion.liga = "off"
+
+                }else{
+                    aplicacion.liga = "on"
+                }
+
+            }else{
+
+                appData = new appdatos({
+                    entregado: 0,
+                    ganado: 0, 
+                    ganadoliga: 0,
+                    misiondiaria: true,
+                    finliga: Date.now() + 86400 * 1000 * 30 
+                });
+            
+                await appData.save();
+
+                appData.finliga = 30;
+
+            }
+
+            aplicacion = new appstatuses({aplicacion});
+
+            await aplicacion.save();
+
+            aplicacion = await appstatuses.find({version: req.query.version});
+            aplicacion = aplicacion[aplicacion.length-1]
+        
+        
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga);
 
         }else{
 
@@ -1771,7 +1794,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
             aplicacion = await appstatuses.find({});
             aplicacion = aplicacion[aplicacion.length-1]
-            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",30");
                     
         }
     }else{
