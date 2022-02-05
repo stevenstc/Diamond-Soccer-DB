@@ -2505,6 +2505,10 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
         
             for (let index = 0; index < json.length; index++) {
 
+                if(usuario[json[index].variable] === "NaN"){
+                    usuario[json[index].variable] = "0"
+                }
+
                 switch (json[index].action) {
                     case "sumar":
                         usuario[json[index].variable] = (parseFloat((usuario[json[index].variable]+"").replace(",", "."))+parseFloat((json[index].valorS+"").replace(",", ".")))+"";
