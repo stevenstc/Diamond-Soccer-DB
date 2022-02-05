@@ -157,13 +157,23 @@ const appstatuses = mongoose.model('appstatuses', {
     entregado: Number,
     ganado: Number, 
     ganadoliga: Number,
-    entregado: Number,
     linea: [Number],
     updates: [String],
     misiondiaria: Boolean,
     apuestas:[Boolean]
     
 });
+
+const appdatos = mongoose.model('appdatos', {
+
+    entregado: Number,
+    ganado: Number, 
+    ganadoliga: Number,
+    misiondiaria: Boolean,
+    finliga: Number
+
+});
+
 
 const playerData = mongoose.model('playerdatas', {
     wallet: String,
@@ -1715,6 +1725,25 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
+    var appData = await appdatos.find({});
+
+    if (appData.length >= 1) {
+        appData = appData[appData.length-1]
+    }else{
+
+        appData = new appstatuses({
+            entregado: 0,
+            ganado: 0, 
+            ganadoliga: 0,
+            misiondiaria: true,
+            finliga: Date.now() + 86400 * 1000 * 30 
+        });
+    
+        await appData.save();
+
+    }
+
+
     if(req.query.version){
         var aplicacion = await appstatuses.find({version: req.query.version});
         
@@ -1731,13 +1760,9 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 liga: "on",
                 mantenimiento: "off",
                 link: "https://cryptosoccermarket.com/download",
-                ganado: 0, 
-                entregado: 0,
-                ganadoliga: 0,
                 linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
-                misiondiaria: true,
-                apuestas:[true,true,true,true,true]
+                updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')]
+                
             });
     
             aplicacion.save().then(()=>{
