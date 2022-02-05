@@ -157,6 +157,7 @@ const appstatuses = mongoose.model('appstatuses', {
     link: String,
     entregado: Number,
     ganado: Number, 
+    ganadoliga: Number,
     entregado: Number,
     linea: [Number],
     updates: [String],
@@ -1050,20 +1051,41 @@ app.get('/api/v1/ben10',async(req,res) => {
     var aplicacion = await appstatuses.find({});
     aplicacion = aplicacion[aplicacion.length-1]
 
-    if(req.query.ganado){
+    if(req.query.ganadoliga){
 
-        datos = {};
-        datos.ganado = aplicacion.ganado+parseInt(req.query.ganado);
+        if(aplicacion.ganadoliga){
+            aplicacion.ganadoliga += parseInt(req.query.ganadoliga);
+        }else{
+            aplicacion.ganadoliga = parseInt(req.query.ganadoliga);
+        }
 
-        update = await appstatuses.updateOne({ _id: aplicacion._id }, datos)
+        //update = await appstatuses.updateOne({ _id: aplicacion._id }, datos)
+
+        aplicacion = await new appstatuses(aplicacion);
+        await aplicacion.save();
 
         res.send("true");
 
     }else{
-        
-        res.send(appstatus.ganado+","+appstatus.entregado);
+
+    
+        if(req.query.ganado){
+
+            aplicacion.ganado += parseInt(req.query.ganado);
+
+            //update = await appstatuses.updateOne({ _id: aplicacion._id }, datos)
+
+            aplicacion = await new appstatuses(aplicacion);
+            await aplicacion.save();
+
+            res.send("true");
+
+        }else{
+            
+            res.send(appstatus.ganado+","+appstatus.entregado);
 
 
+        }
     }
     
 });
@@ -1656,12 +1678,11 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 app.get('/api/v1/app/init/',async(req,res) => {
 
     
-
     var aplicacion = await appstatuses.find({version: req.query.version});
     
     if (aplicacion.length >= 1) {
         aplicacion = aplicacion[aplicacion.length-1]
-        res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates);
+        res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
 
     }else{
 
@@ -1680,6 +1701,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 link: "https://cryptosoccermarket.com/download",
                 ganado: 0, 
                 entregado: 0,
+                ganadoliga: 0,
                 linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
                 misiondiaria: true
@@ -1738,6 +1760,8 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
     }
 
     var poolliga = 3050;
+
+    poolliga = poolliga*0.7
 
     var porcentajes = [0.327868,0.213114,0.114754,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393]
     var lista = [];
