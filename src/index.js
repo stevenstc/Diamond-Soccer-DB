@@ -1096,7 +1096,7 @@ app.get('/api/v1/enlinea',async(req,res) => {
 
 app.get('/api/v1/ben10',async(req,res) => {
 
-    var aplicacion = await appstatuses.find({});
+    var aplicacion = await appdatos.find({});
     aplicacion = aplicacion[aplicacion.length-1]
 
     if(req.query.ganadoliga){
@@ -1107,9 +1107,9 @@ app.get('/api/v1/ben10',async(req,res) => {
             aplicacion.ganadoliga = parseInt(req.query.ganadoliga);
         }
 
-        //update = await appstatuses.updateOne({ _id: aplicacion._id }, datos)
+        //update = await appdatos.updateOne({ _id: aplicacion._id }, datos)
 
-        aplicacion = await new appstatuses(aplicacion);
+        aplicacion = await new appdatos(aplicacion);
         await aplicacion.save();
 
         res.send("true");
@@ -1121,9 +1121,9 @@ app.get('/api/v1/ben10',async(req,res) => {
 
             aplicacion.ganado += parseInt(req.query.ganado);
 
-            //update = await appstatuses.updateOne({ _id: aplicacion._id }, datos)
+            //update = await appdatos.updateOne({ _id: aplicacion._id }, datos)
 
-            aplicacion = await new appstatuses(aplicacion);
+            aplicacion = await new appdatos(aplicacion);
             await aplicacion.save();
 
             res.send("true");
@@ -1261,7 +1261,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
     var MisionDiaria = false;
 
-    var aplicacion = await appstatuses.find({});
+    var aplicacion = await appdatos.find({});
     
     if(aplicacion.length >= 1 && web3.utils.isAddress(wallet)){
 
@@ -1322,7 +1322,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    var aplicacion = await appstatuses.find({});
+    var aplicacion = await appdatos.find({});
     aplicacion = aplicacion[aplicacion.length-1]
     
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
@@ -1355,7 +1355,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
                     aplicacion.entregado += coins;
 
-                    await appstatuses.updateOne({ version: aplicacion.version }, aplicacion)
+                    await appdatos.updateOne({ version: aplicacion.version }, aplicacion)
                     var nuevoUsuario = new user(datos)
                     await nuevoUsuario.save();
                     //await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
@@ -1765,7 +1765,6 @@ app.get('/api/v1/app/init/',async(req,res) => {
             }
 
             aplicacion = new appstatuses({aplicacion});
-
             await aplicacion.save();
 
             aplicacion = await appstatuses.find({version: req.query.version});
@@ -1788,9 +1787,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 
             });
     
-            aplicacion.save().then(()=>{
-                console.log("nueva version creada");
-            })
+            await aplicacion.save();
 
             aplicacion = await appstatuses.find({});
             aplicacion = aplicacion[aplicacion.length-1]
