@@ -1677,21 +1677,15 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
 app.get('/api/v1/app/init/',async(req,res) => {
 
-    
-    var aplicacion = await appstatuses.find({version: req.query.version});
-    
-    if (aplicacion.length >= 1) {
-        aplicacion = aplicacion[aplicacion.length-1]
-        res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
-
-    }else{
-
-        if(!req.query.version){
-            aplicacion = await appstatuses.find({});
+    if(req.query.version){
+        var aplicacion = await appstatuses.find({version: req.query.version});
+        
+        if (aplicacion.length >= 1) {
             aplicacion = aplicacion[aplicacion.length-1]
-            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates);
-    
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
+
         }else{
+
             aplicacion = new appstatuses({
                 version: req.query.version,
                 torneo: "on",
@@ -1708,12 +1702,16 @@ app.get('/api/v1/app/init/',async(req,res) => {
             });
     
             aplicacion.save().then(()=>{
-                res.send("nueva version creada");
+                console.log("nueva version creada");
             })
+
+            aplicacion = await appstatuses.find({});
+            aplicacion = aplicacion[aplicacion.length-1]
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
+                    
         }
-        
-        
-            
+    }else{
+        res.send("null")
     }
 
 });
