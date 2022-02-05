@@ -160,7 +160,8 @@ const appstatuses = mongoose.model('appstatuses', {
     entregado: Number,
     linea: [Number],
     updates: [String],
-    misiondiaria: Boolean
+    misiondiaria: Boolean,
+    apuestas:[Boolean]
     
 });
 
@@ -1735,7 +1736,57 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 ganadoliga: 0,
                 linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
-                misiondiaria: true
+                misiondiaria: true,
+                apuestas:[true,true,true,true,true]
+            });
+    
+            aplicacion.save().then(()=>{
+                console.log("nueva version creada");
+            })
+
+            aplicacion = await appstatuses.find({});
+            aplicacion = aplicacion[aplicacion.length-1]
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
+                    
+        }
+    }else{
+        res.send("null")
+    }
+
+});
+
+app.get('/api/v1/app/apuestas/',async(req,res) => {
+
+    if(req.query.version){
+        var aplicacion = await appstatuses.find({version: req.query.version});
+        
+        if (aplicacion.length >= 1) {
+            aplicacion = aplicacion[aplicacion.length-1]
+            var resultado = [];
+            
+            for (let index = 0; index < aplicacion.apuestas.length; index++) {
+                resultado = aplicacion.apuestas[index];
+                
+            }
+            
+            res.send(resultado.toLocaleString());
+
+        }else{
+
+            aplicacion = new appstatuses({
+                version: req.query.version,
+                torneo: "on",
+                duelo: "on",
+                liga: "on",
+                mantenimiento: "off",
+                link: "https://cryptosoccermarket.com/download",
+                ganado: 0, 
+                entregado: 0,
+                ganadoliga: 0,
+                linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
+                misiondiaria: true,
+                apuestas:[true,true,true,true,true]
             });
     
             aplicacion.save().then(()=>{
