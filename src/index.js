@@ -1786,42 +1786,54 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
 app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 
-    var cantidad;
-
-    if(!req.query.cantidad){
-        cantidad = 20;
-    }else{
-        cantidad = parseInt(req.query.cantidad);
-    }
-
-    var poolliga = 3050;
-
-    poolliga = poolliga*0.7
-
-    var porcentajes = [0.327868,0.213114,0.114754,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393]
-    var lista = [];
-
-    var aplicacion = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
-      
-    if (aplicacion.length >= 1) {
+    if(req.query.version){
+        var aplicacion = await appstatuses.find({version: req.query.version});
         
-        for (let index = 0; index < aplicacion.length; index++) {
- 
-                lista[index] = parseInt(poolliga*porcentajes[index]);
-            
-                if(isNaN(lista[index])){
-                    lista[index] = 0;
-                }
-            
-            
-        }
-        res.send(lista.toLocaleString());
+        if (aplicacion.length >= 1) {
+            aplicacion = aplicacion[aplicacion.length-1]
 
+            var cantidad;
+
+            if(!req.query.cantidad){
+                cantidad = 20;
+            }else{
+                cantidad = parseInt(req.query.cantidad);
+            }
+
+            var poolliga = aplicacion.ganadoliga;
+
+            poolliga = poolliga*0.7
+
+            var porcentajes = [0.327868,0.213114,0.114754,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393]
+            var lista = [];
+
+            var usuarios = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
+            
+            if (usuarios.length >= 1) {
+                
+                for (let index = 0; index < usuarios.length; index++) {
+        
+                    lista[index] = parseInt(poolliga*porcentajes[index]);
+                
+                    if(isNaN(lista[index])){
+                        lista[index] = 0;
+                    }
+                    
+                }
+                res.send(lista.toLocaleString());
+
+            }else{
+                res.send("null");
+                    
+            }
+    
+        }else{
+            res.send("null");
+        }
     }else{
         res.send("null");
-            
     }
-    
+
 });
 
 app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
@@ -2585,7 +2597,7 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
     if(!json.misDat){
 
-        console.log("recibiendo data desde el juego: "+uc.upperCase(wallet))
+        //console.log("recibiendo data desde el juego: "+uc.upperCase(wallet))
 
         json = Buffer.from(json);
         json = json.toString('utf8');
