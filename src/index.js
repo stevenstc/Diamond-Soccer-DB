@@ -1762,41 +1762,12 @@ app.get('/api/v1/app/apuestas/',async(req,res) => {
         
         if (aplicacion.length >= 1) {
             aplicacion = aplicacion[aplicacion.length-1]
-            var resultado = [];
-            
-            for (let index = 0; index < aplicacion.apuestas.length; index++) {
-                resultado = aplicacion.apuestas[index];
-                
-            }
-            
-            res.send(resultado.toLocaleString());
+         
+            res.send(aplicacion.apuestas.toLocaleString());
 
         }else{
 
-            aplicacion = new appstatuses({
-                version: req.query.version,
-                torneo: "on",
-                duelo: "on",
-                liga: "on",
-                mantenimiento: "off",
-                link: "https://cryptosoccermarket.com/download",
-                ganado: 0, 
-                entregado: 0,
-                ganadoliga: 0,
-                linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
-                misiondiaria: true,
-                apuestas:[true,true,true,true,true]
-            });
-    
-            aplicacion.save().then(()=>{
-                console.log("nueva version creada");
-            })
-
-            aplicacion = await appstatuses.find({});
-            aplicacion = aplicacion[aplicacion.length-1]
-            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",02/28/2022");
-                    
+            res.send("null")
         }
     }else{
         res.send("null")
