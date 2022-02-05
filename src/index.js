@@ -1014,36 +1014,72 @@ app.get('/api/v1/sendmail',async(req,res) => {
 
 app.get('/api/v1/enlinea',async(req,res) => {
 
-    var appstatus = await appstatuses.find({version: req.query.version});
-    appstatus = appstatus[appstatus.length-1]
+    if(req.query.version){
 
-    if(req.query.rango){
+        var appstatus = await appstatuses.find({version: req.query.version});
+        appstatus = appstatus[appstatus.length-1]
 
-        for (let index = 0; index < appstatus.linea.length; index++) {
+        if(req.query.rango){
 
-            if(parseInt(req.query.rango) == index){
-                if (parseInt(req.query.activo) >= 0 ) {
-                    appstatus.linea[index] = parseInt(req.query.activo);
-                }else{
-                    appstatus.linea[index] = 0;
+            for (let index = 0; index < appstatus.linea.length; index++) {
+
+                if(parseInt(req.query.rango) == index){
+                    if (parseInt(req.query.activo) >= 0 ) {
+                        appstatus.linea[index] = parseInt(req.query.activo);
+                    }else{
+                        appstatus.linea[index] = 0;
+                    }
+                    
                 }
                 
             }
-            
-        }
 
-        datos = {};
-        datos.linea = appstatus.linea;
+            datos = {};
+            datos.linea = appstatus.linea;
 
-        update = await appstatuses.updateOne({ _id: appstatus._id }, datos)
+            update = await appstatuses.updateOne({ _id: appstatus._id }, datos)
 
-        res.send("true");
+            res.send("true");
 
+        }else{
+
+            res.send((appstatus.linea).toString());
+
+        }   
     }else{
 
-        res.send((appstatus.linea).toString());
+        var appstatus = await appstatuses.find({});
+        appstatus = appstatus[appstatus.length-1]
 
-    }   
+        if(req.query.rango){
+
+            for (let index = 0; index < appstatus.linea.length; index++) {
+
+                if(parseInt(req.query.rango) == index){
+                    if (parseInt(req.query.activo) >= 0 ) {
+                        appstatus.linea[index] = parseInt(req.query.activo);
+                    }else{
+                        appstatus.linea[index] = 0;
+                    }
+                    
+                }
+                
+            }
+
+            datos = {};
+            datos.linea = appstatus.linea;
+
+            update = await appstatuses.updateOne({ _id: appstatus._id }, datos)
+
+            res.send("true");
+
+        }else{
+
+            res.send((appstatus.linea).toString());
+
+        }   
+
+    }
     
 });
 
