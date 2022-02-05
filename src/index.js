@@ -1858,6 +1858,14 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 
     if(req.query.version){
         var aplicacion = await appstatuses.find({version: req.query.version});
+
+        var appData = await appdatos.find({});
+
+        if (appData.length >= 1) {
+            appData = appData[appData.length-1]
+        }else{
+            appData.ganadoliga = 0;
+        }
         
         if (aplicacion.length >= 1) {
             aplicacion = aplicacion[aplicacion.length-1]
@@ -1870,7 +1878,7 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
                 cantidad = parseInt(req.query.cantidad);
             }
 
-            var poolliga = aplicacion.ganadoliga;
+            var poolliga = appData.ganadoliga;
 
             poolliga = poolliga*0.7
 
