@@ -1769,7 +1769,13 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
     if (aplicacion.length >= 1) {
         
         for (let index = 0; index < aplicacion.length; index++) {
-            lista[index] = parseInt(poolliga*porcentajes[index]);
+ 
+                lista[index] = parseInt(poolliga*porcentajes[index]);
+            
+                if(isNaN(lista[index])){
+                    lista[index] = 0;
+                }
+            
             
         }
         res.send(lista.toLocaleString());
