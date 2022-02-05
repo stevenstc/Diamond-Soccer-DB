@@ -1731,7 +1731,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
         appData = appData[appData.length-1]
     }else{
 
-        appData = new appstatuses({
+        appData = new appdatos({
             entregado: 0,
             ganado: 0, 
             ganadoliga: 0,
