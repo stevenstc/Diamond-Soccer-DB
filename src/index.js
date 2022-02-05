@@ -1727,6 +1727,38 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
     
 });
 
+app.get('/api/v1/consulta/redwardleague',async(req,res) => {
+
+    var cantidad;
+
+    if(!req.query.cantidad){
+        cantidad = 20;
+    }else{
+        cantidad = parseInt(req.query.cantidad);
+    }
+
+    var poolliga = 3050;
+
+    var porcentajes = [0.327868,0.213114,0.114754,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393]
+    var lista = [];
+
+    var aplicacion = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
+      
+    if (aplicacion.length >= 1) {
+        
+        for (let index = 0; index < aplicacion.length; index++) {
+            lista[index] = parseInt(poolliga*porcentajes[index]);
+            
+        }
+        res.send(lista.toLocaleString());
+
+    }else{
+        res.send("null");
+            
+    }
+    
+});
+
 app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
