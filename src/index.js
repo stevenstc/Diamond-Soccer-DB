@@ -1228,10 +1228,10 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
                     cuando = "Later than";
                 }
 
-                res.send(moment(usuario.checkpoint).format('['+cuando+',] D/M/YY HH:mm:ss [UTC]'));
+                res.send(moment(usuario.checkpoint).format('['+cuando+',] D/M/YY HH:mm:ss [,UTC]'));
                 
             }else{
-                res.send(moment(Date.now()).format('['+cuando+',] D/M/YY HH:mm:ss [UTC]'));
+                res.send(moment(Date.now()).format('['+cuando+',] D/M/YY HH:mm:ss [,UTC]'));
             }
         
     }
