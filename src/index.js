@@ -1228,10 +1228,10 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
                     cuando = "Later than";
                 }
 
-                res.send(moment(usuario.checkpoint).format('['+cuando+'] D/M/YY HH:mm:ss [UTC]'));
+                res.send(moment(usuario.checkpoint).format('['+cuando+',] D/M/YY HH:mm:ss [UTC]'));
                 
             }else{
-                res.send(moment(Date.now()).format('['+cuando+'] D/M/YY HH:mm:ss [UTC]'));
+                res.send(moment(Date.now()).format('['+cuando+',] D/M/YY HH:mm:ss [UTC]'));
             }
         
     }
@@ -1783,8 +1783,9 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 mantenimiento: "off",
                 link: "https://cryptosoccermarket.com/download",
                 linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')]
-                
+                updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
+                apuestas:[true,true,true,true,true]
+
             });
     
             await aplicacion.save();
@@ -1911,6 +1912,23 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 
 });
 
+app.get('/api/v1/consulta/poolliga',async(req,res) => {
+
+
+    var appData = await appdatos.find({});
+
+    if (appData.length >= 1) {
+        appData = appData[appData.length-1]
+    }else{
+        appData.ganadoliga = 0;
+    }
+
+
+    res.send(appData.ganadoliga+"");
+
+
+});
+
 app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
@@ -2006,6 +2024,21 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
         
     }
 
+    
+});
+
+app.post('/api/v1/reset/leadboard',async(req,res) => {
+
+    if(req.body.token == TOKEN ){
+
+        //var dataUsuarios = await playerData.find({}).sort([['CupsWin', 1]]);
+
+        await playerData.find({}).sort([['CupsWin', 1]]).update({ $set: {CupsWin:0}}).exec();
+        
+        res.send("true");
+    }else{
+        res.send("false");
+    }
     
 });
 
