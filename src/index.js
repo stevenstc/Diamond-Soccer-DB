@@ -1780,7 +1780,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 torneo: "on",
                 duelo: "on",
                 liga: "on",
-                mantenimiento: "off",
+                mantenimiento: "on",
                 link: "https://cryptosoccermarket.com/download",
                 linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
