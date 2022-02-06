@@ -1764,7 +1764,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
             }
 
-            await playerData.updateOne({version: req.query.version}, aplicacion);
+            await appstatuses.updateOne({version: req.query.version}, aplicacion);
 
 
             aplicacion = await appstatuses.find({version: req.query.version});
