@@ -1764,8 +1764,8 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
             }
 
-            aplicacion = new appstatuses(aplicacion);
-            await aplicacion.save();
+            var cosa1 = new appstatuses(aplicacion);
+            await cosa1.save();
 
             aplicacion = await appstatuses.find({version: req.query.version});
             aplicacion = aplicacion[aplicacion.length-1]
