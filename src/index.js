@@ -1879,7 +1879,7 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 
             poolliga = poolliga*0.7
 
-            var porcentajes = [0.327868,0.213114,0.114754,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393,0.016393]
+            var porcentajes = [0.4,0.2,0.15,0.05,0.04,0.04,0.04,0.03,0.03,0.02]
             var lista = [];
 
             var usuarios = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
