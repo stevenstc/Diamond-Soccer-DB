@@ -1745,7 +1745,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
                     aplicacion.liga = "off"
 
                 }else{
-                    aplicacion.liga = "on"
+                    ////aplicacion.liga = "on"
                 }
 
             }else{
@@ -2033,7 +2033,9 @@ app.post('/api/v1/reset/leadboard',async(req,res) => {
 
         //var dataUsuarios = await playerData.find({}).sort([['CupsWin', 1]]);
 
-        await playerData.find({}).sort([['CupsWin', 1]]).update({ $set: {CupsWin:0}}).exec();
+        await playerData.find({}).update({ $set: {CupsWin:0}}).exec();
+        await playerData.find({}).update({ $set: {LeagueOpport:"0"}}).exec();
+        
         
         res.send("true");
     }else{
