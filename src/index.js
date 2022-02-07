@@ -1531,15 +1531,25 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
      
     if(web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.find({ wallet: uc.upperCase(wallet) })
+        
+            .then(()=>{
 
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
+                if (usuario.length >= 1) {
+                    usuario = usuario[0];
+    
+                    res.send(!usuario.active+"");
+                }else{
+                    res.send("true");
+                }
 
-            res.send(!usuario.active+"");
-        }else{
-            res.send("true");
-        }
+            })
+            .catch(()=>{
+                res.send("false");
+            })
+
+
+            
     }else{
         res.send("true");
     }
@@ -2968,8 +2978,8 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
 
    var cantidad = parseInt(req.query.cantidad);
     if(req.query.cantidad){
-        if(cantidad > 100){
-            cantidad = 100;
+        if(cantidad > 300){
+            cantidad = 300;
         }
             usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
             csc = true
@@ -2979,7 +2989,7 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
         csc = false
     }
 
-    console.log(usuarios.length)
+    //console.log(usuarios.length)
 
     var julio = "";
     var text = "";
@@ -2988,7 +2998,7 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
         if (csc) {
             text = await consultarCscExchange((usuarios[index].wallet).toLowerCase());
         }else{
-            text = "<a href='/api/v1/consultar/csc/exchange/"+usuarios[index].wallet+"'>consultar</a>";
+            text = "<a id='"+usuarios[index].wallet+"' href='/api/v1/consultar/csc/exchange/"+usuarios[index].wallet+"'>consultar</a>";
         }
         
         julio = julio+"<tr><td>"+usuarios[index].username+"</td><td>"+usuarios[index].active+"</td><td>"+usuarios[index].wallet+"</td><td>"+usuarios[index].balance+"</td><td>"+text+"</td></tr>";
