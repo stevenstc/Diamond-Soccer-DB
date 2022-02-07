@@ -2961,4 +2961,58 @@ app.put('/prueba/', (req, res, next) => {
 
 });
 
+app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
+
+   var usuarios;
+   var csc = "";
+
+   var cantidad = parseInt(req.query.cantidad);
+    if(req.query.cantidad){
+        if(cantidad > 100){
+            cantidad = 100;
+        }
+            usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
+            csc = true
+        
+    }else{
+        usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).sort([['balance', -1]]);
+        csc = false
+    }
+
+    console.log(usuarios.length)
+
+    var julio = "";
+    var text = "";
+
+    for (let index = 0; index < usuarios.length; index++) {
+        if (csc) {
+            text = await consultarCscExchange((usuarios[index].wallet).toLowerCase());
+        }else{
+            text = "<a href='/api/v1/consultar/csc/exchange/"+usuarios[index].wallet+"'>consultar</a>";
+        }
+        
+        julio = julio+"<tr><td>"+usuarios[index].username+"</td><td>"+usuarios[index].wallet+"</td><td>"+usuarios[index].balance+"</td><td>"+text+"</td></tr>";
+        
+    }
+
+    res.send('<table border="1"><tr><th>username</th><th>wallet</th><th>GAME WCSC</th> <th>EXCHANGE CSC</th> </tr>'+julio+'</table>');
+
+});
+
+async function consultarCscExchange(wallet){
+    var investor = await contractMarket.methods
+                .investors(wallet.toLowerCase())
+                .call({ from: cuenta.address });
+    return (investor.balance-investor.gastado)/10**18 ; 
+}
+
+app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
+
+    var csc = await consultarCscExchange(req.params.wallet);
+ 
+    res.send(csc+'');
+ 
+ });
+
+
 app.listen(port, ()=> console.log('Escuchando Puerto: ' + port))
