@@ -2991,11 +2991,11 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
             text = "<a href='/api/v1/consultar/csc/exchange/"+usuarios[index].wallet+"'>consultar</a>";
         }
         
-        julio = julio+"<tr><td>"+usuarios[index].username+"</td><td>"+usuarios[index].wallet+"</td><td>"+usuarios[index].balance+"</td><td>"+text+"</td></tr>";
+        julio = julio+"<tr><td>"+usuarios[index].username+"</td><td>"+usuarios[index].active+"</td><td>"+usuarios[index].wallet+"</td><td>"+usuarios[index].balance+"</td><td>"+text+"</td></tr>";
         
     }
 
-    res.send('<table border="1"><tr><th>username</th><th>wallet</th><th>GAME WCSC</th> <th>EXCHANGE CSC</th> </tr>'+julio+'</table>');
+    res.send('<table border="1"><tr><th>username</th><th>activo</th><th>wallet</th><th>GAME WCSC</th> <th>EXCHANGE CSC</th> </tr>'+julio+'</table>');
 
 });
 
