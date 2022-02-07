@@ -1531,22 +1531,17 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
      
     if(web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) })
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
         
-            .then(()=>{
+  
+            if (usuario.length >= 1) {
+                usuario = usuario[0];
 
-                if (usuario.length >= 1) {
-                    usuario = usuario[0];
-    
-                    res.send(!usuario.active+"");
-                }else{
-                    res.send("true");
-                }
-
-            })
-            .catch(()=>{
+                res.send(!usuario.active+"");
+            }else{
                 res.send("false");
-            })
+            }
+
 
 
             
