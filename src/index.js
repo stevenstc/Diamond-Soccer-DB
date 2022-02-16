@@ -587,6 +587,8 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         }
     }
 
+    inventario[cantidad] = 0;
+
     for (let t = 0; t < testers.length; t++) {
             
         if(testers[t].toLowerCase() == wallet){
