@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const Web3 = require('web3');
-var cors = require('cors')
+var cors = require('cors');
 require('dotenv').config();
 var moment = require('moment');
 const BigNumber = require('bignumber.js');
@@ -15,10 +15,9 @@ const abiMarket = require("./abiMarket.js");
 //console.log(("HolA Que Haze").toLowerCase())
 
 //var cosa = {cosita: "1,23456"}
-
 //console.log(cosa["cosita"].replace(",","."))
 
-const Cryptr = require('cryptr');
+var aleatorio = 1;
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -37,7 +36,6 @@ app.use(bodyParser.text());
 const port = process.env.PORT || 3004;
 const PEKEY = process.env.APP_PRIVATEKEY;
 const TOKEN = process.env.APP_TOKEN;
-const cryptr = new Cryptr(process.env.APP_MAIL);
 
 const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
@@ -62,12 +60,12 @@ const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f83
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
 let web3 = new Web3(RED);
-let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY);
-
-web3.eth.accounts.wallet.add(PEKEY);
+let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY); 
 
 const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
 //const contractToken = new web3.eth.Contract(abiToken,addressContractToken);
+
+web3.eth.accounts.wallet.add(PEKEY);
 
 //console.log(web3.eth.accounts.wallet[0].address);
 
@@ -86,29 +84,20 @@ const options = { useNewUrlParser: true, useUnifiedTopology: true };
 
 var formatoliga = 'MDYYYY';
 
-mongoose.connect(uri, options).then(
-    async() => { console.log("Conectado Exitodamente!");
-    console.log("nonce: "+await web3.eth.getTransactionCount(web3.eth.accounts.wallet[0].address));
-
-},
-    err => { console.log(err); }
-  );
+mongoose.connect(uri, options)
+    .then(async() => { console.log("Conectado Exitodamente!");})
+    .catch(err => { console.log(err); });
 
 const user = require("./modelos/usuarios");
 const appstatuses = require("./modelos/appstatuses");
 const appdatos = require("./modelos/appdatos");
 const playerData = require("./modelos/playerdatas");
-const userplayonline = require("./modelos/userplayonline")
+const userplayonline = require("./modelos/userplayonline");
+const playerdatas = require('./modelos/playerdatas');
 
-app.get('/',async(req,res) => {
+app.get('/', require("./v1/funcionando"));
 
-    res.send("Conectado y funcionando");
-});
-
-app.get('/api',async(req,res) => {
-
-    res.send("Conectado y funcionando");
-});
+app.get('/api', require("./v1/funcionando"));
 
 app.get('/api/v1', require("./v1/funcionando"));
 
@@ -137,10 +126,25 @@ app.get('/api/v1/sesion/consultar/',async(req,res) => {
 
     if( req.query.sesionID ){
 
-        var sesion = await userplayonline.find({ sesionID: req.query.sesionID });
-        res.send(sesion[sesion.length-1]);
+        var sesion = await userplayonline.find({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+        if(sesion.length > 0){
+            res.send(sesion[sesion.length-1]);
+        }else{
+            res.send("null");
+
+        }
     }else{
-        res.send("null");
+
+        var sesion = await userplayonline.find({ },{_id:0, soporte1:0,soporte2:0}).sort({identificador: 1});
+        //console.log(sesion[0].identificador);
+        //console.log(sesion[sesion.length-1].identificador);
+        if(sesion.length > 0){
+            res.send(sesion[sesion.length-1]);
+        }else{
+            res.send("null");
+
+        }
+
     }
 
 });
@@ -149,8 +153,101 @@ app.get('/api/v1/sesion/consultar/saque',async(req,res) => {
 
     if( req.query.sesionID ){
 
-        var sesion = await userplayonline.find({ sesionID: req.query.sesionID });
-        res.send(sesion[sesion.length-1].saqueInicial+"");
+        var sesion = await userplayonline.find({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+
+        if(sesion.length > 0){
+            res.send(sesion[sesion.length-1].saqueInicial+"");
+        }else{
+            res.send("null");
+        }
+        
+    }else{
+        res.send("null");
+    }
+
+});
+
+app.get('/api/v1/sesion/consultar/turno',async(req,res) => {
+
+    if( req.query.sesionID ){
+
+        var sesion = await userplayonline.find({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+
+        if(sesion.length > 0){
+            res.send(sesion[sesion.length-1].turno+"");
+        }else{
+            res.send("null");
+        }
+        
+    }else{
+        res.send("null");
+    }
+
+});
+
+app.post('/api/v1/sesion/actualizar/turno',async(req,res) => {
+
+    if( req.body.sesionID && req.body.token == TOKEN){
+
+        var sesion = await userplayonline.find({sesionID: req.body.sesionID }).sort({identificador: 1});
+
+        if(sesion.length > 0){
+            if(sesion[sesion.length-1].turno === "1"){
+                sesion[sesion.length-1].turno = "2";
+            }else{
+                sesion[sesion.length-1].turno = "1";
+            }
+
+            var userPlay = new userplayonline(sesion[sesion.length-1]);
+            await userPlay.save();
+
+            res.send(sesion[sesion.length-1].turno+"");
+        }else{
+            res.send("null");
+        }
+        
+    }else{
+        res.send("null");
+    }
+
+});
+
+app.get('/api/v1/sesion/consultar/id',async(req,res) => {
+
+    if( req.query.sesionID ){
+ 
+        var sesion = await userplayonline.find({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+        console.log(req.query.sesionID);
+        //console.log(sesion[sesion.length-1].identificador);
+        if(sesion.length > 0){
+            res.send(sesion[sesion.length-1].identificador+"");
+        }else{
+            res.send("null");
+        }
+        
+    }else{
+        res.send("null");
+    }
+
+});
+
+app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
+
+    if( req.query.id ){
+        var soporte = 0;
+        if(req.query.soporte){
+            soporte = 1;
+        }
+ 
+        var sesion = await userplayonline.find({identificador: req.query.id},{__v:0,_id:0,soporte1:soporte,soporte2:soporte});
+        //console.log(sesion);
+        //console.log(sesion[sesion.length-1].identificador);
+        if(sesion.length > 0){
+            res.send(sesion[sesion.length-1]);
+        }else{
+            res.send("null");
+        }
+        
     }else{
         res.send("null");
     }
@@ -163,29 +260,56 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 
         var ids = await userplayonline.find({});
 
+        usuario1 = await user.find({ username: req.body.u1 });
+        usuario1 = await playerdatas.find({ wallet: usuario1[0].wallet });
+        usuario1 = usuario1[0];
+
+        usuario2 = await user.find({ username: req.body.u2 });
+        usuario2 = await playerdatas.find({ wallet: usuario2[0].wallet });
+        usuario2 = usuario2[0];
+
         var playOnline = new userplayonline({
-            id: ids.length,
+            identificador: ids.length,
             sesionID: req.body.sesionID,
             incio: Date.now(),
             fin: 0,
             finalizada: false,
             ganador: "",
             tipo: req.body.tipo,
-            saqueInicial: Math.floor(Math.random() * 2),
+            saqueInicial: aleatorio,
+            turno: aleatorio,
             csc: req.body.csc,
             u1: req.body.u1,
             u2: req.body.u2,
-            soporte1: "",
-            soporte2: ""
+            soporte1: usuario1.Soporte,
+            soporte2: usuario2.Soporte
             
         });
 
-        await playOnline.save();
+        if(aleatorio === 2){
+            aleatorio = 1;
 
-        res.send(playOnline.id);
+        }else{
+            aleatorio = 1;
+
+        }
+        
+
+        if(req.body.u1 === req.body.u2){
+            var datos = {}
+            datos.active = false;
+            update = await user.updateOne({ username: req.body.u1 }, datos);
+            res.send("false");
+        }else{
+            await playOnline.save();
+
+            res.send("true");
+        }
+
+        
 
     }else{
-        res.send("null")
+        res.send("false")
     }
     
 });
@@ -194,21 +318,52 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
     if(req.body.sesionID && req.body.token == TOKEN ){
 
-        var sesion = await userplayonline.find({id: req.body.sesionID});
-        sesion = sesion[0];
+        var sesionPlay = await userplayonline.find({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort([['identificador', 1]]);
 
-        if(!sesion.finalizada){
+        if(sesionPlay.length > 0){
+            //console.log(sesionPlay.length-1)
+            //console.log(sesionPlay[sesionPlay.length-1]);
 
-            sesion.fin = Date.now();
-            if(req.body.finalizada === "true"){
-                sesion.finalizada = true
+            sesionPlay = sesionPlay[sesionPlay.length-1];
+
+            if(!sesionPlay.finalizada){
+
+                sesionPlay.fin = Date.now();
+                datos.finalizada = true
+                sesionPlay.ganador = req.body.ganador;
+
+                if(req.body.soporte1 === ""){
+                    usuario1 = await user.find({ username: sesionPlay.u1 });
+                    usuario1 = await playerdatas.find({ wallet: usuario1[0].wallet });
+                    usuario1 = usuario1[0];
+
+                    sesionPlay.soporte1 = usuario1.Soporte;
+                }else{
+                    sesionPlay.soporte1 = req.body.soporte1;
+                }
+
+                if(req.body.soporte2 === ""){
+                    usuario2 = await user.find({ username: sesionPlay.u2 });
+                    usuario2 = await playerdatas.find({ wallet: usuario2[0].wallet });
+                    usuario2 = usuario2[0];
+
+                    sesionPlay.soporte2 = usuario2.Soporte;
+                }else{
+                    sesionPlay.soporte2 = req.body.soporte2;
+                }
+
+                
+                var userPlay = new userplayonline(sesionPlay);
+                await userPlay.save();
+
+                //await userplayonline.updateOne({ sesionID: req.body.sesionID }, datos);
+
+                await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
+
+                res.send("true");
+            }else{
+                res.send("false");
             }
-            sesion.ganador = req.body.ganador;
-            sesion.soporte1 = req.body.soporte1;
-
-            await userplayonline.updateOne({ id: req.body.id }, sesion);
-
-            res.send("true");
         }else{
             res.send("false");
         }
@@ -226,7 +381,10 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
     var result = await contractMarket.methods
         .largoInventario(wallet)
-        .call({ from: cuenta.address });
+        .call({ from: cuenta.address })
+        .catch(err => {console.log(err); return 0})
+
+    console.log(result);
   
     var inventario = [];
 
@@ -241,7 +399,9 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
             var item = await contractMarket.methods
             .inventario(wallet, index)
-            .call({ from: cuenta.address });
+            .call({ from: cuenta.address })
+            .catch(err => {console.log(err); return {nombre: "ninguno"}})
+
     
             if(item.nombre.indexOf("t") === 0){
     
@@ -309,7 +469,8 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 
     var result = await contractMarket.methods
         .largoInventario(wallet)
-        .call({ from: cuenta.address });
+        .call({ from: cuenta.address })
+        .catch(err => {console.log(err); return 0})
   
     var inventario = [];
 
@@ -323,7 +484,8 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 
             var item = await contractMarket.methods
                 .inventario(wallet, index)
-                .call({ from: cuenta.address });
+                .call({ from: cuenta.address })
+                .catch(err => {console.log(err); return 0})
 
 
             if(item.nombre.indexOf("f") === 0){
@@ -336,6 +498,100 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
     }
 
     res.send("1,"+inventario.toString());
+});
+
+app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    var formaciones = [];
+
+    var inventario = [];
+
+    var cantidad = 43;
+
+    var isSuper = 0;
+
+    if(superUser[wallet].toLowerCase() === wallet){
+        isSuper = 1;
+    }
+
+    for (let index = 0; index < 4; index++) {
+        formaciones[index] = isSuper;
+    }
+
+    for (let index = 0; index < cantidad; index++) {
+        inventario[index] = isSuper;
+    }
+        
+    if (isSuper === 0) {
+        var largoInventario = await contractMarket.methods
+        .largoInventario(wallet)
+        .call({ from: cuenta.address })
+        .catch(err => {console.log(err); return 0})
+  
+        for (let index = 0; index < largoInventario; index++) {
+
+            var item = await contractMarket.methods
+                .inventario(wallet, index)
+                .call({ from: cuenta.address })
+                .catch(() => {return {nombre: "ninguno"}})
+
+
+            if(item.nombre.indexOf("f") === 0){
+
+                formaciones[parseInt(item.nombre.slice(item.nombre.indexOf("f")+1,item.nombre.indexOf("-")))-1] =  1;
+
+            }
+    
+            if(item.nombre.indexOf("t") === 0){
+    
+                inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
+    
+            }
+    
+        }
+
+        
+
+        if (quitarLegandarios === "true") { // quitar legendarios
+            for (let index = 0; index < 3; index++) {
+
+                inventario[index] = 0;
+
+            }
+
+        }
+
+        if (quitarEpicos === "true") { // quitar epicos
+
+            for (let index = 3; index < 10; index++) {
+
+                inventario[index] = 0;
+
+            }
+            
+        }
+
+        if (quitarComunes === "true") { // quitar Comunes
+
+            for (let index = 10; index < cantidad; index++) {
+
+                inventario[index] = 0;
+
+            }
+            
+        }
+    }
+
+    for (let t = 0; t < testers.length; t++) {
+            
+        if(testers[t].toLowerCase() == wallet){
+            inventario[cantidad] = 1;
+        }
+    }
+
+    res.send("1,"+formaciones.toString()+","+inventario.toString());
 });
 
 app.get('/api/v1/coins/:wallet',async(req,res) => {
@@ -557,7 +813,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     var usuario = await contractMarket.methods
     .investors(wallet)
-    .call({ from: web3.eth.accounts.wallet[0].address });
+    .call({ from: cuenta.address});
 
     balance = new BigNumber(usuario.balance);
     balance = balance.shiftedBy(-18);
@@ -1149,18 +1405,17 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 4 && parseInt(data.FriendLyWins) >= 10){
               
 
+                if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
 
-                    if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
+                    //console.log("si cumple mision diaria");
     
-                        //console.log("si cumple mision diaria");
-        
-                        res.send("true");
-                    }else{
+                    res.send("true");
+                }else{
 
-                        res.send("false");
-                        
+                    res.send("false");
+                    
 
-                    }
+                }
 
                       
     
@@ -1665,7 +1920,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
     
             await aplicacion.save();
 
-            aplicacion = await appstatuses.find({});
+            aplicacion = await appstatuses.find({version: req.query.version});
             aplicacion = aplicacion[aplicacion.length-1]
             res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",30");
                     
