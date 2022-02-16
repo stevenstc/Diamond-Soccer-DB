@@ -594,7 +594,7 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         }
     }
 
-    res.send(inventario.toString()+"1,"+formaciones.toString());
+    res.send(inventario.toString()+",1,"+formaciones.toString());
 });
 
 app.get('/api/v1/coins/:wallet',async(req,res) => {
