@@ -508,7 +508,7 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
 
     var inventario = [];
 
-    var cantidad = 43;
+    var cantidad = 45;
 
     var isSuper = 0;
 
@@ -519,9 +519,12 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         
     }
 
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 6; index++) {
         formaciones[index] = isSuper;
     }
+
+    // formacion por defecto
+    formaciones[0] = 1;
 
     for (let index = 0; index < cantidad; index++) {
         inventario[index] = isSuper;
@@ -555,8 +558,6 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
     
         }
 
-        
-
         if (quitarLegandarios === "true") { // quitar legendarios
             for (let index = 0; index < 3; index++) {
 
@@ -589,16 +590,17 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
 
     // añadir equipo betatester
 
-    inventario[cantidad] = 0;
-
     for (let t = 0; t < testers.length; t++) {
             
         if(testers[t].toLowerCase() == wallet){
-            inventario[cantidad] = 1;
+            inventario[inventario.length-1] = 1;
         }
     }
 
-    res.send(inventario.toString()+",1,"+formaciones.toString());
+    console.log([...inventario,...formaciones])
+
+    res.send([...inventario,...formaciones].toString());
+
 });
 
 app.get('/api/v1/coins/:wallet',async(req,res) => {
