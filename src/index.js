@@ -523,9 +523,6 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         formaciones[index] = isSuper;
     }
 
-    // formacion por defecto
-    formaciones[0] = 1;
-
     for (let index = 0; index < cantidad; index++) {
         inventario[index] = isSuper;
     }
@@ -597,9 +594,9 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         }
     }
 
-    console.log([...inventario,...formaciones])
+    console.log([...inventario,1,...formaciones])
 
-    res.send([...inventario,...formaciones].toString());
+    res.send([...inventario,1,...formaciones].toString());
 
 });
 
