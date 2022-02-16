@@ -329,7 +329,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
             if(!sesionPlay.finalizada){
 
                 sesionPlay.fin = Date.now();
-                datos.finalizada = true
+                sesionPlay.finalizada = true
                 sesionPlay.ganador = req.body.ganador;
 
                 if(req.body.soporte1 === ""){
