@@ -508,7 +508,7 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
 
     var inventario = [];
 
-    var cantidad = 45;
+    var cantidad = 43;
 
     var isSuper = 0;
 
