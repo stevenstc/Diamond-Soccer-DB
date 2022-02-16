@@ -512,8 +512,11 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
 
     var isSuper = 0;
 
-    if(superUser[wallet].toLowerCase() === wallet){
-        isSuper = 1;
+    for (let index = 0; index < superUser.length; index++) {
+        if((superUser[index]).toLowerCase() === wallet){
+            isSuper = 1;
+        }
+        
     }
 
     for (let index = 0; index < 4; index++) {
