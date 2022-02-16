@@ -508,7 +508,7 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
 
     var inventario = [];
 
-    var cantidad = 43;
+    var cantidad = 44;
 
     var isSuper = 0;
 
@@ -519,7 +519,7 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         
     }
 
-    for (let index = 0; index < 6; index++) {
+    for (let index = 0; index < 5; index++) {
         formaciones[index] = isSuper;
     }
 
