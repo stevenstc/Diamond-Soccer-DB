@@ -594,9 +594,11 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         }
     }
 
-    console.log([...inventario,1,...formaciones])
+    inventario = [...inventario,1,...formaciones]
 
-    res.send([...inventario,1,...formaciones].toString());
+    //console.log(inventario)
+
+    res.send(inventario.toString());
 
 });
 
