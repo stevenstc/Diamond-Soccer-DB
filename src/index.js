@@ -634,7 +634,8 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 retiro: [],
                 txs: [],
                 pais: "null",
-                imagen: imgDefault
+                imagen: imgDefault,
+                wcscExchange: await consultarCscExchange(wallet)
             });
 
             users.save().then(()=>{
@@ -670,7 +671,13 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                     finalized: true,
                     txhash: "Win coins: "+req.body.coins+" # "+uc.upperCase(wallet)
                 })
-                update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+
+                datos.wcscExchange = await consultarCscExchange(wallet);
+
+                var nuevoUsuario = new user(datos)
+                await nuevoUsuario.save();
+
+                //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                 console.log("Win coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                 res.send("true");
             }else{
@@ -699,7 +706,8 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                 retiro: [],
                 txs: [],
                 pais: "null",
-                imagen: imgDefault
+                imagen: imgDefault,
+                wcscExchange: await consultarCscExchange(wallet)
             });
     
             users.save().then(()=>{
@@ -742,7 +750,13 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                         txhash: "Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet)
                   
                       })
-                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+
+                    datos.wcscExchange = await consultarCscExchange(wallet);
+
+                    var nuevoUsuario = new user(datos)
+                    await nuevoUsuario.save();
+
+                    //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                     console.log("Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                     res.send("true");
 
@@ -772,7 +786,8 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 retiro: [],
                 txs: [],
                 pais: "null",
-                imagen: imgDefault
+                imagen: imgDefault,
+                wcscExchange: await consultarCscExchange(wallet)
             });
     
             users.save().then(()=>{
@@ -1383,6 +1398,8 @@ async function resetChecpoint(wallet){
         console.log("new time Dayly: "+usuario.checkpoint)
         usuario.reclamado = false;
 
+        usuario.wcscExchange = await consultarCscExchange(wallet);
+
         var nuevoUsuario = new user(usuario)
         await nuevoUsuario.save();
 
@@ -1481,6 +1498,8 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                         finalized: true,
                         txhash: "Daily mision coins: "+coins+" # "+wallet
                     })
+
+                    datos.wcscExchange = await consultarCscExchange(wallet);
 
                     dataPlay.DuelsPlays = "0";
                     dataPlay.FriendLyWins = "0";
@@ -1772,7 +1791,8 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 retiro: [],
                 txs: [],
                 pais: "null",
-                imagen: imgDefault
+                imagen: imgDefault,
+                wcscExchange: await consultarCscExchange(wallet)
             });
     
             users.save().then(()=>{
