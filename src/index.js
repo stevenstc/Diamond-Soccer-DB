@@ -3146,7 +3146,7 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
             activo: usuarios[index].active,
             wallet: usuarios[index].wallet,
             balance: usuarios[index].balance,
-            exchange:`/api/v1/consultar/csc/exchange/${usuarios[index].wallet}`
+            exchange: usuarios[index].wcscExchange
         }
         
     }
