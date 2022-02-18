@@ -1983,6 +1983,29 @@ app.get('/api/v1/app/apuestas/',async(req,res) => {
 
 });
 
+app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet;
+
+    var aplicacion = await playerData.find({}).sort([['CupsWin', -1]]);
+
+    if (aplicacion.length >= 1) {
+
+        var posicion = aplicacion.findIndex(item => item.wallet === uc.upperCase(wallet))+1;
+
+        if (posicion > 0) {
+            res.send(posicion+","+aplicacion[posicion-1].CupsWin);
+        }else{
+            res.send("0,0");
+        }
+        
+
+    }else{
+        res.send("0,0");
+        
+    }
+
+});
 
 app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
@@ -1997,7 +2020,7 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
     
     var lista = [];
 
-    var aplicacion = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
+    var aplicacion = await playerData.find({}).sort([['CupsWin', -1]]).limit(cantidad);
       
     if (aplicacion.length >= 1) {
         
@@ -2091,30 +2114,7 @@ app.get('/api/v1/consulta/poolliga',async(req,res) => {
 
 });
 
-app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 
-    var wallet =  req.params.wallet;
-
-    var aplicacion = await playerData.find({}).sort([['CupsWin', -1]]);
-
-
-    if (aplicacion.length >= 1) {
-
-        var posicion = aplicacion.findIndex(item => item.wallet === uc.upperCase(wallet))+1;
-
-        if (posicion > 0) {
-            res.send(posicion+","+aplicacion[posicion-1].CupsWin);
-        }else{
-            res.send("0,0");
-        }
-        
-
-    }else{
-        res.send("0,0");
-        
-    }
-
-});
 
 app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
 
