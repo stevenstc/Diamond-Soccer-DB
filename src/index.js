@@ -3110,30 +3110,28 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
             cantidad = 300;
         }
             usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
-            csc = true
+
         
     }else{
         usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).sort([['balance', -1]]);
-        csc = false
+
     }
 
-    //console.log(usuarios.length)
-
-    var julio = "";
-    var text = "";
+    var lista = [];
 
     for (let index = 0; index < usuarios.length; index++) {
-        if (csc) {
-            text = await consultarCscExchange((usuarios[index].wallet).toLowerCase());
-        }else{
-            text = "<a id='"+usuarios[index].wallet+"' href='/api/v1/consultar/csc/exchange/"+usuarios[index].wallet+"'>consultar</a>";
-        }
         
-        julio = julio+"<tr><td>"+usuarios[index].username+"</td><td>"+usuarios[index].active+"</td><td>"+usuarios[index].wallet+"</td><td>"+usuarios[index].balance+"</td><td>"+text+"</td></tr>";
+        lista[index] = {
+            username: usuarios[index].username,
+            activo: usuarios[index].active,
+            wallet: usuarios[index].wallet,
+            balance: usuarios[index].balance,
+            exchange:`/api/v1/consultar/csc/exchange/${usuarios[index].wallet}`
+        }
         
     }
 
-    res.send('<table border="1"><tr><th>username</th><th>activo</th><th>wallet</th><th>GAME WCSC</th> <th>EXCHANGE CSC</th> </tr>'+julio+'</table>');
+    res.send(lista);
 
 });
 
