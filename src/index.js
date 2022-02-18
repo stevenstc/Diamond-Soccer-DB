@@ -1398,10 +1398,10 @@ async function resetChecpoint(wallet){
         console.log("new time Dayly: "+usuario.checkpoint)
         usuario.reclamado = false;
 
-        usuario.wcscExchange = await consultarCscExchange(wallet);
+        //usuario.wcscExchange = await consultarCscExchange(wallet);
 
-        var nuevoUsuario = new user(usuario)
-        await nuevoUsuario.save();
+        //var nuevoUsuario = new user(usuario)
+        //await nuevoUsuario.save();
 
         //await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
     }
@@ -1660,10 +1660,10 @@ app.get('/api/v1/imagen/user',async(req,res) => {
         usuario = usuario[0];
 
         resetChecpoint(usuario.wallet);
-        usuario.wcscExchange = await consultarCscExchange(usuario.wallet);
+        //usuario.wcscExchange = await consultarCscExchange(usuario.wallet);
 
-        var nuevoUsuario = new user(usuario)
-        await nuevoUsuario.save();
+        //var nuevoUsuario = new user(usuario)
+        //await nuevoUsuario.save();
 
         if(usuario.imagen){
             if(usuario.imagen.indexOf('https://')>=0){
