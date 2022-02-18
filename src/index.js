@@ -2000,13 +2000,7 @@ app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
         posicion++;
 
         if (posicion > 0) {
-            res.send(
-            {
-                pos:posicion,
-                copas: aplicacion[posicion-1].CupsWin
-            });
-            
-            //res.send(posicion+","+aplicacion[posicion-1].CupsWin);
+            res.send(posicion+","+aplicacion[posicion-1].CupsWin);
         }else{
             res.send("0,0");
         }
