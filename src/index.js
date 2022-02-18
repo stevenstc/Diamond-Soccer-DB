@@ -3138,15 +3138,22 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
     }
 
     var lista = [];
+    var ex = 0;
 
     for (let index = 0; index < usuarios.length; index++) {
+
+        if(!usuarios[index].wcscExchange){
+            ex = 0;
+        }else{
+            ex = usuarios[index].wcscExchange;
+        }
         
         lista[index] = {
             username: usuarios[index].username,
             activo: usuarios[index].active,
             wallet: usuarios[index].wallet,
             balance: usuarios[index].balance,
-            exchange: usuarios[index].wcscExchange
+            exchange: ex
         }
         
     }
