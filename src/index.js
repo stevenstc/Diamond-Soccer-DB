@@ -3012,123 +3012,6 @@ app.get('/', (req, res, next) => {
 
 });
 
-app.post('/prueba/', (req, res, next) => {
-
-    console.log(req.body)
-
-    res.send(req.body);
-
-});
-
-app.put('/prueba/', (req, res, next) => {
-
-    var json = req.body;
-
-    json = Buffer.from(json);
-    json = json.toString('utf8');
-    json = JSON.parse(json);
-    //console.log(json);
-/*
-    var json = {
-        misDat: [
-         { variable: 'BallonSet', action: 'setear', valorS: '1' },
-         { variable: 'CupsWin', action: 'nada', valorS: '0' },
-         { variable: 'DificultConfig', action: 'nada', valorS: '0' },
-         { variable: 'DiscountMomment', action: 'nada', valorS: '0' },
-         { variable: 'DuelsOnlineWins', action: 'nada', valorS: '0' },
-         { variable: 'DuelsPlays', action: 'nada', valorS: '0' },
-         { variable: 'FriendLyWins', action: 'nada', valorS: '0' },
-         { variable: 'FriendlyTiming', action: 'nada', valorS: '0' },
-            { variable: 'LastDate', action: 'nada', valorS: '0' },
-            { variable: 'LeagueOpport', action: 'nada', valorS: '0' },
-            { variable: 'LeaguesOnlineWins', action: 'nada', valorS: '0' },
-            { variable: 'MatchLose', action: 'nada', valorS: '0' },
-            { variable: 'MatchWins', action: 'nada', valorS: '0' },
-            { variable: 'MatchesOnlineWins', action: 'nada', valorS: '0' },
-            { variable: 'Music', action: 'nada', valorS: '0' },
-            { variable: 'PhotonDisconnected', action: 'nada', valorS: '0' },
-            { variable: 'PlaysOnlineTotal', action: 'nada', valorS: '0' },
-            { variable: 'PlaysTotal', action: 'nada', valorS: '0' },
-            { variable: 'QualityConfig', action: 'nada', valorS: '0' },
-            { variable: 'StadiumSet', action: 'nada', valorS: '0' },
-            { variable: 'TournamentsPlays', action: 'nada', valorS: '0' },
-            { variable: 'Version', action: 'nada', valorS: '0' },
-            { variable: 'VolumeConfig', action: 'nada', valorS: '0' },
-            { variable: 'Plataforma', action: 'nada', valorS: '0' },
-            { variable: 'GolesEnContra', action: 'nada', valorS: '0' },
-            { variable: 'GolesAFavor', action: 'nada', valorS: '0' },
-            { variable: 'FirstTime', action: 'nada', valorS: '0' },
-            { variable: 'DrawMatchs', action: 'nada', valorS: '0' },
-            { variable: 'DrawMatchsOnline', action: 'nada', valorS: '0' },
-            { variable: 'LeaguePlay', action: 'nada', valorS: '0' },
-            { variable: 'Analiticas', action: 'nada', valorS: '0' },
-            { variable: 'Fxs', action: 'nada', valorS: '0' },
-            { variable: 'Resolucion', action: 'nada', valorS: '3465678789567' },
-            { variable: 'Fullscreen', action: 'nada', valorS: '32' }
-          ]
-       }*/
-
-       json = json.misDat;
-
-       console.log(json);
-
-    const respuesta = {
-        BallonSet: 0,
-        CupsWin: 0,
-        DificultConfig: 3,
-        DiscountMomment: 3,
-        DuelsOnlineWins: 0,
-        DuelsPlays: 0,
-        FriendLyWins: 0,
-        FriendlyTiming: 2,
-        LastDate: 0,
-        LeagueOpport: 0,
-        LeaguesOnlineWins: 0,
-        MatchLose: 0,
-        MatchWins: 0,
-        MatchesOnlineWins: 0,
-        Music: 0,
-        PhotonDisconnected: 0,
-        PlaysOnlineTotal: 0,
-        PlaysTotal: 0,
-        QualityConfig: 0,
-        StadiumSet: 0,
-        TournamentsPlays: 0,
-        Version: "mainet",
-        VolumeConfig: 0,
-        Plataforma: "PC",
-        GolesEnContra: 0,
-        GolesAFavor: 0,
-        FirstTime: 0,
-        DrawMatchs: 0,
-        DrawMatchsOnline: 0,
-        LeaguePlay: 0,
-        Analiticas: 0,
-        Fxs: 0,
-        Resolucion: 0,
-        Fullscreen: 0,
-        Soporte: "J&S"
-    }
-
-        for (let index = 0; index < json.length; index++) {
-
-            if (json[index].action !== "nada") {
-
-                Object.defineProperty(respuesta, json[index].variable, {
-                    value: json[index].valorS,
-                    writable: true
-                  });  
-                
-            }    
-            
-        }
-
-        console.log(respuesta)
-
-    res.send(respuesta);
-
-});
-
 app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
 
    var usuarios;
@@ -3187,12 +3070,12 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
  
  });
 
- app.get('/api/v1/consultar/numero/aleatorio', async(req, res, next) => {
+app.get('/api/v1/consultar/numero/aleatorio', async(req, res, next) => {
 
  
     res.send(Math.floor(Math.random() * 2)+'');
  
- });
+});
 
 
 app.listen(port, ()=> console.log('Escuchando Puerto: ' + port))
