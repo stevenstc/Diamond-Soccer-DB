@@ -1398,12 +1398,12 @@ async function resetChecpoint(wallet){
         console.log("new time Dayly: "+usuario.checkpoint)
         usuario.reclamado = false;
 
-        //usuario.wcscExchange = await consultarCscExchange(wallet);
+        usuario.wcscExchange = await consultarCscExchange(wallet);
 
         //var nuevoUsuario = new user(usuario)
         //await nuevoUsuario.save();
 
-        //await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
+        await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
     }
 }
 
