@@ -1366,7 +1366,7 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
             if (usuario.length >= 1) {
                 var usuario = usuario[0];
 
-                resetChecpoint(wallet);
+                await resetChecpoint(wallet);
 
                 if(usuario.checkpoint === 0){
                     usuario.checkpoint=Date.now();
@@ -1404,6 +1404,13 @@ async function resetChecpoint(wallet){
         //await nuevoUsuario.save();
 
         await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
+    }else{
+        usuario.wcscExchange = await consultarCscExchange(wallet);
+
+        var nuevoUsuario = new user(usuario)
+        await nuevoUsuario.save();
+
+        //await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
     }
 }
 
