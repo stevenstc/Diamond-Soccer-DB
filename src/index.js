@@ -1408,10 +1408,10 @@ async function resetChecpoint(wallet){
         var datos = usuario
         datos.wcscExchange = await consultarCscExchange(wallet);
 
-        var nuevoUsuario = new user(datos)
-        await nuevoUsuario.save();
+        //var nuevoUsuario = new user(datos)
+        //await nuevoUsuario.save();
 
-        //await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
+        await user.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
     }
 }
 
