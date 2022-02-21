@@ -1387,7 +1387,7 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 });
 
 async function resetChecpoint(wallet){
-    var usuario = await user.find({ wallet: uc.upperCase(wallet) },{_id:0});
+    var usuario = await user.find({ wallet: uc.upperCase(wallet) },{_id:0, __v:0});
     usuario = usuario[0];
     var datos = usuario
 
