@@ -3073,27 +3073,29 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
     var wallet = req.params.wallet;
 
     var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-    usuario = usuario[0];
-    var datos = usuario
-
-    if(!datos.checkpoint){
-        datos.checkpoint = 0;
-    }
-
-    if(Date.now() >= datos.checkpoint){
-
-        datos.checkpoint =  Date.now()  + DaylyTime*1000;
-        console.log("new time Dayly: "+datos.checkpoint)
-        datos.reclamado = false;
-
-    }
     
-    datos.wcscExchange = await consultarCscExchange(wallet);
 
-    var nuevoUsuario = new user(datos)
-    await nuevoUsuario.save();
- 
-    res.send(datos.wcscExchange+'');
+    if(usuario.length > 0){
+        usuario = usuario[0];
+        var datos = usuario;
+
+        if(Date.now() >= datos.checkpoint){
+
+            datos.checkpoint =  Date.now()  + DaylyTime*1000;
+            console.log("new time Dayly: "+datos.checkpoint)
+            datos.reclamado = false;
+
+        }
+        
+        datos.wcscExchange = await consultarCscExchange(wallet);
+
+        var nuevoUsuario = new user(datos)
+        await nuevoUsuario.save();
+    
+        res.send(datos.wcscExchange+'');
+    }else{
+        res.send("0");
+    }
  
  });
 
