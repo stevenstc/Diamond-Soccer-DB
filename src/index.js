@@ -192,10 +192,10 @@ app.post('/api/v1/sesion/actualizar/turno',async(req,res) => {
         var sesion = await userplayonline.find({sesionID: req.body.sesionID }).sort({identificador: 1});
 
         if(sesion.length > 0){
-            if(sesion[sesion.length-1].turno === "1"){
-                sesion[sesion.length-1].turno = "2";
-            }else{
+            if(sesion[sesion.length-1].turno === "2"){
                 sesion[sesion.length-1].turno = "1";
+            }else{
+                sesion[sesion.length-1].turno = "2";
             }
 
             var userPlay = new userplayonline(sesion[sesion.length-1]);
@@ -290,7 +290,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             aleatorio = 1;
 
         }else{
-            aleatorio = 1;
+            aleatorio = 2;
 
         }
         
