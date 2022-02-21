@@ -3082,6 +3082,10 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
     usuario = usuario[0];
     var datos = usuario
 
+    if(!datos.checkpoint){
+        datos.checkpoint = 0;
+    }
+
     if(Date.now() >= datos.checkpoint){
 
         datos.checkpoint =  Date.now()  + DaylyTime*1000;
