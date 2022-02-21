@@ -1662,14 +1662,8 @@ app.get('/api/v1/imagen/user',async(req,res) => {
     if (usuario.length >= 1) {
         usuario = usuario[0];
 
-        var datos = usuario;
-
         resetChecpoint(usuario.wallet);
-        datos.wcscExchange = await consultarCscExchange(usuario.wallet);
-
-        var nuevoUsuario = new user(datos)
-        await nuevoUsuario.save();
-
+      
         if(usuario.imagen){
             if(usuario.imagen.indexOf('https://')>=0){
                 res.send(usuario.imagen);
