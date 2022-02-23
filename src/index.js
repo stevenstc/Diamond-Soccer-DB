@@ -10,6 +10,7 @@ const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
 
 const abiMarket = require("./abiMarket.js");
+const abiToken = require("./abitoken.js");
 
 //console.log(("HolA Que Haze").toUpperCase())
 //console.log(("HolA Que Haze").toLowerCase())
@@ -56,6 +57,7 @@ const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
+const addressContractToken = process.env.APP_CONTRACTTOKEN || "0xF0fB4a5ACf1B1126A991ee189408b112028D7A63";
 
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
@@ -63,7 +65,7 @@ let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY); 
 
 const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
-//const contractToken = new web3.eth.Contract(abiToken,addressContractToken);
+const contractToken = new web3.eth.Contract(abiToken,addressContractToken);
 
 web3.eth.accounts.wallet.add(PEKEY);
 
@@ -3096,6 +3098,24 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
     }else{
         res.send("0");
     }
+ 
+ });
+
+ app.get('/api/v1/consultar/csc/cuenta/:wallet', async(req, res, next) => {
+
+    var wallet = req.params.wallet;
+
+    var saldo = await contractToken.methods
+    .balanceOf(wallet.toLowerCase())
+    .call({ from: cuenta.address });
+
+    saldo = new BigNumber(saldo);
+    saldo = saldo.shiftedBy(-18);
+    saldo = saldo.decimalPlaces(6);
+    saldo = saldo.toString();
+    
+    res.send(saldo+"");
+    
  
  });
 
