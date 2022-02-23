@@ -37,6 +37,8 @@ app.use(bodyParser.text());
 const port = process.env.PORT || 3004;
 const PEKEY = process.env.APP_PRIVATEKEY;
 const TOKEN = process.env.APP_TOKEN;
+const TOKEN2 = process.env.APP_TOKEN2;
+
 
 const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
@@ -3124,6 +3126,228 @@ app.get('/api/v1/consultar/numero/aleatorio', async(req, res, next) => {
  
     res.send(Math.floor(Math.random() * 2)+'');
  
+});
+
+app.post('/api/v1/asignar2/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    req.body.coins = parseInt(req.body.coins);
+    
+    if(req.body.token == TOKEN2 && web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) {
+            var datos = usuario[0];
+            if(datos.active){
+                datos.balance = datos.balance + req.body.coins;
+                datos.ingresado = datos.ingresado + req.body.coins;
+                datos.deposit.push({amount: req.body.coins,
+                    date: Date.now(),
+                    finalized: true,
+                    txhash: "Win coins: "+req.body.coins+" # "+uc.upperCase(wallet)
+                })
+
+                datos.wcscExchange = await consultarCscExchange(wallet);
+
+                var nuevoUsuario = new user(datos)
+                await nuevoUsuario.save();
+
+                //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                console.log("Win coins: "+req.body.coins+" # "+uc.upperCase(wallet));
+                res.send("true");
+            }else{
+                res.send("false");
+            }
+    
+        }else{
+            console.log("creado USUARIO al Asignar"+wallet)
+            var users = new user({
+                wallet: uc.upperCase(wallet),
+                email: "",
+                password: "",
+                username: "", 
+                active: true,
+                payAt: Date.now(),
+                checkpoint: 0,
+                reclamado: false,
+                balance: req.body.coins,
+                ingresado: req.body.coins,
+                retirado: 0,
+                deposit: [{amount: req.body.coins,
+                    date: Date.now(),
+                    finalized: true,
+                    txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
+                }],
+                retiro: [],
+                txs: [],
+                pais: "null",
+                imagen: imgDefault,
+                wcscExchange: await consultarCscExchange(wallet)
+            });
+    
+            users.save().then(()=>{
+                console.log("Usuario creado exitodamente");
+                res.send("true");
+            })
+                
+            
+        }
+
+
+    }else{
+        res.send("false");
+    }
+		
+});
+
+app.post('/api/v1/quitar2/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    req.body.coins = parseInt(req.body.coins);
+
+    if(req.body.token == TOKEN2  && web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) { 
+            var datos = usuario[0];
+            if(datos.active){
+                datos.balance = datos.balance-req.body.coins;
+                if(datos.balance >= 0){
+
+                    datos.retirado = datos.retirado+ req.body.coins;
+                    datos.retiro.push({
+                        amount: req.body.coins,
+                        date: Date.now(),
+                        done: true,
+                        dateSend: Date.now(),
+                        txhash: "Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet)
+                  
+                      })
+
+                    datos.wcscExchange = await consultarCscExchange(wallet);
+
+                    var nuevoUsuario = new user(datos)
+                    await nuevoUsuario.save();
+
+                    //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                    console.log("Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet));
+                    res.send("true");
+
+                }else{
+                    res.send("false");
+                }
+                
+            }else{
+                res.send("false");
+            }
+    
+        }else{
+            console.log("usuario creado al retirar monedas"+wallet)
+            var users = new user({
+                wallet: uc.upperCase(wallet),  
+                email: "",
+                password: "",
+                username: "",   
+                active: true,
+                payAt: Date.now(),
+                checkpoint: 0,
+                reclamado: false,
+                balance: 0,
+                ingresado: 0,
+                retirado: 0,
+                deposit: [],
+                retiro: [],
+                txs: [],
+                pais: "null",
+                imagen: imgDefault,
+                wcscExchange: await consultarCscExchange(wallet)
+            });
+    
+            users.save().then(()=>{
+                console.log("Usuario creado exitodamente");
+                res.send("false");
+            })
+                
+            
+        }
+
+    }else{
+        res.send("false");
+    }
+		
+    
+});
+
+app.post('/api/v1/ban/unban/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    req.body.active
+    req.body.ban 
+
+    if(req.body.token == TOKEN2  && web3.utils.isAddress(wallet)){
+
+        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        if (usuario.length >= 1) { 
+            var datos = usuario[0];
+
+            if(req.body.active){
+                datos.active = true;
+            }
+            
+            if(req.body.ban){
+                datos.active = false;
+            }
+            
+            datos.wcscExchange = await consultarCscExchange(wallet);
+
+            var nuevoUsuario = new user(datos)
+            await nuevoUsuario.save();
+
+            //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+            //console.log(" # "+uc.upperCase(wallet));
+            res.send({activo: datos.active});
+    
+        }else{
+            console.log("usuario creado al hacer ban o quitar"+wallet)
+            var users = new user({
+                wallet: uc.upperCase(wallet),  
+                email: "",
+                password: "",
+                username: "",   
+                active: true,
+                payAt: Date.now(),
+                checkpoint: 0,
+                reclamado: false,
+                balance: 0,
+                ingresado: 0,
+                retirado: 0,
+                deposit: [],
+                retiro: [],
+                txs: [],
+                pais: "null",
+                imagen: imgDefault,
+                wcscExchange: await consultarCscExchange(wallet)
+            });
+    
+            users.save().then(()=>{
+                console.log("Usuario creado exitodamente");
+                res.send("false");
+            })
+                
+            
+        }
+
+    }else{
+        res.send("false");
+    }
+		
+    
 });
 
 
