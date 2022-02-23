@@ -3167,7 +3167,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
                 datos.deposit.push({amount: req.body.coins,
                     date: Date.now(),
                     finalized: true,
-                    txhash: "Win coins: "+req.body.coins+" # "+uc.upperCase(wallet)
+                    txhash: "Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet)
                 })
 
                 datos.wcscExchange = await consultarCscExchange(wallet);
@@ -3176,14 +3176,14 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
                 await nuevoUsuario.save();
 
                 //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
-                console.log("Win coins: "+req.body.coins+" # "+uc.upperCase(wallet));
+                console.log("Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet));
                 res.send("true");
             }else{
                 res.send("false");
             }
     
         }else{
-            console.log("creado USUARIO al Asignar"+wallet)
+            console.log("creado USUARIO al Ajustar"+wallet)
             var users = new user({
                 wallet: uc.upperCase(wallet),
                 email: "",
@@ -3245,7 +3245,7 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
                         date: Date.now(),
                         done: true,
                         dateSend: Date.now(),
-                        txhash: "Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet)
+                        txhash: "-Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet)
                   
                       })
 
@@ -3255,7 +3255,7 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
                     await nuevoUsuario.save();
 
                     //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
-                    console.log("Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet));
+                    console.log("-Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet));
                     res.send("true");
 
                 }else{
