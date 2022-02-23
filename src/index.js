@@ -130,7 +130,7 @@ app.post('/api/v1/tiket/consultar/',async(req,res) => {
 
     if(req.body.token == TOKEN2 ){
  
-        var sesion = await userplayonline.find({identificador: parseInt(req.body.tiket) },{_id:0, soporte1:1,soporte2:1}).sort({identificador: 1});
+        var sesion = await userplayonline.find({identificador: parseInt(req.body.tiket) },{_id:0}).sort({identificador: 1});
         //console.log(sesion[0].identificador);
         //console.log(sesion[sesion.length-1].identificador);
         if(sesion.length > 0){
