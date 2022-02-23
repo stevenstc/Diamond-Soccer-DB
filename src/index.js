@@ -126,6 +126,27 @@ app.get('/api/v1/datefuture',async(req,res) => {
     res.send(data+""); 
 });
 
+app.post('/api/v1/tiket/consultar/',async(req,res) => {
+
+    if(req.body.token == TOKEN2 ){
+ 
+        var sesion = await userplayonline.find({identificador: parseInt(req.body.tiket) },{_id:0, soporte1:1,soporte2:1}).sort({identificador: 1});
+        //console.log(sesion[0].identificador);
+        //console.log(sesion[sesion.length-1].identificador);
+        if(sesion.length > 0){
+            res.send(sesion[sesion.length-1]);
+        }else{
+            res.send("null");
+
+        }
+    }else{
+        res.send("null");
+    }
+
+    
+
+});
+
 app.get('/api/v1/sesion/consultar/',async(req,res) => {
 
     if( req.query.sesionID ){
