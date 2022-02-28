@@ -289,9 +289,20 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
         usuario1 = await playerdatas.find({ wallet: usuario1[0].wallet });
         usuario1 = usuario1[0];
 
+        var soporte1 = "";
+        if (usuario1.Soporte) {
+            soporte1 = usuario1.Soporte;
+        }
+        
+
         usuario2 = await user.find({ username: req.body.u2 });
         usuario2 = await playerdatas.find({ wallet: usuario2[0].wallet });
         usuario2 = usuario2[0];
+
+        var soporte2 = usuario2.Soporte
+        if (usuario2.Soporte) {
+            soporte2 = usuario2.Soporte;
+        }
 
         var playOnline = new userplayonline({
             identificador: ids.length,
@@ -306,8 +317,8 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             csc: req.body.csc,
             u1: req.body.u1,
             u2: req.body.u2,
-            soporte1: usuario1.Soporte,
-            soporte2: usuario2.Soporte
+            soporte1: soporte1,
+            soporte2: soporte2
             
         });
 
@@ -3144,7 +3155,6 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
 
 app.get('/api/v1/consultar/numero/aleatorio', async(req, res, next) => {
 
- 
     res.send(Math.floor(Math.random() * 2)+'');
  
 });
