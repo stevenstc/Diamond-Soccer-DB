@@ -3382,4 +3382,67 @@ app.post('/api/v1/ban/unban/:wallet',async(req,res) => {
 });
 
 
+app.post('/api/v1/copas/asignar/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    var copas = parseInt(req.body.copas);
+    
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+
+        var update = await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
+            {$set:{CupsWin: {$sum:["$CupsWin",copas]}}}
+        ])
+
+        //console.log(update)
+
+        if(update.modifiedCount > 0){
+    
+            res.send("true");
+        }else{
+            res.send("false");
+        }
+    
+    }else{
+        
+        res.send("false");
+
+        
+    }
+
+		
+});
+
+app.post('/api/v1/copas/quitar/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    var copas = parseInt(req.body.copas);
+    
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+
+        var update = await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
+            {$set:{CupsWin: {$subtract:["$CupsWin",copas]}}}
+        ])
+
+        //console.log(update)
+
+        if(update.modifiedCount > 0){
+    
+            res.send("true");
+        }else{
+            res.send("false");
+        }
+    
+    }else{
+        
+        res.send("false");
+
+        
+    }
+		
+    
+});
+
+
 app.listen(port, ()=> console.log('Escuchando Puerto: ' + port))
