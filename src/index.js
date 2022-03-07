@@ -289,18 +289,22 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
         usuario1 = await playerdatas.find({ wallet: usuario1[0].wallet });
         usuario1 = usuario1[0];
 
-        var soporte1 = "";
-        if (usuario1.Soporte) {
+        
+        if (!usuario1.Soporte) {
+            var soporte1 = "";
+        }else{
             soporte1 = usuario1.Soporte;
         }
         
-
         usuario2 = await user.find({ username: req.body.u2 });
         usuario2 = await playerdatas.find({ wallet: usuario2[0].wallet });
         usuario2 = usuario2[0];
 
-        var soporte2 = usuario2.Soporte
-        if (usuario2.Soporte) {
+        
+        if (!usuario2.Soporte) {
+            var soporte2 = "";
+            
+        }else{
             soporte2 = usuario2.Soporte;
         }
 
