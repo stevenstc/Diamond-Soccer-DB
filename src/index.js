@@ -1434,7 +1434,7 @@ async function resetChecpoint(wallet){
         // resetear daily mision
         
         datos.checkpoint =  Date.now()  + DaylyTime*1000;
-        console.log("new time Dayly: "+datos.checkpoint)
+        //console.log("new time Dayly: "+datos.checkpoint)
         datos.reclamado = false;
 
     }
@@ -1554,7 +1554,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                     //await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
                     await playerData.updateOne({ wallet: uc.upperCase(wallet) }, dataPlay);
 
-                    console.log("Daily mision coins: "+coins+" # "+wallet);
+                    //console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
                     res.send(coins+"");
                 }else{
                     res.send("0");
@@ -3120,7 +3120,7 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
         if(Date.now() >= datos.checkpoint){
 
             datos.checkpoint =  Date.now()  + DaylyTime*1000;
-            console.log("new time Dayly: "+datos.checkpoint)
+            //console.log("new time Dayly: "+datos.checkpoint)
             datos.reclamado = false;
 
         }
