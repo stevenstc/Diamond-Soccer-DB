@@ -716,8 +716,10 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                 //await nuevoUsuario.save();
 
                 update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                    {$set:{datos}}
-                ]);
+                    {$set:datos}
+                ])
+
+                console.log(update)
                 console.log("Win coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                 res.send("true");
             }else{
@@ -804,7 +806,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                     //await nuevoUsuario.save();
 
                     update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set:{datos}}
+                        {$set:datos}
                     ]);
                     console.log("Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                     res.send("true");
