@@ -798,10 +798,12 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
                     datos.wcscExchange = await consultarCscExchange(wallet);
 
-                    var nuevoUsuario = new user(datos)
-                    await nuevoUsuario.save();
+                    //var nuevoUsuario = new user(datos)
+                    //await nuevoUsuario.save();
 
-                    //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set:{datos}}
+                    ]);
                     console.log("Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                     res.send("true");
 
