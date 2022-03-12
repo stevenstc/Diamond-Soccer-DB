@@ -719,7 +719,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                     {$set:datos}
                 ])
 
-                console.log(update)
+                //console.log(update)
                 console.log("Win coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                 res.send("true");
             }else{
@@ -1077,7 +1077,9 @@ async function monedasAlMarket(coins,wallet,intentos){
                             txhash: "TO MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                         })
                         datos.txs.push(explorador+result.transactionHash)
-                        update = user.updateOne({ wallet: uc.upperCase(wallet) }, datos)
+                        update = user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                            {$set:datos}
+                        ])
                         .then(console.log("Coins SEND TO MARKET: "+coins.dividedBy(10**18)+" # "+wallet))
                         .catch(console.error())
                     
@@ -1248,7 +1250,9 @@ app.get('/api/v1/enlinea',async(req,res) => {
             datos = {};
             datos.linea = appstatus.linea;
 
-            update = await appstatuses.updateOne({ _id: appstatus._id }, datos)
+            update = await appstatuses.updateOne({ _id: appstatus._id }, [
+                {$set: datos}
+            ])
 
             res.send("true");
 
@@ -1280,7 +1284,9 @@ app.get('/api/v1/enlinea',async(req,res) => {
             datos = {};
             datos.linea = appstatus.linea;
 
-            update = await appstatuses.updateOne({ _id: appstatus._id }, datos)
+            update = await appstatuses.updateOne({ _id: appstatus._id }, [
+                {$set: datos}
+            ])
 
             res.send("true");
 
@@ -1307,10 +1313,9 @@ app.get('/api/v1/ben10',async(req,res) => {
             aplicacion.ganadoliga = parseInt(req.query.ganadoliga);
         }
 
-        //update = await appdatos.updateOne({ _id: aplicacion._id }, datos)
-
-        aplicacion = await new appdatos(aplicacion);
-        await aplicacion.save();
+        update = await appdatos.updateOne({ _id: aplicacion._id }, [
+                {$set: {ganadoliga: aplicacion.ganadoliga}}
+            ])
 
         res.send("true");
 
@@ -1321,10 +1326,10 @@ app.get('/api/v1/ben10',async(req,res) => {
 
             aplicacion.ganado += parseInt(req.query.ganado);
 
-            //update = await appdatos.updateOne({ _id: aplicacion._id }, datos)
+            update = await appdatos.updateOne({ _id: aplicacion._id }, [
+                {$set:{ganado: aplicacion.ganado}}
+            ])
 
-            aplicacion = await new appdatos(aplicacion);
-            await aplicacion.save();
 
             res.send("true");
 
@@ -1440,7 +1445,7 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 async function resetChecpoint(wallet){
     var usuario = await user.find({ wallet: uc.upperCase(wallet) },{});
     usuario = usuario[0];
-    var datos = usuario
+    var datos = {};
 
     if(Date.now() >= usuario.checkpoint){
 
@@ -1454,10 +1459,9 @@ async function resetChecpoint(wallet){
     
     datos.wcscExchange = await consultarCscExchange(wallet);
 
-    //var nuevoUsuario = new user(datos)
-    //await nuevoUsuario.save();
-
-    await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+    await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+        {$set: datos}
+    ]);
 
 }
 
