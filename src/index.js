@@ -695,7 +695,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     req.body.coins = parseInt(req.body.coins);
     
-    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet) && req.body.coins <= 180){
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
@@ -758,7 +758,14 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
 
     }else{
-        res.send("false");
+        if(req.body.coins > 180){
+            await user.updateOne({ wallet: uc.upperCase(wallet) },[
+                {$set:{active: false}}
+            ])
+            res.send("true");
+        }else{
+            res.send("false");
+        }
     }
 		
 });
