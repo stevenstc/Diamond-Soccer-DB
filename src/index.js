@@ -1079,7 +1079,8 @@ async function monedasAlMarket(coins,wallet,intentos){
                             txhash: "TO MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                         })
                         datos.txs.push(explorador+result.transactionHash)
-                        update = user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        
+                        user.updateOne({ wallet: uc.upperCase(wallet) }, [
                             {$set:datos}
                         ])
                         .then(console.log("Coins SEND TO MARKET: "+coins.dividedBy(10**18)+" # "+wallet))
@@ -1249,11 +1250,8 @@ app.get('/api/v1/enlinea',async(req,res) => {
                 
             }
 
-            datos = {};
-            datos.linea = appstatus.linea;
-
             update = await appstatuses.updateOne({ _id: appstatus._id }, [
-                {$set: datos}
+                {$set: {linea:appstatus.linea}}
             ])
 
             res.send("true");
