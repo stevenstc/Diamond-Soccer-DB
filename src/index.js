@@ -2041,26 +2041,30 @@ app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
 
-    var aplicacion = await playerData.find({},
+    var user = await playerData.findOne({wallet: wallet},
+        {_id:0,BallonSet:0,DificultConfig:0,LastDate:0,PlaysOnlineTotal:0,LeaguesOnlineWins:0,DiscountMomment:0,DuelsOnlineWins:0,DuelsPlays:0,FriendLyWins:0,FriendlyTiming:0,LeagueDate:0,LeagueOpport:0,LeagueTimer:0,MatchLose:0,MatchWins:0,MatchesOnlineWins:0,Music:0,PhotonDisconnected:0,QualityConfig:0,StadiumSet:0,PlaysTotal:0,TournamentsPlays:0,Version:0,VolumeConfig:0,Plataforma:0,GolesEnContra:0,GolesAFavor:0,FirstTime:0,DrawMatchs:0,DrawMatchsOnline:0,LeaguePlay:0,Analiticas:0,Fxs:0,__v:0,Soporte:0,Fullscreen:0,Resolucion:0}
+        )
+
+    console.log("mi ranking");
+    console.log(user)
+
+    var playDat = await playerData.find({CupsWin: {$gte: user.CupsWin},UserOnline:{$gte: user.UserOnline}},
         {_id:0,BallonSet:0,DificultConfig:0,LastDate:0,PlaysOnlineTotal:0,LeaguesOnlineWins:0,DiscountMomment:0,DuelsOnlineWins:0,DuelsPlays:0,FriendLyWins:0,FriendlyTiming:0,LeagueDate:0,LeagueOpport:0,LeagueTimer:0,MatchLose:0,MatchWins:0,MatchesOnlineWins:0,Music:0,PhotonDisconnected:0,QualityConfig:0,StadiumSet:0,PlaysTotal:0,TournamentsPlays:0,Version:0,VolumeConfig:0,Plataforma:0,GolesEnContra:0,GolesAFavor:0,FirstTime:0,DrawMatchs:0,DrawMatchsOnline:0,LeaguePlay:0,Analiticas:0,Fxs:0,__v:0,Soporte:0,Fullscreen:0,Resolucion:0}
         )
     .sort({"CupsWin": -1, "UserOnline": -1});
 
-    if (aplicacion.length >= 1) {
 
-        const busqueda = element => element.wallet === uc.upperCase(wallet)
+    if (playDat.length >= 1) {
 
-        var posicion = aplicacion.findIndex(busqueda);
-        posicion++;
-
-        if (posicion > 0) {
-            res.send(posicion+","+aplicacion[posicion-1].CupsWin);
+        if (playDat.length > 0) {
+            res.send(playDat.length+","+user.CupsWin);
         }else{
             res.send("0,0");
         }
         
 
     }else{
+    
         res.send("0,0");
         
     }
@@ -2080,7 +2084,7 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
     
     var lista = [];
 
-    var aplicacion = await playerData.find({}).sort({"CupsWin": -1, "UserOnline": -1}).limit(cantidad);
+    var aplicacion = await playerData.find({}).limit(cantidad).sort({"CupsWin": -1, "UserOnline": -1});
       
     if (aplicacion.length >= 1) {
         
