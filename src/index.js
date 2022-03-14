@@ -1943,7 +1943,7 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 app.get('/api/v1/app/init/',async(req,res) => {
 
     if(req.query.version){
-        var aplicacion = await appstatuses.find({version: req.query.version});
+        var aplicacion = await appstatuses.find({version: req.query.version},{_id:0});
 
         if (aplicacion.length >= 1) {
 
@@ -1984,7 +1984,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
             await appstatuses.updateOne({version: req.query.version}, aplicacion);
 
 
-            aplicacion = await appstatuses.find({version: req.query.version});
+            aplicacion = await appstatuses.find({version: req.query.version},{_id:0});
             aplicacion = aplicacion[aplicacion.length-1]
         
         
@@ -2007,7 +2007,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
     
             await aplicacion.save();
 
-            aplicacion = await appstatuses.find({version: req.query.version});
+            aplicacion = await appstatuses.find({version: req.query.version},{_id:0});
             aplicacion = aplicacion[aplicacion.length-1]
             res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+",30");
                     
