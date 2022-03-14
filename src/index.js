@@ -911,6 +911,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
                     if (usuario.length >= 1) {
                         var datos = usuario[0];
+                        delete datos._id;
                         if(datos.active){
                             datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(0).toNumber();
                             datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(0).toNumber();
@@ -921,7 +922,7 @@ async function monedasAlJuego(coins,wallet,intentos){
                                 txhash: "FROM MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                             })
                             datos.txs.push(explorador+result.transactionHash)
-                            update = user.updateOne({ wallet: uc.upperCase(wallet) }, datos)
+                            update = user.updateOne({ wallet: uc.upperCase(wallet) }, {$set: datos})
                             .then(console.log("Coins SEND TO GAME: "+coins.dividedBy(10**18)+" # "+wallet))
                             .catch(console.error())
                             
@@ -1066,6 +1067,7 @@ async function monedasAlMarket(coins,wallet,intentos){
 
                 if (usuario.length >= 1) {
                     var datos = usuario[0];
+                    delete datos._id;
                     if(datos.active ){
                         datos.payAt = Date.now();
                         datos.balance = datos.balance-coins.dividedBy(10**18).toNumber();
@@ -1445,7 +1447,8 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 async function resetChecpoint(wallet){
     var usuario = await user.find({ wallet: uc.upperCase(wallet) },{});
     usuario = usuario[0];
-    var datos = {};
+    var datos = usuario;
+    delete datos._id;
 
     if(Date.now() >= usuario.checkpoint){
 
