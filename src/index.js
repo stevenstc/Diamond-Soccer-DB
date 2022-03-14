@@ -3410,21 +3410,16 @@ app.post('/api/v1/copas/asignar/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
 
     var copas = parseInt(req.body.copas);
+
+    console.log("Copas: +"+copas+" wallet:"+wallet)
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
-        var update = await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
+        playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
             {$set:{CupsWin: {$sum:["$CupsWin",copas]}}}
-        ])
-
-        //console.log(update)
-
-        if(update.modifiedCount > 0){
-    
+        ]).then(()=>{
             res.send("true");
-        }else{
-            res.send("false");
-        }
+        })    
     
     }else{
         
@@ -3441,21 +3436,17 @@ app.post('/api/v1/copas/quitar/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
 
     var copas = parseInt(req.body.copas);
+
+    console.log("Copas: -"+copas+" wallet:"+wallet)
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
-        var update = await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
+        playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
             {$set:{CupsWin: {$subtract:["$CupsWin",copas]}}}
-        ])
-
-        //console.log(update)
-
-        if(update.modifiedCount > 0){
-    
+        ]).then(()=>{
             res.send("true");
-        }else{
-            res.send("false");
-        }
+        })    
+     
     
     }else{
         
