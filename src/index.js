@@ -130,7 +130,7 @@ app.post('/api/v1/tiket/consultar/',async(req,res) => {
 
     if(req.body.token == TOKEN2 ){
  
-        var sesion = await userplayonline.find({identificador: parseInt(req.body.tiket) },{_id:0}).sort({identificador: 1});
+        var sesion = await userplayonline.findOne({identificador: parseInt(req.body.tiket) },{_id:0}).sort({identificador: 1});
         //console.log(sesion[0].identificador);
         //console.log(sesion[sesion.length-1].identificador);
         if(sesion.length > 0){
@@ -151,24 +151,17 @@ app.get('/api/v1/sesion/consultar/',async(req,res) => {
 
     if( req.query.sesionID ){
 
-        var sesion = await userplayonline.find({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
-        if(sesion.length > 0){
-            res.send(sesion[sesion.length-1]);
+        var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+        if(!sesion.finalizada){
+            res.send(sesion);
         }else{
             res.send("null");
 
         }
     }else{
 
-        var sesion = await userplayonline.find({ },{_id:0, soporte1:0,soporte2:0}).sort({identificador: 1});
-        //console.log(sesion[0].identificador);
-        //console.log(sesion[sesion.length-1].identificador);
-        if(sesion.length > 0){
-            res.send(sesion[sesion.length-1]);
-        }else{
-            res.send("null");
+        res.send("null");
 
-        }
 
     }
 
@@ -178,10 +171,10 @@ app.get('/api/v1/sesion/consultar/saque',async(req,res) => {
 
     if( req.query.sesionID ){
 
-        var sesion = await userplayonline.find({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+        var sesion = await userplayonline.findOne({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
 
-        if(sesion.length > 0){
-            res.send(sesion[sesion.length-1].saqueInicial+"");
+        if(!sesion.finalizada){
+            res.send(sesion.saqueInicial+"");
         }else{
             res.send("null");
         }
@@ -196,10 +189,10 @@ app.get('/api/v1/sesion/consultar/turno',async(req,res) => {
 
     if( req.query.sesionID ){
 
-        var sesion = await userplayonline.find({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+        var sesion = await userplayonline.findOne({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
 
-        if(sesion.length > 0){
-            res.send(sesion[sesion.length-1].turno+"");
+        if(!sesion.finalizada){
+            res.send(sesion.turno+"");
         }else{
             res.send("null");
         }
@@ -214,19 +207,21 @@ app.post('/api/v1/sesion/actualizar/turno',async(req,res) => {
 
     if( req.body.sesionID && req.body.token == TOKEN){
 
-        var sesion = await userplayonline.find({sesionID: req.body.sesionID }).sort({identificador: 1});
+        var sesion = await userplayonline.findOne({sesionID: req.body.sesionID }).sort({identificador: 1});
 
-        if(sesion.length > 0){
-            if(sesion[sesion.length-1].turno === "2"){
-                sesion[sesion.length-1].turno = "1";
+        if(!sesion.finalizada){
+            var data = {};
+            if(sesion.turno === "2"){
+                data.turno = "1";
             }else{
-                sesion[sesion.length-1].turno = "2";
+                data.turno = "2";
             }
 
-            var userPlay = new userplayonline(sesion[sesion.length-1]);
-            await userPlay.save();
+            await userplayonline.updateOne({_id: sesion._id}, [
+                {$set: data}
+            ])
 
-            res.send(sesion[sesion.length-1].turno+"");
+            res.send(data.turno+"");
         }else{
             res.send("null");
         }
@@ -241,11 +236,10 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
 
     if( req.query.sesionID ){
  
-        var sesion = await userplayonline.find({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
-        console.log(req.query.sesionID);
-        //console.log(sesion[sesion.length-1].identificador);
-        if(sesion.length > 0){
-            res.send(sesion[sesion.length-1].identificador+"");
+        var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
+        
+        if(!sesion.finalizada){
+            res.send(sesion.identificador+"");
         }else{
             res.send("null");
         }
@@ -264,14 +258,10 @@ app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
             soporte = 1;
         }
  
-        var sesion = await userplayonline.find({identificador: req.query.id},{__v:0,_id:0,soporte1:soporte,soporte2:soporte});
-        //console.log(sesion);
-        //console.log(sesion[sesion.length-1].identificador);
-        if(sesion.length > 0){
-            res.send(sesion[sesion.length-1]);
-        }else{
-            res.send("null");
-        }
+        var sesion = await userplayonline.findOne({identificador: req.query.id},{__v:0,_id:0,soporte1:soporte,soporte2:soporte});
+   
+        res.send(sesion);
+        
         
     }else{
         res.send("null");
