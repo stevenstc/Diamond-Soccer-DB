@@ -224,8 +224,8 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
 
     if( req.query.sesionID ){
  
-        var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
-        
+        var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{identificador:1}).sort({identificador: -1});
+        console.log(sesion)
         res.send(sesion.identificador+"");
         
     }else{
@@ -259,7 +259,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 
         var ids = await userplayonline.find({}).count();
 
-        console.log(ids)
+        //console.log(ids)
 
         usuario1 = await user.findOne({ username: req.body.u1 });
         usuario1 = await playerdatas.findOne({ wallet: usuario1.wallet });
