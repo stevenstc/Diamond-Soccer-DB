@@ -700,7 +700,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                     txhash: "Win coins: "+req.body.coins+" # "+uc.upperCase(wallet)
                 })
 
-                datos.wcscExchange = await consultarCscExchange(wallet);
+                //datos.wcscExchange = await consultarCscExchange(wallet);
 
                 //var nuevoUsuario = new user(datos)
                 //await nuevoUsuario.save();
@@ -790,7 +790,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                   
                       })
 
-                    datos.wcscExchange = await consultarCscExchange(wallet);
+                    //datos.wcscExchange = await consultarCscExchange(wallet);
 
                     //var nuevoUsuario = new user(datos)
                     //await nuevoUsuario.save();
@@ -1410,7 +1410,7 @@ async function resetChecpoint(wallet){
 
     }
     
-    datos.wcscExchange = await consultarCscExchange(wallet);
+    //datos.wcscExchange = await consultarCscExchange(wallet);
 
     await user.updateOne({ wallet: uc.upperCase(wallet) }, [
         {$set: datos}
@@ -1510,7 +1510,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                         txhash: "Daily mision coins: "+coins+" # "+wallet
                     })
 
-                    datos.wcscExchange = await consultarCscExchange(wallet);
+                    //datos.wcscExchange = await consultarCscExchange(wallet);
 
                     dataPlay.DuelsPlays = "0";
                     dataPlay.FriendLyWins = "0";
@@ -3149,7 +3149,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
                     txhash: "Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet)
                 })
 
-                datos.wcscExchange = await consultarCscExchange(wallet);
+                //datos.wcscExchange = await consultarCscExchange(wallet);
 
                 var nuevoUsuario = new user(datos)
                 await nuevoUsuario.save();
@@ -3228,7 +3228,7 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
                   
                       })
 
-                    datos.wcscExchange = await consultarCscExchange(wallet);
+                    //datos.wcscExchange = await consultarCscExchange(wallet);
 
                     var nuevoUsuario = new user(datos)
                     await nuevoUsuario.save();
@@ -3304,7 +3304,7 @@ app.post('/api/v1/ban/unban/:wallet',async(req,res) => {
                 datos.active = false;
             }
             
-            datos.wcscExchange = await consultarCscExchange(wallet);
+            //datos.wcscExchange = await consultarCscExchange(wallet);
 
             var nuevoUsuario = new user(datos)
             await nuevoUsuario.save();
