@@ -152,12 +152,9 @@ app.get('/api/v1/sesion/consultar/',async(req,res) => {
     if( req.query.sesionID ){
 
         var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
-        if(!sesion.finalizada){
-            res.send(sesion);
-        }else{
-            res.send("null");
 
-        }
+        res.send(sesion);
+      
     }else{
 
         res.send("null");
