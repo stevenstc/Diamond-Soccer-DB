@@ -1210,11 +1210,11 @@ async function recompensaDiaria(wallet){
 
 }
 
-app.get('/api/v1/sendmail',async(req,res) => {
+app.post('/api/v1/sendmail',async(req,res) => {
     //console.log(req.query);
-    if(req.query.destino && req.query.code){
+    if(req.body.destino && req.body.code){
 
-        var resultado = await fetch("https://brutusgroup.tk/mail.php?destino="+req.query.destino+"&code="+req.query.code+"&token=crypto2021");
+        var resultado = await fetch("https://brutusgroup.tk/mail.php?destino="+req.body.destino+"&code="+req.body.code+"&token=crypto2021");
 
         if (await resultado.text() === "true") {
             res.send("true");
@@ -1399,9 +1399,9 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             
         })
 
-        playernewdata.save().then(()=>{
-            res.send("0,0,0");
-        })
+        await playernewdata.save();
+
+        res.send("0,0,0");
             
         
     }
@@ -2078,7 +2078,6 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
         cantidad = parseInt(req.query.cantidad);
     }
 
-    
     var lista = [];
 
     var aplicacion = await playerData.find({}).limit(cantidad).sort({"CupsWin": -1, "UserOnline": -1});
