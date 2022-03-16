@@ -2946,27 +2946,28 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
         var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
         
         if (usuario.length >= 1) {
-            var usuario = usuario[0];
+            usuario = usuario[0];
+            var datos = {};
         
             for (let index = 0; index < json.length; index++) {
 
                 if(usuario[json[index].variable] === "NaN"){
-                    usuario[json[index].variable] = "0"
+                    datos[json[index].variable] = "0"
                 }
 
                 switch (json[index].action) {
                     case "sumar":
-                        usuario[json[index].variable] = (parseFloat((usuario[json[index].variable]+"").replace(",", "."))+parseFloat((json[index].valorS+"").replace(",", ".")))+"";
+                        datos[json[index].variable] = (parseFloat((usuario[json[index].variable]+"").replace(",", "."))+parseFloat((json[index].valorS+"").replace(",", ".")))+"";
                      
                         break;
 
                     case "restar":
-                        usuario[json[index].variable] = (parseFloat((usuario[json[index].variable]+"").replace(",", "."))-parseFloat((json[index].valorS+"").replace(",", ".")))+"";
+                        datos[json[index].variable] = (parseFloat((usuario[json[index].variable]+"").replace(",", "."))-parseFloat((json[index].valorS+"").replace(",", ".")))+"";
   
                         break;
 
                     case "setear":
-                            usuario[json[index].variable] = (json[index].valorS+"").replace(",", ".");
+                        datos[json[index].variable] = (json[index].valorS+"").replace(",", ".");
                          
                         break;
 
@@ -2979,27 +2980,24 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
                 
             }
         
-            usuario.UserOnline = Date.now();
+            datos.UserOnline = Date.now();
 
             if( Date.now() >= parseInt(usuario.LeagueTimer) + 86400*1000){
-                usuario.LeagueOpport = "0";
-                usuario.LeagueTimer = Date.now();
+                datos.LeagueOpport = "0";
+                datos.LeagueTimer = Date.now();
             }
 
-            var playernewdata = new playerData(usuario)
-            await playernewdata.save();
+            playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
+                {$set: datos}
+            ]).then(async()=>{
+                var consulta = await playerData.find({wallet: uc.upperCase(wallet)},{_id:0,wallet:0,__v:0,UserOnline:0});
+                consulta = consulta[0];
 
-            //update = await playerData.updateOne({ wallet: uc.upperCase(wallet) }, usuario);
-            //console.log(update);
+                res.send(consulta);
 
-            var consulta = await playerData.find({wallet: uc.upperCase(wallet)},{_id:0,wallet:0,__v:0,UserOnline:0});
-            consulta = consulta[0];
-
-            //console.log(consulta)
-
-            res.send(consulta);
-        
-                
+            }).catch(()=>{
+                res.send("false");
+            })   
 
         }else{
             res.send("false");
