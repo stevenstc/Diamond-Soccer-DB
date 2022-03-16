@@ -668,8 +668,10 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
             users.save().then(()=>{
                 console.log("Usuario creado exitodamente");
-                res.send("0");
+                
             })
+
+            res.send("0");
                 
             
         }
@@ -744,8 +746,10 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
     
             users.save().then(()=>{
                 console.log("Usuario creado exitodamente");
-                res.send("true");
+                
             })
+
+            res.send("false");
                 
             
         }
@@ -833,8 +837,10 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
     
             users.save().then(()=>{
                 console.log("Usuario creado exitodamente");
-                res.send("false");
+                
             })
+
+            res.send("false");
                 
             
         }
@@ -1808,8 +1814,10 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
     
             users.save().then(()=>{
                 console.log("Usuario creado exitodamente");
-                res.send("true");
+                
             })
+
+            res.send("false");
                 
             
         }
@@ -3077,30 +3085,39 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
 
     var wallet = req.params.wallet;
 
-    var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-    
-
-    if(usuario.length > 0){
-        usuario = usuario[0];
-        var datos = usuario;
-
-        if(Date.now() >= datos.checkpoint){
-
-            datos.checkpoint =  Date.now()  + DaylyTime*1000;
-            //console.log("new time Dayly: "+datos.checkpoint)
-            datos.reclamado = false;
-
-        }
+    if(web3.utils.isAddress(wallet)){
         
-        datos.wcscExchange = await consultarCscExchange(wallet);
+        await user.findOne({ wallet: uc.upperCase(wallet) })
+        .then(async(usuario)=>{
 
-        var nuevoUsuario = new user(datos)
-        await nuevoUsuario.save();
-    
-        res.send(datos.wcscExchange+'');
+            var datos = {};
+
+            if(Date.now() >= datos.checkpoint){
+
+                datos.checkpoint =  Date.now()  + DaylyTime*1000;
+                //console.log("new time Dayly: "+datos.checkpoint)
+                datos.reclamado = false;
+
+            }
+            
+            datos.wcscExchange = await consultarCscExchange(wallet);
+
+
+            user.updateOne({_id: usuario._id}, [
+                {$set: datos}
+            ])
+        
+            res.send(datos.wcscExchange+'');
+
+        })
+        .catch(async()=>{
+            res.send("0");
+        })  
     }else{
         res.send("0");
     }
+
+    
  
  });
 
@@ -3269,8 +3286,9 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
     
             users.save().then(()=>{
                 console.log("Usuario creado exitodamente");
-                res.send("false");
+                
             })
+            res.send("false");
                 
             
         }
@@ -3337,9 +3355,10 @@ app.post('/api/v1/ban/unban/:wallet',async(req,res) => {
     
             users.save().then(()=>{
                 console.log("Usuario creado exitodamente");
-                res.send("false");
+                
             })
                 
+            res.send("false");
             
         }
 
