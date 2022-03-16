@@ -131,14 +131,10 @@ app.post('/api/v1/tiket/consultar/',async(req,res) => {
     if(req.body.token == TOKEN2 ){
  
         var sesion = await userplayonline.findOne({identificador: parseInt(req.body.tiket) },{_id:0}).sort({identificador: 1});
-        //console.log(sesion[0].identificador);
-        //console.log(sesion[sesion.length-1].identificador);
-        if(sesion.length > 0){
-            res.send(sesion[sesion.length-1]);
-        }else{
-            res.send("null");
 
-        }
+        res.send(sesion);
+
+         
     }else{
         res.send("null");
     }
@@ -170,11 +166,8 @@ app.get('/api/v1/sesion/consultar/saque',async(req,res) => {
 
         var sesion = await userplayonline.findOne({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
 
-        if(!sesion.finalizada){
-            res.send(sesion.saqueInicial+"");
-        }else{
-            res.send("null");
-        }
+        res.send(sesion.saqueInicial+"");
+        
         
     }else{
         res.send("null");
@@ -188,11 +181,9 @@ app.get('/api/v1/sesion/consultar/turno',async(req,res) => {
 
         var sesion = await userplayonline.findOne({sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
 
-        if(!sesion.finalizada){
-            res.send(sesion.turno+"");
-        }else{
-            res.send("null");
-        }
+
+        res.send(sesion.turno+"");
+
         
     }else{
         res.send("null");
@@ -235,11 +226,7 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
  
         var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
         
-        if(!sesion.finalizada){
-            res.send(sesion.identificador+"");
-        }else{
-            res.send("null");
-        }
+        res.send(sesion.identificador+"");
         
     }else{
         res.send("null");
