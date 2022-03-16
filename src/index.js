@@ -1343,7 +1343,7 @@ app.get('/api/v1/ben10',async(req,res) => {
     
 });
 
-app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
+app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
 
