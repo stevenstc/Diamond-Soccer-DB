@@ -1347,64 +1347,26 @@ app.get('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
 
-    var data = await playerData.find({wallet: uc.upperCase(wallet)});
+    if(web3.utils.isAddress(wallet)){
 
-    if (data.length >= 1) {
-        data = data[0];
-    
-        res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins);
+        var data = await playerData.find({wallet: uc.upperCase(wallet)});
+
+        if (data.length >= 1) {
+            data = data[0];
+        
+            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins);
+
+        }else{
+
+            res.send("0,0,0");
+                
+        }
 
     }else{
-
-        var playernewdata = new playerData({
-            wallet: uc.upperCase(wallet),
-            BallonSet: "0",
-            CupsWin: 0,
-            DificultConfig:  "3",
-            DiscountMomment:  "0",
-            DuelsOnlineWins:  "0",
-            DuelsPlays:  "0",
-            FriendLyWins:  "0",
-            FriendlyTiming: "2",
-            LastDate:  "0",
-            LeagueDate:  moment(Date.now()).format(formatoliga),
-            LeagueOpport:  "0",
-            LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
-            LeaguesOnlineWins:  "0",
-            MatchLose:  "0",
-            MatchWins:  "0",
-            MatchesOnlineWins:  "0",
-            Music:  "0",
-            PhotonDisconnected:  "0",
-            PlaysOnlineTotal:  "0",
-            PlaysTotal:  "0",
-            QualityConfig:  "0",
-            StadiumSet:  "0",
-            TournamentsPlays:  "0",
-            Version:  "mainet",
-            VolumeConfig:  "0",
-            Plataforma: "pc",
-            GolesEnContra: "0",
-            GolesAFavor: "0",
-            FirstTime: "0",
-            DrawMatchs: "0",
-            DrawMatchsOnline: "0",
-            LeaguePlay: "0",
-            Analiticas: "0",
-            Fxs: "0",
-            UserOnline: Date.now(),
-            Resolucion: "0",
-            Fullscreen: "0",
-            Soporte: "J&S"
-            
-        })
-
-        await playernewdata.save();
-
         res.send("0,0,0");
-            
-        
     }
+
+    
 
     
 });
