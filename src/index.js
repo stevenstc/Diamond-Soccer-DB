@@ -273,11 +273,12 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 
     if(req.body.sesionID && req.body.token == TOKEN ){
 
-        var ids = await userplayonline.find({});
+        var ids = await userplayonline.find({}).count();
 
-        usuario1 = await user.find({ username: req.body.u1 });
-        usuario1 = await playerdatas.find({ wallet: usuario1[0].wallet });
-        usuario1 = usuario1[0];
+        console.log(ids)
+
+        usuario1 = await user.findOne({ username: req.body.u1 });
+        usuario1 = await playerdatas.findOne({ wallet: usuario1.wallet });
 
         if (!usuario1.Soporte) {
             var soporte1 = "";
@@ -285,9 +286,8 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             soporte1 = usuario1.Soporte;
         }
         
-        usuario2 = await user.find({ username: req.body.u2 });
-        usuario2 = await playerdatas.find({ wallet: usuario2[0].wallet });
-        usuario2 = usuario2[0];
+        usuario2 = await user.findOne({ username: req.body.u2 });
+        usuario2 = await playerdatas.findOne({ wallet: usuario2.wallet });
 
         if (!usuario2.Soporte) {
             var soporte2 = "";
@@ -297,7 +297,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
         }
 
         var playOnline = new userplayonline({
-            identificador: ids.length,
+            identificador: ids,
             sesionID: req.body.sesionID,
             incio: Date.now(),
             fin: 0,
