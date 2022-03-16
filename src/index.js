@@ -663,7 +663,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
-                wcscExchange: await consultarCscExchange(wallet)
+                wcscExchange: 0
             });
 
             users.save().then(()=>{
@@ -741,7 +741,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
-                wcscExchange: await consultarCscExchange(wallet)
+                wcscExchange: 0
             });
     
             users.save().then(()=>{
@@ -832,7 +832,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
-                wcscExchange: await consultarCscExchange(wallet)
+                wcscExchange: 0
             });
     
             users.save().then(()=>{
@@ -1809,7 +1809,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
-                wcscExchange: await consultarCscExchange(wallet)
+                wcscExchange: 0
             });
     
             users.save().then(()=>{
@@ -3201,7 +3201,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
-                wcscExchange: await consultarCscExchange(wallet)
+                wcscExchange: 0
             });
     
             users.save().then(()=>{
@@ -3281,7 +3281,7 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
-                wcscExchange: await consultarCscExchange(wallet)
+                wcscExchange: 0
             });
     
             users.save().then(()=>{
@@ -3350,7 +3350,7 @@ app.post('/api/v1/ban/unban/:wallet',async(req,res) => {
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
-                wcscExchange: await consultarCscExchange(wallet)
+                wcscExchange: 0
             });
     
             users.save().then(()=>{
