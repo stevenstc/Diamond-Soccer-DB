@@ -223,10 +223,17 @@ app.post('/api/v1/sesion/actualizar/turno',async(req,res) => {
 app.get('/api/v1/sesion/consultar/id',async(req,res) => {
 
     if( req.query.sesionID ){
+
+        console.log("consulta de sesion: "+req.query.sesionID )
  
         var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{identificador:1}).sort({identificador: -1});
         console.log(sesion)
-        res.send(sesion.identificador+"");
+        if(!sesion.identificador){
+            res.send("null");
+        }else{
+            res.send(sesion.identificador+"");
+
+        }
         
     }else{
         res.send("null");
