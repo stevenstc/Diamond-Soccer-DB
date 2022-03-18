@@ -120,12 +120,6 @@ app.get('/api/v1/convertdate/:date',async(req,res) => {
     res.send(moment(parseInt(req.params.date)).format('MM-DD-YYYY/HH:mm:ss')); 
 });
 
-app.get('/api/v1/datefuture',async(req,res) => {
-
-	var data = Date.now()+604800*1000;
-    res.send(data+""); 
-});
-
 app.post('/api/v1/tiket/consultar/',async(req,res) => {
 
     if(req.body.token == TOKEN2 ){
@@ -2051,6 +2045,7 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
         cantidad = 20;
     }else{
         cantidad = parseInt(req.query.cantidad);
+        if(cantidad > 100 )cantidad= 100;
     }
 
     var lista = [];
@@ -3042,20 +3037,14 @@ app.get('/', (req, res, next) => {
 app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
 
    var usuarios;
-   var csc = "";
 
    var cantidad = parseInt(req.query.cantidad);
-    if(req.query.cantidad){
-        if(cantidad > 300){
-            cantidad = 300;
-        }
-            usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
 
-        
-    }else{
-        usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).sort([['balance', -1]]);
-
+    if(cantidad > 300){
+        cantidad = 300;
     }
+    
+    usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
 
     var lista = [];
     var ex = 0;
