@@ -3036,9 +3036,13 @@ app.get('/', (req, res, next) => {
 
 app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
 
-   var usuarios;
+    var usuarios;
 
-   var cantidad = parseInt(req.query.cantidad);
+    var cantidad
+
+    if(!req.query.cantidad) cantidad = 10;
+
+    cantidad = parseInt(req.query.cantidad);
 
     if(cantidad > 300){
         cantidad = 300;
