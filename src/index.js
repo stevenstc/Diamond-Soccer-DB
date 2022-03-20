@@ -1765,7 +1765,9 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 }
 
                 if (req.body.email || req.body.username || req.body.password || req.body.pais || req.body.ban || req.body.imagen){
-                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set: datos}
+                    ]);
                     res.send("true");
                 }else{
                     res.send("false");
