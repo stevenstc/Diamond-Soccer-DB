@@ -20,6 +20,8 @@ const abiToken = require("./abitoken.js");
 
 var aleatorio = 1;
 
+
+
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 var superUser = require("./superUser");
@@ -38,7 +40,6 @@ const port = process.env.PORT || 3004;
 const PEKEY = process.env.APP_PRIVATEKEY;
 const TOKEN = process.env.APP_TOKEN;
 const TOKEN2 = process.env.APP_TOKEN2;
-
 
 const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
