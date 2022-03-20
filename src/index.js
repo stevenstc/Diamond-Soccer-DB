@@ -1620,15 +1620,10 @@ app.get('/api/v1/user/email/:wallet',async(req,res) => {
      
     if( req.query.tokenemail === TokenEmail && web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
-
-            res.send(usuario.email);
-        }else{
-            res.send("false");
-        }
+        res.send(usuario.email);
+        
     }else{
         res.send("false");
     }
