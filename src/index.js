@@ -2902,8 +2902,6 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
         data = JSON.parse(data);
         console.log(data);
 
-    }else{
-        console.log("data externa "+uc.upperCase(wallet))
     }
     
     if( data.misDat ){
@@ -2959,8 +2957,7 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
             playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
                 {$set: datos}
             ]).then(async()=>{
-                var consulta = await playerData.find({wallet: uc.upperCase(wallet)},{_id:0,wallet:0,__v:0,UserOnline:0});
-                consulta = consulta[0];
+                var consulta = await playerData.findOne({wallet: uc.upperCase(wallet)},{_id:0,wallet:0,__v:0,UserOnline:0});
 
                 res.send(consulta);
 
@@ -3018,8 +3015,10 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
             })
 
             playernewdata.save().then(()=>{
-                res.send("false");
+                
             })
+
+            res.send("false");
                 
             
         
