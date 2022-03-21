@@ -219,13 +219,12 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
 
     if( req.query.sesionID ){
 
-        console.log("consulta de sesion: "+req.query.sesionID )
- 
         var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{identificador:1}).sort({identificador: -1});
-        console.log(sesion)
+        //console.log(sesion)
         if(!sesion.identificador){
             res.send("null");
         }else{
+            console.log("consulta de sesion: "+req.query.sesionID+" #"+sesion.identificador )
             res.send(sesion.identificador+"");
 
         }
@@ -987,9 +986,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         coins = new BigNumber(req.body.coins).multipliedBy(10**18);
 
-        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-
-        usuario = usuario[0];
+        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
         console.log(usuario.balance);
         console.log(usuario.balance-parseInt(req.body.coins))
