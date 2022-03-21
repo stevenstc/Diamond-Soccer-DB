@@ -2890,23 +2890,27 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet;
 
-    var json = req.body;
+    var data = req.body;
 
-    if(!json.misDat){
+    if(!data.misDat){
 
-        //console.log("recibiendo data desde el juego: "+uc.upperCase(wallet))
+        console.log("recibiendo data desde el juego: "+uc.upperCase(wallet))
 
-        json = Buffer.from(json);
-        json = json.toString('utf8');
-        json = JSON.parse(json);
+        data = Buffer.from(data);
+        data = data.toString('utf8');
+        console.log(data);
+        data = JSON.parse(data);
+        console.log(data);
 
+    }else{
+        console.log("data externa "+uc.upperCase(wallet))
     }
     
-    if( json.misDat ){
+    if( data.misDat ){
 
-        json = json.misDat;
+        data = data.misDat;
 
-        //console.log(json)
+        //console.log(data)
 
         var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
         
@@ -2914,25 +2918,25 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
             usuario = usuario[0];
             var datos = {};
         
-            for (let index = 0; index < json.length; index++) {
+            for (let index = 0; index < data.length; index++) {
 
-                if(usuario[json[index].variable] === "NaN"){
-                    datos[json[index].variable] = "0"
+                if(usuario[data[index].variable] === "NaN"){
+                    datos[data[index].variable] = "0"
                 }
 
-                switch (json[index].action) {
+                switch (data[index].action) {
                     case "sumar":
-                        datos[json[index].variable] = (parseFloat((usuario[json[index].variable]+"").replace(",", "."))+parseFloat((json[index].valorS+"").replace(",", ".")))+"";
+                        datos[data[index].variable] = (parseFloat((usuario[data[index].variable]+"").replace(",", "."))+parseFloat((data[index].valorS+"").replace(",", ".")))+"";
                      
                         break;
 
                     case "restar":
-                        datos[json[index].variable] = (parseFloat((usuario[json[index].variable]+"").replace(",", "."))-parseFloat((json[index].valorS+"").replace(",", ".")))+"";
+                        datos[data[index].variable] = (parseFloat((usuario[data[index].variable]+"").replace(",", "."))-parseFloat((data[index].valorS+"").replace(",", ".")))+"";
   
                         break;
 
                     case "setear":
-                        datos[json[index].variable] = (json[index].valorS+"").replace(",", ".");
+                        datos[data[index].variable] = (data[index].valorS+"").replace(",", ".");
                          
                         break;
 
