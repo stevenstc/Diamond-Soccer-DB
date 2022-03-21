@@ -2898,9 +2898,9 @@ app.put('/api/v1/update/playerdata/:wallet',async(req,res) => {
 
         data = Buffer.from(data);
         data = data.toString('utf8');
-        console.log(data);
+        //console.log(data);
         data = JSON.parse(data);
-        console.log(data);
+        //console.log(data);
 
     }
     
