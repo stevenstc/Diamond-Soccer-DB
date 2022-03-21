@@ -262,7 +262,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 
         //console.log(ids)
 
-        usuario1 = await user.findOne({ username: req.body.u1 });
+        var usuario1 = await user.findOne({ username: req.body.u1 });
         usuario1 = await playerdatas.findOne({ wallet: usuario1.wallet });
 
         if (!usuario1.Soporte) {
@@ -271,7 +271,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             soporte1 = usuario1.Soporte;
         }
         
-        usuario2 = await user.findOne({ username: req.body.u2 });
+        var usuario2 = await user.findOne({ username: req.body.u2 });
         usuario2 = await playerdatas.findOne({ wallet: usuario2.wallet });
 
         if (!usuario2.Soporte) {
