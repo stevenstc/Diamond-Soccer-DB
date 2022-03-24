@@ -256,11 +256,11 @@ app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
 
 app.post('/api/v1/sesion/crear/',async(req,res) => {
 
-    if(req.body.sesionID && req.body.token == TOKEN ){
+    if(req.body.sesionID && req.body.token == TOKEN && req.body.u1 && req.body.u2 ){
 
-        var ids = await userplayonline.find({}).count();
+        var ids = await userplayonline.count();
 
-        //console.log(ids)
+        console.log(ids)
 
         var usuario1 = await user.findOne({ username: req.body.u1 });
         
@@ -346,21 +346,28 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 sesionPlay.ganador = req.body.ganador;
 
                 if(req.body.soporte1 === ""){
-                    usuario1 = await user.find({ username: sesionPlay.u1 });
-                    usuario1 = await playerdatas.find({ wallet: usuario1[0].wallet });
-                    usuario1 = usuario1[0];
-
-                    sesionPlay.soporte1 = usuario1.Soporte;
+                    usuario1 = await user.findOne({ username: sesionPlay.u1 });
+                    usuario1 = await playerdatas.findOne({ wallet: usuario1.wallet });
+                    if(!usuario1.Soporte){
+                        sesionPlay.soporte1 = req.body.soporte1;
+                    }else{
+                        sesionPlay.soporte1 = usuario1.Soporte;
+                    }
+                    
                 }else{
                     sesionPlay.soporte1 = req.body.soporte1;
                 }
 
                 if(req.body.soporte2 === ""){
-                    usuario2 = await user.find({ username: sesionPlay.u2 });
-                    usuario2 = await playerdatas.find({ wallet: usuario2[0].wallet });
-                    usuario2 = usuario2[0];
+                    usuario2 = await user.findOne({ username: sesionPlay.u2 });
+                    usuario2 = await playerdatas.findOne({ wallet: usuario2.wallet });
+                    if(!usuario1.Soporte){
+                        sesionPlay.soporte2 = req.body.soporte2;
 
-                    sesionPlay.soporte2 = usuario2.Soporte;
+                    }else{
+                        sesionPlay.soporte2 = usuario2.Soporte;
+
+                    }
                 }else{
                     sesionPlay.soporte2 = req.body.soporte2;
                 }
