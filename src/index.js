@@ -971,15 +971,10 @@ app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
 
     if(web3.utils.isAddress(wallet)){
 
-        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
-        if (usuario.length >= 1) {
-            var datos = usuario[0];
-
-            res.send((datos.payAt + (TimeToMarket * 1000)).toString())
-        }else{
-            res.send((Date.now()+(TimeToMarket * 1000)).toString())
-        }
+        res.send((usuario.payAt + (TimeToMarket * 1000)).toString())
+        
     }else{
         res.send((Date.now()+(TimeToMarket * 1000)).toString())
     }
@@ -998,7 +993,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
         console.log(usuario.balance);
         console.log(usuario.balance-parseInt(req.body.coins))
 
-        if (usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0) {
+        if (usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
             
             await delay(Math.floor(Math.random() * 12000));
 
