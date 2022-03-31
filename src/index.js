@@ -48,6 +48,8 @@ const DaylyTime = process.env.APP_DAYTIME || 86400;
 
 const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
+const miniCoins = parseInt(process.env.APP_MIN_COINS) || 180;
+
 const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
 const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
 const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
@@ -679,7 +681,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     req.body.coins = parseInt(req.body.coins);
     
-    if(req.body.token == TOKEN && web3.utils.isAddress(wallet) && req.body.coins <= 180){
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet) && req.body.coins <= miniCoins){
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
