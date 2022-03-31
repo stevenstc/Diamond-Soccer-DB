@@ -1129,7 +1129,7 @@ async function recompensaDiaria(wallet){
 
     var cantidad = 43;
 
-    var coins = 48; // CSC coins
+    var coins = 96; // CSC coins
     var bono = false;
 
     for (let index = 0; index < cantidad; index++) {
@@ -1167,7 +1167,7 @@ async function recompensaDiaria(wallet){
 
             if(inventario[index]){
 
-                coins += 20;
+                coins += 40;
                 bono = true;
                 break;
 
@@ -1185,7 +1185,7 @@ async function recompensaDiaria(wallet){
 
                 if(inventario[index]){
 
-                    coins += 10;
+                    coins += 20;
                     break;
 
                 }
@@ -1962,7 +1962,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
             aplicacion = aplicacion[aplicacion.length-1]
         
         
-            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga);
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false");
 
         }else{
 
