@@ -995,7 +995,13 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
         console.log(usuario.balance);
         console.log(usuario.balance-parseInt(req.body.coins))
 
-        if (usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
+
+        var result = await contractMarket.methods
+        .largoInventario(wallet)
+        .call({ from: cuenta.address })
+        .catch(err => {console.log(err); return 0})
+
+        if (result > 0 && usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
             
             await delay(Math.floor(Math.random() * 12000));
 
