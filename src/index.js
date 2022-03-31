@@ -1972,7 +1972,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 link: "https://cryptosoccermarket.com/download",
                 linea: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 updates:["V"+req.query.version+" READY!","thanks for download",moment(Date.now()).format('DD/MM/YYYY HH:mm:ss [UTC]')],
-                apuestas:[true,true,true,true,true]
+                apuestas:[true,true,true,true,true,true]
 
             });
     
