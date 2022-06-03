@@ -20,13 +20,11 @@ const abiToken = require("./abitoken.js");
 
 var aleatorio = 1;
 
-
-
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 var superUser = require("./superUser");
 
-var testers = require("./betaTesters")
+var testers = require("./betaTesters");
 
 const app = express();
 app.use(cors());
@@ -994,7 +992,6 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         console.log(usuario.balance);
         console.log(usuario.balance-parseInt(req.body.coins))
-
 
         var result = await contractMarket.methods
         .largoInventario(wallet)
