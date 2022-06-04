@@ -65,7 +65,6 @@ const addressContractToken = process.env.APP_CONTRACTTOKEN || "0xF0fB4a5ACf1B112
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
 let web3 = new Web3(RED);
-let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY); 
 
 const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
 const contractToken = new web3.eth.Contract(abiToken,addressContractToken);
@@ -401,7 +400,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
     var result = await contractMarket.methods
         .largoInventario(wallet)
-        .call({ from: cuenta.address })
+        .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
 
     console.log(result);
@@ -419,7 +418,7 @@ app.get('/api/v1/user/teams/:wallet',async(req,res) => {
 
             var item = await contractMarket.methods
             .inventario(wallet, index)
-            .call({ from: cuenta.address })
+            .call({ from: web3.eth.accounts.wallet[0].address })
             .catch(err => {console.log(err); return {nombre: "ninguno"}})
 
     
@@ -489,7 +488,7 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 
     var result = await contractMarket.methods
         .largoInventario(wallet)
-        .call({ from: cuenta.address })
+        .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
   
     var inventario = [];
@@ -504,7 +503,7 @@ app.get('/api/v1/formations/:wallet',async(req,res) => {
 
             var item = await contractMarket.methods
                 .inventario(wallet, index)
-                .call({ from: cuenta.address })
+                .call({ from: web3.eth.accounts.wallet[0].address })
                 .catch(err => {console.log(err); return 0})
 
 
@@ -550,14 +549,14 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
     if (isSuper === 0) {
         var largoInventario = await contractMarket.methods
         .largoInventario(wallet)
-        .call({ from: cuenta.address })
+        .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
   
         for (let index = 0; index < largoInventario; index++) {
 
             var item = await contractMarket.methods
                 .inventario(wallet, index)
-                .call({ from: cuenta.address })
+                .call({ from: web3.eth.accounts.wallet[0].address })
                 .catch(() => {return {nombre: "ninguno"}})
 
 
@@ -848,7 +847,13 @@ app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
+    var result = await contractMarket.methods
+        .largoInventario(wallet)
+        .call({ from: web3.eth.accounts.wallet[0].address })
+        .catch(err => {console.log(err); return 0})
+        result = parseInt(result);
+
+    if(result > 0 && req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
         await delay(Math.floor(Math.random() * 12000));
 
@@ -875,7 +880,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     var usuario = await contractMarket.methods
     .investors(wallet)
-    .call({ from: cuenta.address});
+    .call({ from: web3.eth.accounts.wallet[0].address});
 
     balance = new BigNumber(usuario.balance);
     balance = balance.shiftedBy(-18);
@@ -995,10 +1000,12 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         var result = await contractMarket.methods
         .largoInventario(wallet)
-        .call({ from: cuenta.address })
+        .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
+        result = parseInt(result);
 
         if (result > 0 && usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
+        console.log("paso");
             
             await delay(Math.floor(Math.random() * 12000));
 
@@ -1032,6 +1039,8 @@ async function monedasAlMarket(coins,wallet,intentos){
 
     var gases = await web3.eth.getGasPrice(); 
 
+    var gasLimit = await contractMarket.methods.asignarCoinsTo(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+
     var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
     if (usuario.length >= 1) {
@@ -1044,7 +1053,7 @@ async function monedasAlMarket(coins,wallet,intentos){
 
     await contractMarket.methods
         .asignarCoinsTo(coins, wallet)
-        .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
         .then(result => {
 
             console.log("Monedas ENVIADAS en "+intentos+" intentos");
@@ -1120,7 +1129,7 @@ async function recompensaDiaria(wallet){
 
     var result = await contractMarket.methods
         .largoInventario(wallet)
-        .call({ from: cuenta.address });
+        .call({ from: web3.eth.accounts.wallet[0].address });
   
     var inventario = [];
 
@@ -1146,7 +1155,7 @@ async function recompensaDiaria(wallet){
 
             var item = await contractMarket.methods
             .inventario(wallet, index)
-            .call({ from: cuenta.address });
+            .call({ from: web3.eth.accounts.wallet[0].address });
 
             if(item.nombre.indexOf("t") === 0){
 
@@ -3087,7 +3096,7 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
 async function consultarCscExchange(wallet){
     var investor = await contractMarket.methods
         .investors(wallet.toLowerCase())
-        .call({ from: cuenta.address });
+        .call({ from: web3.eth.accounts.wallet[0].address });
                 
     var balance = new BigNumber(investor.balance);
     var gastado = new BigNumber(investor.gastado);
@@ -3144,7 +3153,7 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
 
     var saldo = await contractToken.methods
     .balanceOf(wallet.toLowerCase())
-    .call({ from: cuenta.address });
+    .call({ from: web3.eth.accounts.wallet[0].address });
 
     saldo = new BigNumber(saldo);
     saldo = saldo.shiftedBy(-18);
