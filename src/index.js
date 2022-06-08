@@ -976,7 +976,7 @@ app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
 
     if(web3.utils.isAddress(wallet)){
 
-        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{wallet:1,payAt:1});
 
         res.send((usuario.payAt + (TimeToMarket * 1000)).toString())
         
@@ -995,9 +995,6 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
-        console.log(usuario.balance);
-        console.log(usuario.balance-parseInt(req.body.coins))
-
         var result = await contractMarket.methods
         .largoInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
@@ -1005,7 +1002,6 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
         result = parseInt(result);
 
         if (result > 0 && usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
-        console.log("paso");
             
             await delay(Math.floor(Math.random() * 12000));
 
@@ -1741,7 +1737,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
     
-    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){s
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
