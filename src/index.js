@@ -847,13 +847,15 @@ app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
+    var usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance:1});
+
     var result = await contractMarket.methods
         .largoInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
         result = parseInt(result);
 
-    if(result > 0 && req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
+    if(result > 0 && req.body.token == TOKEN  && web3.utils.isAddress(wallet) && usuario.balance >= 0){
 
         await delay(Math.floor(Math.random() * 12000));
 
@@ -993,7 +995,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         coins = new BigNumber(req.body.coins).multipliedBy(10**18);
 
-        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{password:1,username:1,email:1,balance:1,payAt:1});
 
         var result = await contractMarket.methods
         .largoInventario(wallet)
@@ -1003,6 +1005,10 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         if (result > 0 && usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
             
+            user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                {$set:{balance:usuario.balance-parseInt(req.body.coins)}}
+            ])
+
             await delay(Math.floor(Math.random() * 12000));
 
             if(await monedasAlMarket(coins, wallet,1)){
@@ -1026,7 +1032,6 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 });
 
 async function monedasAlMarket(coins,wallet,intentos){
-
 
     await delay(Math.floor(Math.random() * 12000));
 
@@ -1060,7 +1065,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                     delete datos._id;
                     if(datos.active ){
                         datos.payAt = Date.now();
-                        datos.balance = datos.balance-coins.dividedBy(10**18).toNumber();
+                        //datos.balance = datos.balance-coins.dividedBy(10**18).toNumber();
                         datos.retirado = coins.dividedBy(10**18).toNumber()+datos.retirado;
                         datos.retiro.push({
                             amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
