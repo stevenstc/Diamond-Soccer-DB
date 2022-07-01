@@ -54,8 +54,6 @@ const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
 
 const testNet = false; //quita todos los equipos y formaciones comprados deja solo los equpos testnet
 
-const COMISION = process.env.APP_COMISION || 60000;
-
 const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
@@ -1741,7 +1739,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
     
-    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){s
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
@@ -1773,7 +1771,11 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                     if(req.body.ban === "true"){
                         datos.active = false;
                     }else{
-                        datos.active = false;
+                        if(req.body.ban === "false"){
+                            datos.active = true;
+                        }else{
+                            datos.active = false;
+                        }
                     }
                     
                 }
