@@ -1771,11 +1771,9 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                     if(req.body.ban === "true"){
                         datos.active = false;
                     }else{
-                        if(req.body.ban === "false"){
-                            datos.active = true;
-                        }else{
-                            datos.active = false;
-                        }
+                       
+                        datos.active = false;
+                        
                     }
                     
                 }
