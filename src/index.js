@@ -9,7 +9,8 @@ var moment = require('moment');
 const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
 
-const abiMarket = require("./abiMarket.js");
+const abiExchage = require("./abiExchange.js");
+const abiInventario = require("./abiInventario.js");
 const abiToken = require("./abitoken.js");
 
 //console.log(("HolA Que Haze").toUpperCase())
@@ -57,14 +58,16 @@ const testNet = false; //quita todos los equipos y formaciones comprados deja so
 const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
-const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
+const addressInventario = process.env.APP_CONTRACT_INVENTARIO || "0x16Da4914542574F953b31688f20f1544d4E89537";
+const addressExchnge = process.env.APP_CONTRACT_EXCHANGE || "0x907c4eADcd829Eff4084E6615bf6651938DE56C6";
 const addressContractToken = process.env.APP_CONTRACTTOKEN || "0xF0fB4a5ACf1B1126A991ee189408b112028D7A63";
 
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
 let web3 = new Web3(RED);
 
-const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
+const contractExchange = new web3.eth.Contract(abiExchage,addressExchnge);
+const contractInventario = new web3.eth.Contract(abiInventario,addressInventario);
 const contractToken = new web3.eth.Contract(abiToken,addressContractToken);
 
 web3.eth.accounts.wallet.add(PEKEY);
@@ -389,132 +392,6 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
         res.send("false")
     }
 
-    
-});
-
-app.get('/api/v1/user/teams/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    var result = await contractMarket.methods
-        .largoInventario(wallet)
-        .call({ from: web3.eth.accounts.wallet[0].address })
-        .catch(err => {console.log(err); return 0})
-
-    console.log(result);
-  
-    var inventario = [];
-
-    var cantidad = 43;
-
-    for (let index = 0; index < cantidad; index++) {
-        inventario[index] = 0;
-    }
-        
-    if (!testNet) {
-        for (let index = 0; index < result; index++) {
-
-            var item = await contractMarket.methods
-            .inventario(wallet, index)
-            .call({ from: web3.eth.accounts.wallet[0].address })
-            .catch(err => {console.log(err); return {nombre: "ninguno"}})
-
-    
-            if(item.nombre.indexOf("t") === 0){
-    
-                inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
-    
-            }
-    
-        }
-
-    }
-
-    if (quitarLegandarios === "true") { // quitar legendarios
-        for (let index = 0; index < 3; index++) {
-
-            inventario[index] = 0;
-
-        }
-
-    }
-
-    if (quitarEpicos === "true") { // quitar epicos
-
-        for (let index = 3; index < 10; index++) {
-
-            inventario[index] = 0;
-
-        }
-        
-    }
-
-    if (quitarComunes === "true") { // quitar Comunes
-
-        for (let index = 10; index < cantidad; index++) {
-
-            inventario[index] = 0;
-
-        }
-        
-    }
-
-    for (let t = 0; t < testers.length; t++) {
-            
-        if(testers[t].toLowerCase() == wallet){
-            inventario[cantidad] = 1;
-        }
-    }
-
-    for (let t = 0; t < superUser.length; t++) {
-        if(superUser[t].toLowerCase() == wallet){
-            for (let index = 0; index < cantidad; index++) {
-                inventario[index] = 1;
-            }
-        }
-        
-    }
-
-    //console.log(inventario);
-
-    res.send(inventario.toString());
-});
-
-app.get('/api/v1/formations/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    var result = await contractMarket.methods
-        .largoInventario(wallet)
-        .call({ from: web3.eth.accounts.wallet[0].address })
-        .catch(err => {console.log(err); return 0})
-  
-    var inventario = [];
-
-    for (let index = 0; index < 4; index++) {
-        inventario[index] = 0;
-    }
-
-    if (!testNet) {
-  
-        for (let index = 0; index < result; index++) {
-
-            var item = await contractMarket.methods
-                .inventario(wallet, index)
-                .call({ from: web3.eth.accounts.wallet[0].address })
-                .catch(err => {console.log(err); return 0})
-
-
-            if(item.nombre.indexOf("f") === 0){
-
-                inventario[parseInt(item.nombre.slice(item.nombre.indexOf("f")+1,item.nombre.indexOf("-")))-1] =  1;
-
-            }
-
-        }
-    }
-
-    res.send("1,"+inventario.toString());
 });
 
 app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
@@ -533,7 +410,6 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         if((superUser[index]).toLowerCase() === wallet){
             isSuper = 1;
         }
-        
     }
 
     for (let index = 0; index < 5; index++) {
@@ -545,74 +421,60 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
     }
         
     if (isSuper === 0) {
-        var largoInventario = await contractMarket.methods
-        .largoInventario(wallet)
+
+        var verInventario = await this.props.wallet.contractInventario.methods
+        .verInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
+
+        var nombres_items = await this.props.wallet.contractInventario.methods
+        .verItemsMarket()
+        .call({ from: web3.eth.accounts.wallet[0].address })
+        .catch(err => {console.log(err); return 0})
+
   
-        for (let index = 0; index < largoInventario; index++) {
+        for (let index = 0; index < verInventario.length; index++) {
 
-            var item = await contractMarket.methods
-                .inventario(wallet, index)
-                .call({ from: web3.eth.accounts.wallet[0].address })
-                .catch(() => {return {nombre: "ninguno"}})
+            var item = nombres_items[0][verInventario[index]];
 
-
-            if(item.nombre.indexOf("f") === 0){
-
-                formaciones[parseInt(item.nombre.slice(item.nombre.indexOf("f")+1,item.nombre.indexOf("-")))-1] =  1;
-
+            if(item.indexOf("f") === 0){
+                formaciones[parseInt(item.slice(item.indexOf("f")+1,item.indexOf("-")))-1] =  1;
             }
     
-            if(item.nombre.indexOf("t") === 0){
-    
-                inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
-    
+            if(item.indexOf("t") === 0){
+                inventario[parseInt(item.slice(item.indexOf("t")+1,item.indexOf("-")))-1] =  1;
             }
     
         }
 
         if (quitarLegandarios === "true") { // quitar legendarios
             for (let index = 0; index < 3; index++) {
-
                 inventario[index] = 0;
-
             }
-
         }
 
         if (quitarEpicos === "true") { // quitar epicos
-
             for (let index = 3; index < 10; index++) {
-
                 inventario[index] = 0;
-
             }
-            
         }
 
         if (quitarComunes === "true") { // quitar Comunes
-
             for (let index = 10; index < cantidad; index++) {
-
                 inventario[index] = 0;
-
             }
             
         }
     }
 
     // añadir equipo betatester
-
     for (let t = 0; t < testers.length; t++) {
-            
         if(testers[t].toLowerCase() == wallet){
             inventario[inventario.length-1] = 1;
         }
     }
 
     inventario = [...inventario,1,...formaciones]
-
     //console.log(inventario)
 
     res.send(inventario.toString());
@@ -847,7 +709,7 @@ app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
     var usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance:1});
 
-    var result = await contractMarket.methods
+    var result = await contractInventario.methods
         .largoInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
@@ -878,7 +740,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     await delay(Math.floor(Math.random() * 12000));
 
-    var usuario = await contractMarket.methods
+    var usuario = await contractExchange.methods
     .investors(wallet)
     .call({ from: web3.eth.accounts.wallet[0].address});
 
@@ -890,10 +752,10 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     var paso = true;
 
-    var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+    var gasLimit = await contractExchange.methods.gastarCoinsfrom(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
 
     if(balance - coins.shiftedBy(-18).toNumber() >= 0 ){
-        await contractMarket.methods
+        await contractExchange.methods
             .gastarCoinsfrom(coins, wallet)
             .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
             .then(result => {
@@ -995,7 +857,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         var usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{password:1,username:1,email:1,balance:1,payAt:1});
 
-        var result = await contractMarket.methods
+        var result = await contractInventario.methods
         .largoInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
@@ -1037,7 +899,7 @@ async function monedasAlMarket(coins,wallet,intentos){
 
     var gases = await web3.eth.getGasPrice(); 
 
-    var gasLimit = await contractMarket.methods.asignarCoinsTo(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+    var gasLimit = await contractExchange.methods.asignarCoinsTo(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
 
     var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
@@ -1049,7 +911,7 @@ async function monedasAlMarket(coins,wallet,intentos){
         return false;
     }
 
-    await contractMarket.methods
+    await contractExchange.methods
         .asignarCoinsTo(coins, wallet)
         .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
         .then(result => {
@@ -1124,16 +986,12 @@ async function monedasAlMarket(coins,wallet,intentos){
 }
 
 async function recompensaDiaria(wallet){
-
-    var result = await contractMarket.methods
-        .largoInventario(wallet)
-        .call({ from: web3.eth.accounts.wallet[0].address });
   
     var inventario = [];
 
     var cantidad = 43;
 
-    var coins = 96; // CSC coins
+    var coins = 0; // CSC coins comunes todos
     var bono = false;
 
     for (let index = 0; index < cantidad; index++) {
@@ -1148,16 +1006,25 @@ async function recompensaDiaria(wallet){
     }
 
     if (true) { // solo testers // Habilitar reconocimiento de equipos all
+
+        var verInventario = await this.props.wallet.contractInventario.methods
+        .verInventario(wallet)
+        .call({ from: web3.eth.accounts.wallet[0].address })
+        .catch(err => {console.log(err); return 0})
+
+        var nombres_items = await this.props.wallet.contractInventario.methods
+        .verItemsMarket()
+        .call({ from: web3.eth.accounts.wallet[0].address })
+        .catch(err => {console.log(err); return 0})
+
             
-        for (let index = 0; index < result; index++) {
+        for (let index = 0; index < verInventario.length; index++) {
 
-            var item = await contractMarket.methods
-            .inventario(wallet, index)
-            .call({ from: web3.eth.accounts.wallet[0].address });
+            var item = nombres_items[0][verInventario[index]];
 
-            if(item.nombre.indexOf("t") === 0){
+            if(item.indexOf("t") === 0){
 
-                inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
+                inventario[parseInt(item.slice(item.indexOf("t")+1,item.indexOf("-")))-1] =  1;
 
             }
 
@@ -1171,7 +1038,7 @@ async function recompensaDiaria(wallet){
 
             if(inventario[index]){
 
-                coins += 40;
+                coins += 200;
                 bono = true;
                 break;
 
@@ -1189,7 +1056,7 @@ async function recompensaDiaria(wallet){
 
                 if(inventario[index]){
 
-                    coins += 20;
+                    coins += 125;
                     break;
 
                 }
@@ -3094,16 +2961,11 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
 });
 
 async function consultarCscExchange(wallet){
-    var investor = await contractMarket.methods
-        .investors(wallet.toLowerCase())
-        .call({ from: web3.eth.accounts.wallet[0].address });
+    var investor = await contractExchange.methods
+    .investors(wallet.toLowerCase())
+    .call({ from: web3.eth.accounts.wallet[0].address });
                 
-    var balance = new BigNumber(investor.balance);
-    var gastado = new BigNumber(investor.gastado);
-    balance = balance.minus(gastado);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(6);
-    balance = balance.toString();
+    var balance = new BigNumber(investor.balance).shiftedBy(-18).toString(10);
     return balance ; 
 }
 
@@ -3155,10 +3017,7 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
     .balanceOf(wallet.toLowerCase())
     .call({ from: web3.eth.accounts.wallet[0].address });
 
-    saldo = new BigNumber(saldo);
-    saldo = saldo.shiftedBy(-18);
-    saldo = saldo.decimalPlaces(6);
-    saldo = saldo.toString();
+    saldo = new BigNumber(saldo).shiftedBy(-18).toString(10);
     
     res.send(saldo+"");
     
