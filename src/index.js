@@ -422,12 +422,12 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         
     if (isSuper === 0) {
 
-        var verInventario = await this.props.wallet.contractInventario.methods
+        var verInventario = await contractInventario.methods
         .verInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
 
-        var nombres_items = await this.props.wallet.contractInventario.methods
+        var nombres_items = await contractInventario.methods
         .verItemsMarket()
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
@@ -1007,12 +1007,12 @@ async function recompensaDiaria(wallet){
 
     if (true) { // solo testers // Habilitar reconocimiento de equipos all
 
-        var verInventario = await this.props.wallet.contractInventario.methods
+        var verInventario = await contractInventario.methods
         .verInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
 
-        var nombres_items = await this.props.wallet.contractInventario.methods
+        var nombres_items = await contractInventario.methods
         .verItemsMarket()
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
