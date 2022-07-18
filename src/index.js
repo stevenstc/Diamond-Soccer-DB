@@ -794,13 +794,13 @@ async function monedasAlJuego(coins,wallet,intentos){
                             payAt: Date.now(),
                             checkpoint: 0,
                             reclamado: false,
-                            balance: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
-                            ingresado: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                            balance: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
+                            ingresado: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
                             retirado: 0,
-                            deposit: [{amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                            deposit: [{amount: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
                                 date: Date.now(),
                                 finalized: true,
-                                txhash: "FROM MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                                txhash: "FROM MARKET: "+coins.shiftedBy(-18).decimalPlaces(0).toString()+" # "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                             }],
                             retiro: [],
                             txs: [explorador+result.transactionHash]
@@ -821,7 +821,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
             .catch(async() => {
                 intentos++;
-                console.log(coins.dividedBy(10**18)+" ->  "+wallet+" : "+intentos)
+                console.log(coins.shiftedBy(-18)+" ->  "+wallet+" : "+intentos)
                 await delay(Math.floor(Math.random() * 12000));
                 paso = await monedasAlJuego(coins,wallet,intentos);
             })
@@ -865,9 +865,9 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         if (result > 0 && usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
             
-            await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                {$set:{balance:usuario.balance-parseInt(req.body.coins)}}
-            ])
+            //await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+            //    {$set:{balance:usuario.balance-parseInt(req.body.coins)}}
+            //])
 
             await delay(Math.floor(Math.random() * 12000));
 
@@ -925,20 +925,20 @@ async function monedasAlMarket(coins,wallet,intentos){
                     delete datos._id;
                     if(datos.active ){
                         datos.payAt = Date.now();
-                        //datos.balance = datos.balance-coins.dividedBy(10**18).toNumber();
-                        datos.retirado = coins.dividedBy(10**18).toNumber()+datos.retirado;
+                        datos.balance = datos.balance-coins.shiftedBy(-18).toNumber();
+                        datos.retirado = coins.shiftedBy(-18).toNumber()+datos.retirado;
                         datos.retiro.push({
-                            amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                            amount: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
                             date: Date.now(),
                             finalized: true,
-                            txhash: "TO MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                            txhash: "TO MARKET: "+coins.shiftedBy(-18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                         })
                         datos.txs.push(explorador+result.transactionHash)
                         
                         user.updateOne({ wallet: uc.upperCase(wallet) }, [
                             {$set:datos}
                         ])
-                        .then(console.log("Coins SEND TO MARKET: "+coins.dividedBy(10**18)+" # "+wallet))
+                        .then(console.log("Coins SEND TO MARKET: "+coins.shiftedBy(-18)+" # "+wallet))
                         .catch(console.error())
                     
                     }
@@ -976,7 +976,7 @@ async function monedasAlMarket(coins,wallet,intentos){
         .catch(async err => {
             console.log(err);
             intentos++;
-            console.log(coins.dividedBy(10**18)+" ->  "+wallet+" : "+intentos)
+            console.log(coins.shiftedBy(-18)+" ->  "+wallet+" : "+intentos)
             await delay(Math.floor(Math.random() * 12000));
             paso = await monedasAlMarket(coins,wallet,intentos);
         })
