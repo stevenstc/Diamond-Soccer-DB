@@ -713,9 +713,10 @@ app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
         .largoInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
         .catch(err => {console.log(err); return 0})
-        result = parseInt(result);
 
-    if(result > 0 && req.body.token == TOKEN  && web3.utils.isAddress(wallet) && usuario.balance >= 0){
+    result = parseInt(result);
+
+    if(result > 0 && req.body.token == TOKEN  && web3.utils.isAddress(wallet) && usuario.balance > 0){
 
         await delay(Math.floor(Math.random() * 12000));
 
@@ -744,9 +745,7 @@ async function monedasAlJuego(coins,wallet,intentos){
     .investors(wallet)
     .call({ from: web3.eth.accounts.wallet[0].address});
 
-    balance = new BigNumber(usuario.balance);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(0).toNumber();
+    balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
 
     var gases = await web3.eth.getGasPrice(); 
 
@@ -754,6 +753,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     var gasLimit = await contractExchange.methods.gastarCoinsfrom(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
 
+    console.log("entro por aca")
     if(balance - coins.shiftedBy(-18).toNumber() >= 0 ){
         await contractExchange.methods
             .gastarCoinsfrom(coins, wallet)
@@ -768,17 +768,17 @@ async function monedasAlJuego(coins,wallet,intentos){
                         var datos = usuario[0];
                         delete datos._id;
                         if(datos.active){
-                            datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(0).toNumber();
-                            datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(0).toNumber();
+                            datos.balance = coins.shiftedBy(-18).plus(datos.balance).decimalPlaces(0).toNumber();
+                            datos.ingresado = coins.shiftedBy(-18).plus(datos.ingresado).decimalPlaces(0).toNumber();
                             datos.deposit.push({
-                                amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                                amount: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
                                 date: Date.now(),
                                 finalized: true,
-                                txhash: "FROM MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                                txhash: "FROM MARKET: "+coins.shiftedBy(-18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                             })
                             datos.txs.push(explorador+result.transactionHash)
                             update = user.updateOne({ wallet: uc.upperCase(wallet) }, {$set: datos})
-                            .then(console.log("Coins SEND TO GAME: "+coins.dividedBy(10**18)+" # "+wallet))
+                            .then(console.log("Coins SEND TO GAME: "+coins.shiftedBy(-18)+" # "+wallet))
                             .catch(console.error())
                             
                         }
@@ -865,7 +865,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         if (result > 0 && usuario.password !== "" && usuario.email !== "" && usuario.username !== "" && usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0 && Date.now() > (usuario.payAt + (TimeToMarket * 1000)) ) {
             
-            user.updateOne({ wallet: uc.upperCase(wallet) }, [
+            await user.updateOne({ wallet: uc.upperCase(wallet) }, [
                 {$set:{balance:usuario.balance-parseInt(req.body.coins)}}
             ])
 
@@ -1267,38 +1267,24 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 async function resetChecpoint(wallet){
     var usuario = await user.find({ wallet: uc.upperCase(wallet) },{});
     usuario = usuario[0];
-    var datos = usuario;
-    delete datos._id;
 
     if(Date.now() >= usuario.checkpoint){
 
         // resetear daily mision
-        
-        datos.checkpoint =  Date.now()  + DaylyTime*1000;
-        //console.log("new time Dayly: "+datos.checkpoint)
-        datos.reclamado = false;
+        await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+            {$set: {checkpoint: Date.now()  + DaylyTime*1000 , reclamado: false}}
+        ]);
 
     }
-    
-    //datos.wcscExchange = await consultarCscExchange(wallet);
-
-    await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-        {$set: datos}
-    ]);
 
 }
 
 app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
-    var MisionDiaria = false;
+    var MisionDiaria = true;
 
-    var aplicacion = await appdatos.find({});
-    
     if(aplicacion.length >= 1 && web3.utils.isAddress(wallet)){
-
-        aplicacion = aplicacion[aplicacion.length-1]
-        MisionDiaria = aplicacion.misiondiaria;
 
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
@@ -1314,36 +1300,32 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                 if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
 
                     //console.log("si cumple mision diaria");
-    
                     res.send("true");
                 }else{
-
+                    resetChecpoint(wallet);
                     res.send("false");
                     
-
                 }
 
-                      
-    
             }else{
-
-                //console.log("f2");
-    
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
+                resetChecpoint(wallet);
                 res.send("false");
     
             }
 
-            resetChecpoint(wallet);
+            
         
 
         }else{
             //console.log("f3");
+            resetChecpoint(wallet);
             res.send("false")
         }
 
     }else{
         //console.log("f4");
+        resetChecpoint(wallet);
         res.send("false");
     }
 
@@ -1365,7 +1347,6 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
 
             if (usuario.length >= 1 && player.length >= 1) {
                 var datos = usuario[0];
-                var dataPlay = player[0];
 
                 if(datos.active ){
 
@@ -1373,26 +1354,18 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                     datos.reclamado = true;
 
                     datos.balance = datos.balance + coins;
-                    datos.ingresado = datos.ingresado + coins;
-                    datos.deposit.push({amount: coins,
-                        date: Date.now(),
-                        finalized: true,
-                        txhash: "Daily mision coins: "+coins+" # "+wallet
-                    })
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
-                    dataPlay.DuelsPlays = "0";
-                    dataPlay.FriendLyWins = "0";
-                    dataPlay.TournamentsPlays = "0";
-
-                    aplicacion.entregado += coins;
-
-                    await appdatos.updateOne({ version: aplicacion.version }, aplicacion)
-                    var nuevoUsuario = new user(datos)
-                    await nuevoUsuario.save();
-                    //await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
-                    await playerData.updateOne({ wallet: uc.upperCase(wallet) }, dataPlay);
+                    await appdatos.updateOne({ version: aplicacion.version }, [
+                        {$set: {$sum:["$entregado",coins]}}
+                    ])
+                    await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set: {reclamado: datos.reclamado , balance: datos.balance}}
+                    ]);
+                    await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set: {DuelsPlays: "0", FriendLyWins: "0", TournamentsPlays:"0"}}
+                    ]);
 
                     //console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
                     res.send(coins+"");
