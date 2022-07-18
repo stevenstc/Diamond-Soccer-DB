@@ -1294,7 +1294,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             data = data[0];
             usuario = usuario[0];
     
-            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 4 && parseInt(data.FriendLyWins) >= 10){
+            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 5 && parseInt(data.FriendLyWins) >= 3){
               
 
                 if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
