@@ -1254,8 +1254,7 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 });
 
 async function resetChecpoint(wallet){
-    var usuario = await user.find({ wallet: uc.upperCase(wallet) },{});
-    usuario = usuario[0];
+    var usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{});
 
     if(Date.now() >= usuario.checkpoint){
 
@@ -1285,7 +1284,6 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     
             if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 5 && parseInt(data.FriendLyWins) >= 3){
               
-
                 if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
 
                     //console.log("si cumple mision diaria");
@@ -1295,16 +1293,11 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                     
                 }
 
-
-
             }else{
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                 res.send("false");
     
             }
-
-            
-        
 
         }else{
             //console.log("f3");
