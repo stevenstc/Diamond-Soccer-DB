@@ -1272,7 +1272,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
     var MisionDiaria = true;
 
-    if(aplicacion.length >= 1 && web3.utils.isAddress(wallet)){
+    if(web3.utils.isAddress(wallet)){
 
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
@@ -1292,6 +1292,8 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                     res.send("false");
                     
                 }
+
+                resetChecpoint(wallet);
 
             }else{
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
