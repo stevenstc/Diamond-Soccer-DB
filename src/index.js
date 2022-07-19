@@ -1286,7 +1286,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
               
                 if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
 
-                    //console.log("si cumple mision diaria");
+                    console.log("si cumple mision diaria");
                     res.send("true");
                 }else{
                     res.send("false");
@@ -1340,7 +1340,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
                     await appdatos.updateOne({ version: aplicacion.version }, [
-                        {$set: {$sum:["$entregado",coins]}}
+                        {$set: {entregado:{$sum:["$entregado",coins]}}}
                     ])
                     await user.updateOne({ wallet: uc.upperCase(wallet) }, [
                         {$set: {reclamado: datos.reclamado , balance: datos.balance}}
@@ -1349,7 +1349,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                         {$set: {DuelsPlays: "0", FriendLyWins: "0", TournamentsPlays:"0"}}
                     ]);
 
-                    //console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
+                    console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
                     res.send(coins+"");
                 }else{
                     res.send("0");
@@ -1361,7 +1361,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
             }
 
         }else{
-            //console.log("no se envio mision diaria");
+            console.log("no se envio mision diaria");
             res.send("0");
 
         }
