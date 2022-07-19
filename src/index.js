@@ -928,7 +928,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                         datos.balance = datos.balance-coins.shiftedBy(-18).toNumber();
                         datos.retirado = coins.shiftedBy(-18).toNumber()+datos.retirado;
                         datos.retiro.push({
-                            amount: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
+                            amount: coins.shiftedBy(-18).toNumber(),
                             date: Date.now(),
                             finalized: true,
                             txhash: "TO MARKET: "+coins.shiftedBy(-18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
@@ -1005,7 +1005,7 @@ async function recompensaDiaria(wallet){
         
     }
 
-    if (true) { // solo testers // Habilitar reconocimiento de equipos all
+    if (true) { // Habilitar reconocimiento de equipos
 
         var verInventario = await contractInventario.methods
         .verInventario(wallet)
@@ -1034,33 +1034,22 @@ async function recompensaDiaria(wallet){
 
     if (true) { // habilitar bono legendarios
         for (let index = 0; index < 3; index++) {
-
-
             if(inventario[index]){
-
                 coins += 200;
                 bono = true;
                 break;
-
             }
 
         }
     }
 
     if (true) { // habilitar bono epico
-
         if(!bono){
-
             for (let index = 3; index < 10; index++) {
-
-
                 if(inventario[index]){
-
                     coins += 125;
                     break;
-
                 }
-
             }
         }
     }
@@ -1302,14 +1291,14 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                     //console.log("si cumple mision diaria");
                     res.send("true");
                 }else{
-                    resetChecpoint(wallet);
                     res.send("false");
                     
                 }
 
+
+
             }else{
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
-                resetChecpoint(wallet);
                 res.send("false");
     
             }
@@ -1319,13 +1308,11 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
         }else{
             //console.log("f3");
-            resetChecpoint(wallet);
             res.send("false")
         }
 
     }else{
         //console.log("f4");
-        resetChecpoint(wallet);
         res.send("false");
     }
 
