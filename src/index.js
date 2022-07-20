@@ -1237,7 +1237,6 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 
                 if(usuario.checkpoint === 0){
                     usuario.checkpoint=Date.now();
-
                 }
 
                 if(usuario.reclamado){
