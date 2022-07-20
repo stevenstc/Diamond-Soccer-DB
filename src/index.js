@@ -1281,22 +1281,14 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             data = data[0];
             usuario = usuario[0];
     
-            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 3){
-              
-                if( ( usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
+            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 3 && !usuario.reclamado ){
 
-                    console.log("si cumple mision diaria");
-                    if(await asignarMisionDiaria(wallet)){
-                        res.send("true");
-                    }else{
-                        res.send("false");
-                    }
-                    
+                if(await asignarMisionDiaria(wallet)){
+                    res.send("true");
                 }else{
                     res.send("false");
-                    
                 }
-
+            
             }else{
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                 res.send("false");
