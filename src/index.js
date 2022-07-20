@@ -1226,7 +1226,7 @@ app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
 
     if(web3.utils.isAddress(wallet)){
 
-            var usuario = await user.find({ wallet: uc.upperCase(wallet) });
+            var usuario = await user.find({ wallet: uc.upperCase(wallet) },{checkpoint: 1, reclamado:1});
 
             var cuando = "Earlier than";
 
@@ -1281,18 +1281,21 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             data = data[0];
             usuario = usuario[0];
     
-            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 5 && parseInt(data.FriendLyWins) >= 3){
+            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 3){
               
-                if( (Date.now() < usuario.checkpoint || usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
+                if( ( usuario.checkpoint === 0 || Date.now() >= usuario.checkpoint) && !usuario.reclamado ){
 
                     console.log("si cumple mision diaria");
-                    res.send("true");
+                    if(await asignarMisionDiaria(wallet)){
+                        res.send("true");
+                    }else{
+                        res.send("false");
+                    }
+                    
                 }else{
                     res.send("false");
                     
                 }
-
-                resetChecpoint(wallet);
 
             }else{
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
@@ -1312,7 +1315,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
 });
 
-app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
+async function asignarMisionDiaria(wallet){
 
     var wallet =  req.params.wallet.toLowerCase();
 
@@ -1320,8 +1323,6 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
     aplicacion = aplicacion[aplicacion.length-1]
     
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
-
-        if(req.body.control == "true"){
 
             var usuario = await user.find({ wallet: uc.upperCase(wallet) });
             var player = await playerData.find({ wallet: uc.upperCase(wallet) });
@@ -1332,9 +1333,6 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                 if(datos.active ){
 
                     var coins = await recompensaDiaria(wallet);
-                    datos.reclamado = true;
-
-                    datos.balance = datos.balance + coins;
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
@@ -1342,7 +1340,57 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                         {$set: {entregado:{$sum:["$entregado",coins]}}}
                     ])
                     await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {reclamado: datos.reclamado , balance: datos.balance}}
+                        {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
+                    ]);
+                    await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set: {DuelsPlays: "0", FriendLyWins: "0", TournamentsPlays:"0"}}
+                    ]);
+
+                    console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
+                    return coins;
+                }else{
+                    return 0;
+                }
+
+            
+            }else{
+                return 0;
+            }
+
+       
+
+    }else{
+        return 0;
+    }
+
+}
+
+app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    var aplicacion = await appdatos.find({});
+    aplicacion = aplicacion[aplicacion.length-1]
+    
+    if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
+
+            var usuario = await user.find({ wallet: uc.upperCase(wallet) });
+            var player = await playerData.find({ wallet: uc.upperCase(wallet) });
+
+            if (usuario.length >= 1 && player.length >= 1) {
+                var datos = usuario[0];
+
+                if(datos.active ){
+
+                    var coins = await recompensaDiaria(wallet);
+
+                    //datos.wcscExchange = await consultarCscExchange(wallet);
+
+                    await appdatos.updateOne({ version: aplicacion.version }, [
+                        {$set: {entregado:{$sum:["$entregado",coins]}}}
+                    ])
+                    await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
                     ]);
                     await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
                         {$set: {DuelsPlays: "0", FriendLyWins: "0", TournamentsPlays:"0"}}
@@ -1359,11 +1407,7 @@ app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
                 res.send("0");
             }
 
-        }else{
-            console.log("no se envio mision diaria");
-            res.send("0");
-
-        }
+       
 
     }else{
         res.send("0");
