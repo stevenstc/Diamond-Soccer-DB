@@ -1199,12 +1199,13 @@ app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
     if(web3.utils.isAddress(wallet)){
 
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
-        var user = await user.findOne({wallet: uc.upperCase(wallet)})
+        var usuario = await user.find({wallet: uc.upperCase(wallet)})
 
         if (data.length >= 1) {
             data = data[0];
+            usuario = usuario[0];
         
-            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins+","+user.reclamado);
+            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins+","+usuario.reclamado);
 
         }else{
 
