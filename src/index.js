@@ -1314,7 +1314,7 @@ async function asignarMisionDiaria(wallet){
     var aplicacion = await appdatos.find({});
     aplicacion = aplicacion[aplicacion.length-1]
     
-    if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
+    if(web3.utils.isAddress(wallet)){
 
             var usuario = await user.find({ wallet: uc.upperCase(wallet) });
             var player = await playerData.find({ wallet: uc.upperCase(wallet) });
