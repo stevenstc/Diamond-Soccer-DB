@@ -1309,7 +1309,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
 async function asignarMisionDiaria(wallet){
 
-    var wallet =  req.params.wallet.toLowerCase();
+    wallet =  wallet.toLowerCase();
 
     var aplicacion = await appdatos.find({});
     aplicacion = aplicacion[aplicacion.length-1]
