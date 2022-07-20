@@ -1199,7 +1199,7 @@ app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
     if(web3.utils.isAddress(wallet)){
 
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
-        var user = await user.findOne.find({wallet: uc.upperCase(wallet)})
+        var user = await user.findOne({wallet: uc.upperCase(wallet)})
 
         if (data.length >= 1) {
             data = data[0];
