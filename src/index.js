@@ -1203,21 +1203,18 @@ app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
         if (data.length >= 1) {
             data = data[0];
         
-            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins);
+            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins+","+data.reclamado);
 
         }else{
 
-            res.send("0,0,0");
+            res.send("0,0,0,false");
                 
         }
 
     }else{
-        res.send("0,0,0");
+        res.send("0,0,0,false");
     }
 
-    
-
-    
 });
 
 app.get('/api/v1/misionesdiarias/tiempo/:wallet',async(req,res) => {
@@ -1356,56 +1353,6 @@ async function asignarMisionDiaria(wallet){
     }
 
 }
-
-app.post('/api/v1/misionesdiarias/asignar/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    var aplicacion = await appdatos.find({});
-    aplicacion = aplicacion[aplicacion.length-1]
-    
-    if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
-
-            var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-            var player = await playerData.find({ wallet: uc.upperCase(wallet) });
-
-            if (usuario.length >= 1 && player.length >= 1) {
-                var datos = usuario[0];
-
-                if(datos.active ){
-
-                    var coins = await recompensaDiaria(wallet);
-
-                    //datos.wcscExchange = await consultarCscExchange(wallet);
-
-                    await appdatos.updateOne({ version: aplicacion.version }, [
-                        {$set: {entregado:{$sum:["$entregado",coins]}}}
-                    ])
-                    await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
-                    ]);
-                    await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {DuelsPlays: "0", FriendLyWins: "0", TournamentsPlays:"0"}}
-                    ]);
-
-                    console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
-                    res.send(coins+"");
-                }else{
-                    res.send("0");
-                }
-
-            
-            }else{
-                res.send("0");
-            }
-
-       
-
-    }else{
-        res.send("0");
-    }
-
-});
 
 app.get('/api/v1/user/exist/:wallet',async(req,res) => {
 
