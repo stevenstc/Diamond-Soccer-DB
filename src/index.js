@@ -43,7 +43,7 @@ const TOKEN2 = process.env.APP_TOKEN2;
 const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
 
-const DaylyTime = process.env.APP_DAYTIME || 86400;
+const DaylyTime = process.env.APP_DAYTIME || 43200; //undia 86400
 
 const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
@@ -1261,6 +1261,11 @@ async function resetChecpoint(wallet){
         // resetear daily mision
         await user.updateOne({ wallet: uc.upperCase(wallet) }, [
             {$set: {checkpoint: Date.now()  + DaylyTime*1000 , reclamado: false}}
+        ]);
+
+        
+        await playerData.updateOne({wallet: uc.upperCase(wallet)},[
+            {$set: {TournamentsPlays: "0", DuelsPlays: "0", FriendLyWins: "0"}}
         ]);
 
     }
