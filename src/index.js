@@ -555,14 +555,10 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
                 //datos.wcscExchange = await consultarCscExchange(wallet);
 
-                //var nuevoUsuario = new user(datos)
-                //await nuevoUsuario.save();
-
                 update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
                     {$set:datos}
                 ])
 
-                //console.log(update)
                 console.log("Win coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                 res.send("true");
             }else{
@@ -1204,17 +1200,23 @@ app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
         if (data.length >= 1) {
             data = data[0];
             usuario = usuario[0];
+
+            var no_time = false;
+
+            if(Date.now() < usuario.checkpoint && usuario.reclamado){
+                no_time = true;
+            }
         
-            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins+","+usuario.reclamado);
+            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins+","+usuario.reclamado+","+no_time);
 
         }else{
 
-            res.send("0,0,0,false");
+            res.send("0,0,0,false,false");
                 
         }
 
     }else{
-        res.send("0,0,0,false");
+        res.send("0,0,0,false,false");
     }
 
 });
@@ -1574,14 +1576,16 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 }
 
                 if (req.body.ban) {
-                    if(req.body.ban === "true"){
-                        datos.active = false;
-                    }else{
-                       
-                        datos.active = false;
-                        
+
+                    var razonban = "";
+                    if (req.body.ban !== "true") {
+                        razonban = req.body.ban;
                     }
-                    
+
+                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set: {active: false , razonban: razonban}}
+                    ]);
+                
                 }
 
                 if (req.body.email || req.body.username || req.body.password || req.body.pais || req.body.ban || req.body.imagen){
