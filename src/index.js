@@ -987,7 +987,7 @@ async function recompensaDiaria(wallet){
 
     var cantidad = 43;
 
-    var coins = 0; // CSC coins comunes todos
+    var coins = 10; // CSC coins comunes todos
     var bono = false;
 
     for (let index = 0; index < cantidad; index++) {
@@ -1043,7 +1043,7 @@ async function recompensaDiaria(wallet){
         if(!bono){
             for (let index = 3; index < 10; index++) {
                 if(inventario[index]){
-                    coins += 125;
+                    coins += 130;
                     break;
                 }
             }
