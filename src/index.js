@@ -1175,13 +1175,11 @@ app.get('/api/v1/ben10',async(req,res) => {
                 {$set:{ganado: aplicacion.ganado}}
             ])
 
-
             res.send("true");
 
         }else{
             
             res.send(appstatus.ganado+","+appstatus.entregado);
-
 
         }
     }
@@ -1263,7 +1261,6 @@ async function resetChecpoint(wallet){
             {$set: {checkpoint: Date.now()  + DaylyTime*1000 , reclamado: false}}
         ]);
 
-        
         await playerData.updateOne({wallet: uc.upperCase(wallet)},[
             {$set: {TournamentsPlays: "0", DuelsPlays: "0", FriendLyWins: "0"}}
         ]);
@@ -1290,8 +1287,10 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 3 && !usuario.reclamado ){
 
                 if(await asignarMisionDiaria(wallet)){
+                    console.log("true mision diaria")
                     res.send("true");
                 }else{
+                    console.log("false mision diaria")
                     res.send("false");
                 }
             
@@ -1314,6 +1313,8 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 });
 
 async function asignarMisionDiaria(wallet){
+
+    console.log("entro asignar mision diaria")
 
     wallet =  wallet.toLowerCase();
 
