@@ -1587,8 +1587,10 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                         razonban = req.body.ban;
                     }
 
+                    datos.active = false;
+
                     update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {active: false , razonban: razonban}}
+                        {$set: {razonban: razonban}}
                     ]);
                 
                 }
