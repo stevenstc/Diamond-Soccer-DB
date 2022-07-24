@@ -1290,11 +1290,13 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                     console.log("true mision diaria")
                     res.send("true");
                 }else{
+                    await resetChecpoint(wallet);
                     console.log("false mision diaria")
                     res.send("false");
                 }
             
             }else{
+                await resetChecpoint(wallet);
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                 res.send("false");
     
