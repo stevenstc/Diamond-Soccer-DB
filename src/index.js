@@ -325,7 +325,6 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
         var sesionPlay = await userplayonline.find({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort([['identificador', 1]]);
 
-        console.log("sesion actualizar "+req.body)
         if(sesionPlay.length > 0 && req.body.ganador !== ""){
 
             sesionPlay = sesionPlay[sesionPlay.length-1];
