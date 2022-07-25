@@ -334,49 +334,14 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
         var sesionPlay = await userplayonline.find({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort([['identificador', 1]]);
 
         if(sesionPlay.length > 0){
-            //console.log(sesionPlay.length-1)
-            //console.log(sesionPlay[sesionPlay.length-1]);
 
             sesionPlay = sesionPlay[sesionPlay.length-1];
 
             if(!sesionPlay.finalizada){
 
-                sesionPlay.fin = Date.now();
-                sesionPlay.finalizada = true
-                sesionPlay.ganador = req.body.ganador;
-
-                if(req.body.soporte1 === ""){
-                    usuario1 = await user.findOne({ username: sesionPlay.u1 });
-                    usuario1 = await playerdatas.findOne({ wallet: usuario1.wallet });
-                    if(!usuario1.Soporte){
-                        sesionPlay.soporte1 = req.body.soporte1;
-                    }else{
-                        sesionPlay.soporte1 = usuario1.Soporte;
-                    }
-                    
-                }else{
-                    sesionPlay.soporte1 = req.body.soporte1;
-                }
-
-                if(req.body.soporte2 === ""){
-                    usuario2 = await user.findOne({ username: sesionPlay.u2 });
-                    usuario2 = await playerdatas.findOne({ wallet: usuario2.wallet });
-                    if(!usuario1.Soporte){
-                        sesionPlay.soporte2 = req.body.soporte2;
-
-                    }else{
-                        sesionPlay.soporte2 = usuario2.Soporte;
-
-                    }
-                }else{
-                    sesionPlay.soporte2 = req.body.soporte2;
-                }
-
-                
-                var userPlay = new userplayonline(sesionPlay);
-                await userPlay.save();
-
-                //await userplayonline.updateOne({ sesionID: req.body.sesionID }, datos);
+                await userplayonline.updateOne({ sesionID: req.body.sesionID }, [
+                    {$set: {fin: Date.now(), finalizada: true, ganador: req.body.ganador}}
+                ]);
 
                 await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
