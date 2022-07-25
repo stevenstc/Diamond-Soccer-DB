@@ -2893,24 +2893,15 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
         await user.findOne({ wallet: uc.upperCase(wallet) })
         .then(async(usuario)=>{
 
-            var datos = {};
-
-            if(Date.now() >= datos.checkpoint){
-
-                datos.checkpoint =  Date.now()  + DaylyTime*1000;
-                //console.log("new time Dayly: "+datos.checkpoint)
-                datos.reclamado = false;
-
-            }
+            resetChecpoint(wallet)
             
-            datos.wcscExchange = await consultarCscExchange(wallet);
+            var wcscExchange = await consultarCscExchange(wallet);
 
-
-            user.updateOne({_id: usuario._id}, [
-                {$set: datos}
+            await user.updateOne({_id: usuario._id}, [
+                {$set: {wcscExchange: wcscExchange}}
             ])
         
-            res.send(datos.wcscExchange+'');
+            res.send(wcscExchange+'');
 
         })
         .catch(async()=>{
@@ -2920,8 +2911,6 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
         res.send("0");
     }
 
-    
- 
  });
 
  app.get('/api/v1/consultar/csc/cuenta/:wallet', async(req, res, next) => {
@@ -3122,41 +3111,15 @@ app.post('/api/v1/ban/unban/:wallet',async(req,res) => {
                 datos.active = false;
             }
             
-            //datos.wcscExchange = await consultarCscExchange(wallet);
+            datos.wcscExchange = await consultarCscExchange(wallet);
 
-            var nuevoUsuario = new user(datos)
-            await nuevoUsuario.save();
-
-            //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
-            //console.log(" # "+uc.upperCase(wallet));
+            await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                {$set: {active: datos.active, wcscExchange: datos.wcscExchange}}
+            ]);
+            console.log("unban # "+uc.upperCase(wallet));
             res.send({activo: datos.active});
     
         }else{
-            console.log("usuario creado al hacer ban o quitar"+wallet)
-            var users = new user({
-                wallet: uc.upperCase(wallet),  
-                email: "",
-                password: "",
-                username: "",   
-                active: true,
-                payAt: Date.now(),
-                checkpoint: 0,
-                reclamado: false,
-                balance: 0,
-                ingresado: 0,
-                retirado: 0,
-                deposit: [],
-                retiro: [],
-                txs: [],
-                pais: "null",
-                imagen: imgDefault,
-                wcscExchange: 0
-            });
-    
-            users.save().then(()=>{
-                console.log("Usuario creado exitodamente");
-                
-            })
                 
             res.send("false");
             
