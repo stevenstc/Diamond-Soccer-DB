@@ -264,21 +264,15 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 
         var usuario1 = await user.findOne({ username: req.body.u1 });
         
-        if (!usuario1.Soporte || !usuario1.wallet) {
-            var soporte1 = "";
-        }else{
-            usuario1 = await playerdatas.findOne({ wallet: usuario1.wallet });
-            soporte1 = usuario1.Soporte;
+        if (!usuario1.wallet) {
+            var soporte1 = usuario1.wallet;
         }
         
         var usuario2 = await user.findOne({ username: req.body.u2 });
 
-        if (!usuario2.Soporte || !usuario2.wallet) {
-            var soporte2 = "";
-            
-        }else{
-            usuario2 = await playerdatas.findOne({ wallet: usuario2.wallet });
-            soporte2 = usuario2.Soporte;
+        if (!usuario2.wallet) {
+            var soporte2 = usuario2.wallet;
+        
         }
 
         var playOnline = new userplayonline({
@@ -306,12 +300,12 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             aleatorio = 2;
 
         }
-        
 
         if(req.body.u1 === req.body.u2){
-            var datos = {}
-            datos.active = false;
-            update = await user.updateOne({ username: req.body.u1 }, datos);
+
+            update = await user.updateOne({ username: req.body.u1 }, [
+                {$set: {active:false} }
+            ]);
             res.send("false");
         }else{
             await playOnline.save();
