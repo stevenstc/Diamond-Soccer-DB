@@ -260,19 +260,18 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 
         var ids = await userplayonline.count();
 
-        console.log(ids)
+        //console.log(ids)
 
         var usuario1 = await user.findOne({ username: req.body.u1 });
         
-        if (!usuario1.wallet) {
+        if (usuario1.wallet) {
             var soporte1 = usuario1.wallet;
         }
         
         var usuario2 = await user.findOne({ username: req.body.u2 });
 
-        if (!usuario2.wallet) {
+        if (usuario2.wallet) {
             var soporte2 = usuario2.wallet;
-        
         }
 
         var playOnline = new userplayonline({
@@ -313,7 +312,6 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             res.send("true");
         }
 
-        
 
     }else{
         res.send("false")
@@ -327,7 +325,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
         var sesionPlay = await userplayonline.find({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort([['identificador', 1]]);
 
-        if(sesionPlay.length > 0){
+        console.log("sesion actualizar "+req.body)
+        if(sesionPlay.length > 0 && req.body.ganador !== ""){
 
             sesionPlay = sesionPlay[sesionPlay.length-1];
 
