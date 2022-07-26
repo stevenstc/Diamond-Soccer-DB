@@ -43,7 +43,7 @@ const TOKEN2 = process.env.APP_TOKEN2;
 const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
 
-const DaylyTime = process.env.APP_DAYTIME || 43200; //undia 86400
+const DaylyTime = process.env.APP_DAYTIME || 86400; //undia 86400
 
 const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
