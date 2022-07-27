@@ -288,7 +288,9 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             u1: req.body.u1,
             u2: req.body.u2,
             soporte1: soporte1,
-            soporte2: soporte2
+            soporte2: soporte2,
+            goles1: "",
+            goles2: ""
             
         });
 
@@ -327,14 +329,20 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
         if(sesionPlay.length > 0 && req.body.ganador !== ""){
 
-            console.log(req.body.ganador)
-
             sesionPlay = sesionPlay[sesionPlay.length-1];
+
+            if(req.body.goles1){
+                var goles1 = req.body.goles1;
+            }
+
+            if(req.body.goles2){
+                var goles2 = req.body.goles2;
+            }
 
             if(!sesionPlay.finalizada){
 
                 await userplayonline.updateOne({ _id: sesionPlay._id },[
-                    {$set: {fin: Date.now(), finalizada: true, ganador: req.body.ganador}}
+                    {$set: {fin: Date.now(), finalizada: true, ganador: req.body.ganador, goles1: goles1,goles2:goles2}}
                 ]);
 
                 //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});

@@ -14,6 +14,8 @@ module.exports = mongoose.model('userplayonline', {
   u1: String,
   u2: String,
   soporte1: String,
-  soporte2: String
+  soporte2: String,
+  goles1: String,
+  goles2: String
   
 });
