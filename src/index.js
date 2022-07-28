@@ -2096,6 +2096,8 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
         data = data.misDat;
 
         console.log(data)
+        console.log("texto")
+        console.log({json: 2})
 
         var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
         
