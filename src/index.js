@@ -356,10 +356,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         var pago = parseInt(sesionPlay.csc - sesionPlay.csc * 0.1)
 
                         await user.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {balance: {$sum:pago}} }
+                            {$set: {balance: {$sum:["$balance",pago]}} }
                         ]);
                         await user.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {balance: {$sum:pago}} }
+                            {$set: {balance: {$sum:["$balance",pago]}} }
                         ]);
 
                     }
