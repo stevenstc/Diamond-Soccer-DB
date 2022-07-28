@@ -396,10 +396,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === "Empatado"){
 
                         await playerData.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {CupsWin: {$sum:1}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 1]}} }
                         ]);
                         await playerData.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {CupsWin: {$sum:1}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin",1]}} }
                         ]);
 
                     }
@@ -407,7 +407,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === sesionPlay.u1){
 
                         await playerData.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {CupsWin: {$sum:4}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin",4]}} }
                         ]); 
 
                     }
@@ -415,7 +415,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === sesionPlay.u2){
 
                         await playerData.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {CupsWin: {$sum:4}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin",4]}} }
                         ]); 
 
                     }
@@ -2575,7 +2575,7 @@ app.post('/api/v1/copas/asignar/:wallet',async(req,res) => {
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
         await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
-            {$set:{CupsWin: {$sum: copas}}}
+            {$set:{CupsWin: {$sum: ["$CupsWin",copas]}}}
         ]);
 
         console.log("Copas: +"+copas+" wallet:"+wallet)
