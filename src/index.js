@@ -1274,11 +1274,11 @@ async function resetChecpoint(wallet){
 
         // resetear daily mision
         await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-            {$set: {checkpoint: Date.now()  + DaylyTime*1000 , reclamado: false}}
+            {$set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}
         ]);
 
         await playerData.updateOne({wallet: uc.upperCase(wallet)},[
-            {$set: {TournamentsPlays: "0", DuelsPlays: "0", FriendLyWins: "0"}}
+            {$set: {DuelsPlays: "0", FriendLyWins: "0"}}
         ]);
 
     }
@@ -1292,6 +1292,8 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     if(web3.utils.isAddress(wallet)){
 
+        await resetChecpoint(wallet);
+
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
 
@@ -1300,42 +1302,34 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             data = data[0];
             usuario = usuario[0];
     
-            if(usuario.active && parseInt(data.TournamentsPlays) >= 0 && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 3 && !usuario.reclamado ){
+            if(usuario.active && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 3 && !usuario.reclamado ){
 
-                if(await asignarMisionDiaria(wallet)){
-                    console.log("true mision diaria")
+                if(await asignarMisionDiaria(wallet) > 0){
                     res.send("true");
                 }else{
-                    await resetChecpoint(wallet);
-                    console.log("false mision diaria")
+                    console.log("fallo mision diaria")
                     res.send("false");
                 }
             
             }else{
-                await resetChecpoint(wallet);
-                //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" TP: "+data.TournamentsPlays+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
+                
+                //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                 console.log("f2");
                 res.send("false");
     
             }
 
         }else{
-            await resetChecpoint(wallet);
-            console.log("f3");
             res.send("false")
         }
 
     }else{
-        await resetChecpoint(wallet);
-        console.log("f4");
         res.send("false");
     }
 
 });
 
 async function asignarMisionDiaria(wallet){
-
-    console.log("entro asignar mision diaria")
 
     wallet =  wallet.toLowerCase();
 
@@ -1363,7 +1357,7 @@ async function asignarMisionDiaria(wallet){
                         {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
                     ]);
                     await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {DuelsPlays: "0", FriendLyWins: "0", TournamentsPlays:"0"}}
+                        {$set: {DuelsPlays: "0", FriendLyWins: "0"}}
                     ]);
 
                     console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
