@@ -2093,6 +2093,8 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
     
     if( data.misDat ){
 
+        data = JSON.parse(data.misDat);
+
         data = data.misDat;
 
         console.log(data)
