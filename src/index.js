@@ -345,6 +345,39 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     {$set: {fin: Date.now(), finalizada: true, ganador: req.body.ganador, goles1: goles1,goles2:goles2}}
                 ]);
 
+                if(req.body.ganador === "Empatado"){
+
+                    var pago = parseInt(sesionPlay.csc - sesionPlay.csc * 0.1)
+
+                    update = await user.updateOne({ username: sesionPlay.u1 }, [
+                        {$set: {balance: {$sum:["$balance",pago]}} }
+                    ]);
+                    update = await user.updateOne({ username: sesionPlay.u2 }, [
+                        {$set: {balance: {$sum:["$balance",pago]}} }
+                    ]);
+
+                }
+
+                if(req.body.ganador === sesionPlay.u1){
+
+                    pago = parseInt((sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1)
+
+                    update = await user.updateOne({ username: sesionPlay.u1 }, [
+                        {$set: {balance: {$sum:["$balance",pago]}} }
+                    ]); 
+
+                }
+
+                if(req.body.ganador === sesionPlay.u2){
+
+                    pago = parseInt((sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1)
+
+                    update = await user.updateOne({ username: sesionPlay.u2 }, [
+                        {$set: {balance: {$sum:["$balance",pago]}} }
+                    ]); 
+
+                }
+
                 //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
                 res.send("true");
