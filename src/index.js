@@ -485,48 +485,20 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
     let wallet =  req.params.wallet.toLowerCase();
 
-    if(!web3.utils.isAddress(wallet)){
-        console.log("wallet incorrecta: "+wallet)
-        res.send("0");
-    }else{
-            usuario = await user.find({ wallet: uc.upperCase(wallet) });
+    if(web3.utils.isAddress(wallet)){
+        usuario = await user.find({ wallet: uc.upperCase(wallet) },{balance: 1});
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
             res.send(usuario.balance+"");
 
         }else{
-            console.log("creado USUARIO al consultar monedas: "+wallet)
-            var users = new user({
-                wallet: uc.upperCase(wallet),   
-                email: "",
-                password: "",
-                username: "", 
-                active: true,
-                payAt: Date.now(),
-                checkpoint: 0,
-                reclamado: false,
-                balance: 0,
-                ingresado: 0,
-                retirado: 0,
-                deposit: [],
-                retiro: [],
-                txs: [],
-                pais: "null",
-                imagen: imgDefault,
-                wcscExchange: 0
-            });
-
-            users.save().then(()=>{
-                console.log("Usuario creado exitodamente");
-                
-            })
-
             res.send("0");
                 
-            
         }
 
+    }else{
+        res.send("0");
     }
 
     
@@ -1791,7 +1763,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
             aplicacion = aplicacion[aplicacion.length-1]
         
         
-            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false");
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,10000"); // penultimo 
 
         }else{
 
@@ -2082,12 +2054,9 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
     if( data.misDat && req.body.token == TOKEN){
 
         data = JSON.parse(data.misDat);
-
         data = data.misDat;
 
-        console.log(data)
-        console.log("texto")
-        console.log({json: 2})
+        //console.log(data)
 
         var usuario = await playerData.find({wallet: uc.upperCase(wallet)});
         
