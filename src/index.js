@@ -2078,20 +2078,8 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
     var wallet =  req.params.wallet;
 
     var data = req.body;
-
-    if(!data.misDat){
-
-        console.log("recibiendo data desde el juego: "+uc.upperCase(wallet))
-
-        data = Buffer.from(data);
-        data = data.toString('utf8');
-        //console.log(data);
-        data = JSON.parse(data);
-        //console.log(data);
-
-    }
     
-    if( data.misDat ){
+    if( data.misDat && req.body.token == TOKEN){
 
         data = JSON.parse(data.misDat);
 
