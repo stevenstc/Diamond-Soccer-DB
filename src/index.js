@@ -331,12 +331,16 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
             sesionPlay = sesionPlay[sesionPlay.length-1];
 
+            var goles1 = 0;
+            var goles2 = 0;
+
+
             if(req.body.goles1){
-                var goles1 = req.body.goles1;
+                goles1 = req.body.goles1;
             }
 
             if(req.body.goles2){
-                var goles2 = req.body.goles2;
+                goles2 = req.body.goles2;
             }
 
             if(!sesionPlay.finalizada){
@@ -360,9 +364,9 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     }
 
-                    if(req.body.ganador === sesionPlay.u1){
+                    pago = parseInt((sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1)
 
-                        pago = parseInt((sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1)
+                    if(req.body.ganador === sesionPlay.u1){
 
                         update = await user.updateOne({ username: sesionPlay.u1 }, [
                             {$set: {balance: {$sum:["$balance",pago]}} }
@@ -371,8 +375,6 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     }
 
                     if(req.body.ganador === sesionPlay.u2){
-
-                        pago = parseInt((sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1)
 
                         update = await user.updateOne({ username: sesionPlay.u2 }, [
                             {$set: {balance: {$sum:["$balance",pago]}} }
