@@ -1277,9 +1277,9 @@ async function resetChecpoint(wallet){
             {$set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}
         ]);
 
-        await playerData.updateOne({wallet: uc.upperCase(wallet)},[
-            {$set: {DuelsPlays: "0", FriendLyWins: "0"}}
-        ]);
+        // resetear objetivos
+
+        //await playerData.updateOne({wallet: uc.upperCase(wallet)},[{$set: {DuelsPlays: "0", FriendLyWins: "0"}}]);
 
     }
 
