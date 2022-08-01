@@ -2509,7 +2509,7 @@ app.post('/api/v1/copas/quitar/:wallet',async(req,res) => {
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
         await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
-            {$set:{CupsWin: {$subtract: copas}}}
+            {$set:{CupsWin: {$subtract: ["$CupsWin" ,copas]}}}
         ]);
 
         console.log("Copas: -"+copas+" wallet:"+wallet)
