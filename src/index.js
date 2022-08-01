@@ -362,6 +362,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             {$set: {balance: {$sum:["$balance",pago]}} }
                         ]);
 
+
                     }
 
                     pago = parseInt((sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1)
@@ -381,6 +382,9 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         ]); 
 
                     }
+
+                    console.log("#"+sesionPlay.identificador+" | "+req.body.ganador+" | "+sesionPlay.csc)
+
 
                     //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
@@ -1306,14 +1310,14 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
                 if(await asignarMisionDiaria(wallet) > 0){
                     res.send("true");
                 }else{
-                    console.log("fallo mision diaria")
+                    //console.log("fallo mision diaria")
                     res.send("false");
                 }
             
             }else{
                 
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
-                console.log("f2");
+                //console.log("f2");
                 res.send("false");
     
             }
