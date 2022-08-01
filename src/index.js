@@ -383,7 +383,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     }
 
-                    console.log("#"+sesionPlay.identificador+" | "+req.body.ganador+" | "+sesionPlay.csc)
+                    console.log(sesionPlay.tipo+" | #"+sesionPlay.identificador+" | "+req.body.ganador+" | "+sesionPlay.csc)
 
 
                     //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
@@ -400,10 +400,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === "Empatado"){
 
                         await playerData.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 1]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
                         await playerData.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin",1]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
 
                     }
@@ -411,7 +411,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === sesionPlay.u1){
 
                         await playerData.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin",4]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
                         ]); 
 
                     }
@@ -419,10 +419,12 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === sesionPlay.u2){
 
                         await playerData.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin",4]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
                         ]); 
 
                     }
+
+                    console.log(sesionPlay.tipo+" | #"+sesionPlay.identificador+" | "+req.body.ganador)
 
                     //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
