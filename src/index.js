@@ -1278,7 +1278,6 @@ async function resetChecpoint(wallet){
         ]);
 
         // resetear objetivos
-
         //await playerData.updateOne({wallet: uc.upperCase(wallet)},[{$set: {DuelsPlays: "0", FriendLyWins: "0"}}]);
 
     }
