@@ -413,9 +413,17 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             {$set: {CupsWin: {$sum:["$CupsWin", 6]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
                         ]); 
 
+                        await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
+                            {$set: {LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
+                        ]); 
+
                     }
 
                     if(req.body.ganador === sesionPlay.u2){
+
+                        await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
+                            {$set: {LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
+                        ]); 
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 6]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
