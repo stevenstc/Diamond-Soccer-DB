@@ -2030,7 +2030,7 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
             FriendlyTiming: "2",
             LastDate:  "0",
             LeagueDate:  moment(Date.now()).format(formatoliga),
-            LeagueOpport:  "0",
+            LeagueOpport:  0,
             LeagueTimer:  moment(Date.now()).format('HH:mm:ss'),
             LeaguesOnlineWins:  "0",
             MatchLose:  "0",
@@ -2077,7 +2077,7 @@ app.post('/api/v1/reset/leadboard',async(req,res) => {
 
         //var dataUsuarios = await playerData.find({}).sort([['CupsWin', 1]]);
 
-        await playerData.updateMany({},{ $set: {CupsWin:0, LeagueOpport:"0"}}).exec();
+        await playerData.updateMany({},{ $set: {CupsWin:0, LeagueOpport:0}}).exec();
         
         
         res.send("true");
@@ -2141,7 +2141,7 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
             datos.UserOnline = Date.now();
 
             if( Date.now() >= parseInt(usuario.LeagueTimer) + 86400*1000){
-                datos.LeagueOpport = "0";
+                datos.LeagueOpport = 0;
                 datos.LeagueTimer = Date.now();
             }
 

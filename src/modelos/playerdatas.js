@@ -12,7 +12,7 @@ module.exports = mongoose.model('playerdatas', {
   FriendlyTiming: String,
   LastDate: String,
   LeagueDate: String,
-  LeagueOpport: String,
+  LeagueOpport: Number,
   LeagueTimer: String,
   LeaguesOnlineWins: String,
   MatchLose: String,
