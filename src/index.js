@@ -398,21 +398,19 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     if(req.body.ganador === "Empatado"){
 
-                        var cosa = await playerData.updateOne({ username: sesionPlay.u1 }, [
+                        await playerData.updateOne({ username: sesionPlay.u1 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
-                        console.log(cosa)
-                        cosa = await playerData.updateOne({ username: sesionPlay.u2 }, [
+                        await playerData.updateOne({ username: sesionPlay.u2 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
-                        console.log(cosa)
 
                     }
 
                     if(req.body.ganador === sesionPlay.u1){
 
                         await playerData.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
                         ]); 
 
                     }
@@ -420,7 +418,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === sesionPlay.u2){
 
                         await playerData.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
                         ]); 
 
                     }
