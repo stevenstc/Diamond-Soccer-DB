@@ -399,12 +399,15 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     if(req.body.ganador === "Empatado"){
 
-                        await playerData.updateOne({ username: sesionPlay.u1 }, [
+                        var cosa = await playerData.updateOne({ username: sesionPlay.u1 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
-                        await playerData.updateOne({ username: sesionPlay.u2 }, [
+                        console.log(cosa)
+                        cosa = await playerData.updateOne({ username: sesionPlay.u2 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
+                        console.log(cosa)
+
 
                     }
 
