@@ -408,7 +408,6 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         ]);
                         console.log(cosa)
 
-
                     }
 
                     if(req.body.ganador === sesionPlay.u1){
