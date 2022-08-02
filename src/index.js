@@ -399,10 +399,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === "Empatado"){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
                         ]);
                         await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
                         ]);
 
                     }
@@ -410,7 +410,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === sesionPlay.u1){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
                         ]); 
 
                     }
@@ -418,7 +418,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(req.body.ganador === sesionPlay.u2){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
                         ]); 
 
                     }
