@@ -98,7 +98,6 @@ const appstatuses = require("./modelos/appstatuses");
 const appdatos = require("./modelos/appdatos");
 const playerData = require("./modelos/playerdatas");
 const userplayonline = require("./modelos/userplayonline");
-const playerdatas = require('./modelos/playerdatas');
 
 app.get('/', require("./v1/funcionando"));
 
@@ -221,11 +220,11 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
 
         var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{identificador:1}).sort({identificador: -1});
         //console.log(sesion)
-        if(!sesion.identificador){
-            res.send("null");
-        }else{
+        if(sesion.identificador){
             console.log("consulta de sesion: "+req.query.sesionID+" #"+sesion.identificador )
             res.send(sesion.identificador+"");
+        }else{
+            res.send("null");
 
         }
         
@@ -2484,7 +2483,7 @@ app.post('/api/v1/copas/asignar/:wallet',async(req,res) => {
 
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
-        await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
+        await playerData.updateOne({ wallet: uc.upperCase(wallet) },[
             {$set:{CupsWin: {$sum: ["$CupsWin",copas]}}}
         ]);
 
@@ -2512,7 +2511,7 @@ app.post('/api/v1/copas/quitar/:wallet',async(req,res) => {
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
-        await playerdatas.updateOne({ wallet: uc.upperCase(wallet) },[
+        await playerData.updateOne({ wallet: uc.upperCase(wallet) },[
             {$set:{CupsWin: {$subtract: ["$CupsWin" ,copas]}}}
         ]);
 
