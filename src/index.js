@@ -2095,6 +2095,8 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
     
     if( data.misDat && req.body.token == TOKEN){
 
+        console.log("escribiendo data: "+uc.upperCase(wallet))
+
         data = JSON.parse(data.misDat);
         data = data.misDat;
 
