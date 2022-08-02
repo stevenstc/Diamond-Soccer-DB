@@ -398,10 +398,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     if(req.body.ganador === "Empatado"){
 
-                        await playerData.updateOne({ username: sesionPlay.u1 }, [
+                        await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
-                        await playerData.updateOne({ username: sesionPlay.u2 }, [
+                        await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                         ]);
 
@@ -409,7 +409,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     if(req.body.ganador === sesionPlay.u1){
 
-                        await playerData.updateOne({ username: sesionPlay.u1 }, [
+                        await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
                         ]); 
 
@@ -417,7 +417,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     if(req.body.ganador === sesionPlay.u2){
 
-                        await playerData.updateOne({ username: sesionPlay.u2 }, [
+                        await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
                         ]); 
 
@@ -2077,8 +2077,7 @@ app.post('/api/v1/reset/leadboard',async(req,res) => {
 
         //var dataUsuarios = await playerData.find({}).sort([['CupsWin', 1]]);
 
-        await playerData.updateMany({},{ $set: {CupsWin:0}}).exec();
-        await playerData.updateMany({},{ $set: {LeagueOpport:"0"}}).exec();
+        await playerData.updateMany({},{ $set: {CupsWin:0, LeagueOpport:"0"}}).exec();
         
         
         res.send("true");
@@ -2095,7 +2094,7 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
     
     if( data.misDat && req.body.token == TOKEN){
 
-        console.log("escribiendo data: "+uc.upperCase(wallet))
+        //console.log("escribiendo data: "+uc.upperCase(wallet))
 
         data = JSON.parse(data.misDat);
         data = data.misDat;
