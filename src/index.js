@@ -778,7 +778,6 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     var gasLimit = await contractExchange.methods.gastarCoinsfrom(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
 
-    console.log("entro por aca")
     if(balance - coins.shiftedBy(-18).toNumber() >= 0 ){
         await contractExchange.methods
             .gastarCoinsfrom(coins, wallet)
@@ -2291,13 +2290,14 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
     
     if(req.body.token == TOKEN2 && web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.find({ wallet: uc.upperCase(wallet) },{_id: 0});
 
         if (usuario.length >= 1) {
-            var datos = usuario[0];
-            if(datos.active){
-                datos.balance = datos.balance + req.body.coins;
-                datos.ingresado = datos.ingresado + req.body.coins;
+            usuario = usuario[0];
+            var datos = {}
+            if(usuario.active){
+                datos.balance = usuario.balance + req.body.coins;
+                datos.ingresado = usuario.ingresado + req.body.coins;
                 datos.deposit.push({amount: req.body.coins,
                     date: Date.now(),
                     finalized: true,
@@ -2306,10 +2306,9 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
 
                 //datos.wcscExchange = await consultarCscExchange(wallet);
 
-                var nuevoUsuario = new user(datos)
-                await nuevoUsuario.save();
-
-                //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
+                await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                    {$set: datos}
+                ]);
                 console.log("Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet));
                 res.send("true");
             }else{
