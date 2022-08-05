@@ -1227,7 +1227,7 @@ app.get('/api/v1/ben10',async(req,res) => {
 });
 
 app.get('/api/v1/texto/daily/', async() =>{
-    res.send("1 Win training set[3 MINUTES] ,7 Duels palys ,2 League plays ,1 Tournament play");
+    res.send("1 Win training set[3 MINUTES] ,7 Duels palys ,2 League plays ,0 Tournament play");
 });
 
 app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
