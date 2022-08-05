@@ -1322,7 +1322,7 @@ async function pagarDiaria(wallet){
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
         var data = await playerData.find({wallet: uc.upperCase(wallet)});
 
-        if (data.length >= 1 && usuario.length >= 1 && MisionDiaria ) {
+        if (data.length >= 1 && usuario.length >= 1 ) {
 
             data = data[0];
             usuario = usuario[0];
