@@ -849,8 +849,6 @@ async function monedasAlJuego(coins,wallet,intentos){
                             console.log("Usuario creado exitodamente");
                         };
                         
-                            
-                        
                     }
                 })
 
@@ -1029,7 +1027,7 @@ async function recompensaDiaria(wallet){
 
     var cantidad = 43;
 
-    var coins = 10; // CSC coins comunes todos
+    var coins = 100; // CSC coins comunes todos
     var bono = false;
 
     for (let index = 0; index < cantidad; index++) {
@@ -1073,7 +1071,7 @@ async function recompensaDiaria(wallet){
     if (true) { // habilitar bono legendarios
         for (let index = 0; index < 3; index++) {
             if(inventario[index]){
-                coins += 200;
+                coins += 400;
                 bono = true;
                 break;
             }
@@ -1085,7 +1083,7 @@ async function recompensaDiaria(wallet){
         if(!bono){
             for (let index = 3; index < 10; index++) {
                 if(inventario[index]){
-                    coins += 130;
+                    coins += 200;
                     break;
                 }
             }
@@ -1226,6 +1224,10 @@ app.get('/api/v1/ben10',async(req,res) => {
         }
     }
     
+});
+
+app.get('/api/v1/texto/daily/', async() =>{
+    res.send("1 Win training set[3 MINUTES] ,7 Duels palys ,2 League plays");
 });
 
 app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
