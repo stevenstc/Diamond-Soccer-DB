@@ -1226,7 +1226,7 @@ app.get('/api/v1/ben10',async(req,res) => {
     
 });
 
-app.get('/api/v1/texto/daily/', async() =>{
+app.get('/api/v1/texto/daily/', async(req,res) =>{
     res.send("1 Win training set[3 MINUTES] ,7 Duels palys ,2 League plays ,0 Tournament play");
 });
 
