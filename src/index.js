@@ -1393,7 +1393,7 @@ async function asignarMisionDiaria(wallet){
 
                 if(datos.active ){
 
-                    var coins = await recompensaDiaria(wallet);
+                    var coins = parseInt(await recompensaDiaria(wallet));
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
