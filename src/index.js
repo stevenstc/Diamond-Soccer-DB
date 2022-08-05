@@ -1027,7 +1027,8 @@ async function recompensaDiaria(wallet){
 
     var cantidad = 43;
 
-    var coins = 100; // CSC coins comunes todos
+    //20%
+    var coins = ((await appdatos.findOne({})).valorDiaria)*0.2; // CSC coins comunes todos
     var bono = false;
 
     for (let index = 0; index < cantidad; index++) {
@@ -1071,7 +1072,9 @@ async function recompensaDiaria(wallet){
     if (true) { // habilitar bono legendarios
         for (let index = 0; index < 3; index++) {
             if(inventario[index]){
-                coins += 400;
+
+                //80%+20%
+                coins += ((await appdatos.findOne({})).valorDiaria)*0.8;
                 bono = true;
                 break;
             }
@@ -1083,7 +1086,9 @@ async function recompensaDiaria(wallet){
         if(!bono){
             for (let index = 3; index < 10; index++) {
                 if(inventario[index]){
-                    coins += 200;
+
+                    //60%
+                    coins += ((await appdatos.findOne({})).valorDiaria)*0.6;
                     break;
                 }
             }
@@ -1229,7 +1234,7 @@ app.get('/api/v1/ben10',async(req,res) => {
 app.get('/api/v1/texto/daily/', async(req,res) =>{
 
     // friendly traini // duelos // liga // torneos
-    res.send("1,7,2,0");
+    res.send((await appdatos.findOne({})).objetivosDiaria.toString());
 });
 
 app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
@@ -2389,7 +2394,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
 
 app.get('/api/v1/salas/consultar/',async(req,res) => {
 
-    res.send("5,10,20,50,100");
+    res.send((await appdatos.findOne({})).cscSalas.toString());
 
 });
 

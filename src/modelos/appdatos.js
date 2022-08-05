@@ -6,6 +6,9 @@ module.exports = mongoose.model('appdatos', {
   ganado: Number, 
   ganadoliga: Number,
   misiondiaria: Boolean,
-  finliga: Number
+  finliga: Number,
+  valorDiaria: Number,
+  objetivosDiaria: [Number],
+  cscSalas: [Number]
 
 });
