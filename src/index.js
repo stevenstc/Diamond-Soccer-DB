@@ -1087,8 +1087,8 @@ async function recompensaDiaria(wallet){
             for (let index = 3; index < 10; index++) {
                 if(inventario[index]){
 
-                    //60%
-                    coins += ((await appdatos.findOne({})).valorDiaria)*0.6;
+                    //50%
+                    coins += ((await appdatos.findOne({})).valorDiaria)*0.5;
                     break;
                 }
             }
@@ -1339,7 +1339,7 @@ async function pagarDiaria(wallet){
                 if(await asignarMisionDiaria(wallet) > 0){
                     return true;
                 }else{
-                    //console.log("fallo mision diaria")
+                    console.log("fallo mision diaria")
                     return false;
 
                 }
