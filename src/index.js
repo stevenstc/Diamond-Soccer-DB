@@ -1248,6 +1248,8 @@ app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
             if(Date.now() < usuario.checkpoint && usuario.reclamado){
                 no_time = true;
             }
+
+            await pagarDiaria(wallet);
         
             res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins+","+usuario.reclamado+","+no_time);
 
@@ -1312,12 +1314,8 @@ async function resetChecpoint(wallet){
 
 }
 
-app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-    var MisionDiaria = true;
-
-    if(web3.utils.isAddress(wallet)){
+async function pagarDiaria(wallet){
+    if(web3.utils.isAddress(wallet.toLowerCase())){
 
         await resetChecpoint(wallet);
 
@@ -1332,23 +1330,38 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
             if(usuario.active && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 3 && !usuario.reclamado ){
 
                 if(await asignarMisionDiaria(wallet) > 0){
-                    res.send("true");
+                    return true;
                 }else{
                     //console.log("fallo mision diaria")
-                    res.send("false");
+                    return false;
+
                 }
             
             }else{
                 
                 //console.log("no cumple mision diaria: "+uc.upperCase(wallet)+" DP: "+data.DuelsPlays+" Training: "+data.FriendLyWins);
                 //console.log("f2");
-                res.send("false");
+                return false;
     
             }
 
         }else{
-            res.send("false")
+            return false;
         }
+
+    }else{
+        return false;
+    }
+
+}
+
+app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    if(web3.utils.isAddress(wallet) ){
+
+        res.send(await pagarDiaria(wallet)+"")
 
     }else{
         res.send("false");
