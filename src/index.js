@@ -1,5 +1,6 @@
 const express = require('express');
 const fetch = require('node-fetch');
+var cron = require('node-cron');
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const Web3 = require('web3');
@@ -34,6 +35,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(bodyParser.text());
+
+cron.schedule('0 23 * * *', () => {
+    console.log('Reinicio Misiones diarias: '+Date());
+    resetDailyMision();
+}, {
+    scheduled: true,
+    timezone: "UTC"
+});
 
 const port = process.env.PORT || 3005;
 const PEKEY = process.env.APP_PRIVATEKEY;
@@ -98,6 +107,11 @@ const appstatuses = require("./modelos/appstatuses");
 const appdatos = require("./modelos/appdatos");
 const playerData = require("./modelos/playerdatas");
 const userplayonline = require("./modelos/userplayonline");
+
+
+async function resetDailyMision(){
+    await user.updateMany({},{ $set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}).exec();
+}
 
 app.get('/', require("./v1/funcionando"));
 
@@ -2354,6 +2368,12 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
         res.send("false");
     }
 		
+});
+
+app.get('/api/v1/salas/consultar/',async(req,res) => {
+
+    res.send("5,10,20,50,100");
+
 });
 
 app.post('/api/v1/quitar2/:wallet',async(req,res) => {
