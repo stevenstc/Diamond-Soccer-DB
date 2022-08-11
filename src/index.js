@@ -232,7 +232,8 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
 
     if( req.query.sesionID ){
 
-        var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{identificador:1}).sort({identificador: -1});
+        var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{identificador:1}).sort({identificador: -1})
+        .catch(()=>{res.send("null")})
         //console.log(sesion)
         if(sesion.identificador){
             console.log("consulta de sesion: "+req.query.sesionID+" #"+sesion.identificador )
