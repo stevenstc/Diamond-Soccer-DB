@@ -562,7 +562,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
-            res.send(usuario.balance+"");
+            res.send((usuario.balance+"").replace(".", ","));
 
         }else{
             res.send("0");
