@@ -362,15 +362,15 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     }
                 }
 
-                console.log(req.body.goles1);
-                console.log(req.body.goles2);
+                console.log("usuario 1: "+req.body.goles1);
+                console.log("usuario 2: "+req.body.goles2);
 
+                var ganador = req.body.ganador;
 
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
-                    var ganador = "";
                     
-                    if( goles1 === goles2 ){
+                    if( req.body.ganador === "Empatado" ){
 
                         var pago = parseInt(sesionPlay.csc - sesionPlay.csc * 0.1)
 
@@ -381,30 +381,24 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             {$set: {balance: {$sum:["$balance",pago]}} }
                         ]);
 
-                        ganador = "Empate"
-
 
                     }
 
                     pago = parseInt((sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1)
 
-                    if(goles1 > goles2){
+                    if(req.body.ganador === sesionPlay.u1){
 
                         update = await user.updateOne({ username: sesionPlay.u1 }, [
                             {$set: {balance: {$sum:["$balance",pago]}} }
                         ]); 
 
-                        ganador = sesionPlay.u1;
-
                     }
 
-                    if(goles2 > goles1){
+                    if(req.body.ganador === sesionPlay.u2){
 
                         update = await user.updateOne({ username: sesionPlay.u2 }, [
                             {$set: {balance: {$sum:["$balance",pago]}} }
                         ]); 
-
-                        ganador = sesionPlay.u2;
 
                     }
 
@@ -422,9 +416,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                 if ((sesionPlay.tipo).search("LEAGUE") != -1) {
 
-                    var ganador = ""
                     
-                    if(goles1 === goles2){
+                    if(req.body.ganador === "Empatado"){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
@@ -433,11 +426,9 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
                         ]);
 
-                        ganador = "Empate";
-
                     }
 
-                    if(goles1 > goles2){
+                    if(req.body.ganador === sesionPlay.u1){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 6]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
@@ -451,7 +442,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     }
 
-                    if(goles2 > goles1){
+                    if(req.body.ganador === sesionPlay.u2){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 6]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
