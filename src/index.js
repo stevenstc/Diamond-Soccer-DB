@@ -362,6 +362,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     }
                 }
 
+                console.log(req.body.goles1);
+                console.log(req.body.goles2);
+
+
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
                     var ganador = "";
