@@ -1355,7 +1355,7 @@ async function pagarDiaria(wallet){
             data = data[0];
             usuario = usuario[0];
     
-            if(usuario.active && parseInt(data.DuelsPlays) >= 7 && parseInt(data.FriendLyWins) >= 1 && !usuario.reclamado ){
+            if(usuario.active && !usuario.reclamado && parseInt(data.FriendLyWins) >= (await appdatos.findOne({})).objetivosDiaria[0]  && parseInt(data.DuelsPlays) >= (await appdatos.findOne({})).objetivosDiaria[1] && parseInt(data.LeagueOpport) >= (await appdatos.findOne({})).objetivosDiaria[2] && parseInt(data.TournamentsPlays) >= (await appdatos.findOne({})).objetivosDiaria[3] ){
 
                 if(await asignarMisionDiaria(wallet) > 0){
                     return true;
