@@ -1869,7 +1869,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
             aplicacion = aplicacion[aplicacion.length-1]
         
         
-            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC); // penultimo 
+            res.send(aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC)+","+(await appdatos.findOne({})).ligaCosto; // penultimo 
 
         }else{
 
