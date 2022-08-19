@@ -56,7 +56,7 @@ const DaylyTime = process.env.APP_DAYTIME || 86400; //undia 86400
 
 const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
-const miniCoins = parseInt(process.env.APP_MIN_COINS) || 180;
+const miniCoins = parseInt(process.env.APP_MIN_COINS) || 1000;
 
 const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
 const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
@@ -233,11 +233,15 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
     if( req.query.sesionID ){
 
         var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{identificador:1}).sort({identificador: -1})
-        .catch(()=>{res.send("null")})
         //console.log(sesion)
-        if(sesion.identificador){
-            console.log("consulta de sesion: "+req.query.sesionID+" #"+sesion.identificador )
-            res.send(sesion.identificador+"");
+        if(sesion){
+            if(sesion.identificador){
+                console.log("consulta de sesion: "+req.query.sesionID+" #"+sesion.identificador )
+                res.send(sesion.identificador+"");
+            }else{
+                res.send("null");
+
+            }
         }else{
             res.send("null");
 
@@ -663,7 +667,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
 
     }else{
-        if(req.body.coins > 180){
+        if(req.body.coins > miniCoins){
             await user.updateOne({ wallet: uc.upperCase(wallet) },[
                 {$set:{active: false}}
             ])
