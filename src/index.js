@@ -470,7 +470,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
             
             }else{
-                res.send("false");
+                res.send("true");
             }
         }else{
             res.send("false");
