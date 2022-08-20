@@ -371,7 +371,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
                     
-                    if( req.body.ganador === "Empatado" && goles1 === goles2){
+                    if( req.body.ganador === "Empatado" || goles1 === goles2){
 
                         var pago = parseInt(sesionPlay.csc - sesionPlay.csc * 0.1)
 
@@ -418,7 +418,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 if ((sesionPlay.tipo).search("LEAGUE") != -1) {
 
                     
-                    if(req.body.ganador === "Empatado" && goles1 === goles2){
+                    if(req.body.ganador === "Empatado" || goles1 === goles2){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                             {$set: {CupsWin: {$sum:["$CupsWin", 3]}, LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
@@ -2040,7 +2040,6 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 });
 
 app.get('/api/v1/consulta/poolliga',async(req,res) => {
-
 
     var appData = await appdatos.find({});
 
