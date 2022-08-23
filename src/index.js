@@ -1977,57 +1977,52 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
 app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 
-    if(req.query.version){
-      
-        var appData = await appdatos.findOne({});
+    var appData = await appdatos.findOne({});
 
-        if (appData) {
+    if (appData) {
 
-            var cantidad;
+        var cantidad;
 
-            if(!req.query.cantidad){
-                cantidad = 20;
-            }else{
-                if(parseInt(req.query.cantidad) > 300){
-                    cantidad = 300;
-                }else{
-                    cantidad = parseInt(req.query.cantidad);
-                }
-            }
-
-            var poolliga = appData.ganadoliga;
-
-            poolliga = poolliga*0.7
-
-            var porcentajes = [0.4,0.2,0.15,0.05,0.04,0.04,0.04,0.03,0.03,0.02]
-            var lista = [];
-
-            var usuarios = await playerData.find({}).limit(cantidad).sort([['CupsWin', -1]]);
-            
-            if (usuarios.length >= 1) {
-                
-                for (let index = 0; index < usuarios.length; index++) {
-        
-                    lista[index] = parseInt(poolliga*porcentajes[index]);
-                
-                    if(isNaN(lista[index])){
-                        lista[index] = 0;
-                    }
-                    
-                }
-                res.send(lista.toLocaleString());
-
-            }else{
-                res.send("null");
-                    
-            }
-    
+        if(!req.query.cantidad){
+            cantidad = 20;
         }else{
-            res.send("null");
+            if(parseInt(req.query.cantidad) > 300){
+                cantidad = 300;
+            }else{
+                cantidad = parseInt(req.query.cantidad);
+            }
         }
+
+        var poolliga = appData.ganadoliga;
+
+        poolliga = poolliga*0.7
+
+        var porcentajes = [0.4,0.2,0.15,0.05,0.04,0.04,0.04,0.03,0.03,0.02]
+        var lista = [];
+
+        var usuarios = await playerData.find({}).sort([['CupsWin', -1]]).limit(cantidad);
+        
+        if (usuarios.length >= 1) {
+            
+            for (let index = 0; index < usuarios.length; index++) {
+    
+                lista[index] = parseInt(poolliga*porcentajes[index]);
+            
+                if(isNaN(lista[index])){
+                    lista[index] = 0;
+                }
+                
+            }
+            res.send(lista.toLocaleString());
+
+        }else{
+            res.send("null");  
+        }
+
     }else{
         res.send("null");
     }
+
 
 });
 
