@@ -2013,7 +2013,7 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
                 }
                 
             }
-            res.send(lista.toLocaleString());
+            res.send(lista.toString(10));
 
         }else{
             res.send("null");  
