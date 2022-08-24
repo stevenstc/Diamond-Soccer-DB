@@ -577,7 +577,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
 
         if (usuario) {
-            res.send((usuario.balance+"").replace(".", ","));
+            res.send((usuario.balance).toString(10));
 
         }else{
             res.send("0");
