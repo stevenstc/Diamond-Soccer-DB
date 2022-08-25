@@ -71,7 +71,7 @@ const addressInventario = process.env.APP_CONTRACT_INVENTARIO || "0x16Da49145425
 const addressExchnge = process.env.APP_CONTRACT_EXCHANGE || "0x42D3ad6032311220C48ccee4cE5401308F7AC88A";
 const addressContractToken = process.env.APP_CONTRACTTOKEN || "0xF0fB4a5ACf1B1126A991ee189408b112028D7A63";
 
-const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
+const imgDefault = "0";
 
 let web3 = new Web3(RED);
 
@@ -262,12 +262,23 @@ app.get('/api/v1/sesion/consultar/id',async(req,res) => {
 app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
 
     if( req.query.id ){
-        var soporte = 0;
-        if(req.query.soporte){
-            soporte = 1;
-        }
  
-        var sesion = await userplayonline.findOne({identificador: req.query.id},{__v:0,_id:0,soporte1:soporte,soporte2:soporte});
+        var sesion = await userplayonline.findOne({identificador: req.query.id},{__v:0,_id:0});
+   
+        res.send(sesion);
+        
+        
+    }else{
+        res.send("null");
+    }
+
+});
+
+app.get('/api/v1/sesion/consultar/latesmaches',async(req,res) => {
+
+    if( req.query.long ){
+ 
+        var sesion = await userplayonline.find({finalizada: true},{__v:0,_id:0}).limit(req.query.long);
    
         res.send(sesion);
         
@@ -1559,24 +1570,20 @@ app.get('/api/v1/user/pais/:wallet',async(req,res) => {
 app.get('/api/v1/imagen/user',async(req,res) => {
     var username =  req.query.username;
      
-    usuario = await user.find({ username: username });
+    usuario = await user.findOne({ username: username });
 
-    if (usuario.length >= 1) {
-        usuario = usuario[0];
+    if (usuario) {
 
         resetChecpoint(usuario.wallet);
-      
-        if(usuario.imagen){
-            if(usuario.imagen.indexOf('https://')>=0){
-                res.send(usuario.imagen);
-            }else{
-                res.send(imgDefault);
 
-            }
+        if(!isNaN(parseInt(usuario.imagen))){
+            res.send(usuario.imagen+"");
+
         }else{
             res.send(imgDefault);
 
         }
+      
     }else{
         res.send(imgDefault);
     }
