@@ -36,9 +36,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(bodyParser.text());
 
-cron.schedule('0 0 * * *', () => {
+cron.schedule('0 0 * * *', async() => {
     console.log('Reinicio Misiones diarias: '+Date());
-    resetDailyMision();
+    await resetDailyMision();
+
+    console.log('FIN Reinicio Misiones diarias: '+Date());
+
+}, {
+    scheduled: true,
+    timezone: "UTC"
+});
+
+cron.schedule('0 * * * * *', async() => {
+
+    var precioactCSC = await precioCSC();
+    console.log("########## "+precioactCSC+" ##########")
+    if( precioactCSC > 0){
+
+        console.log("valor Diaria: "+new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
+        await appdatos.updateOne({},{ $set: {valorDiaria: new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber()}});
+    }
+
 }, {
     scheduled: true,
     timezone: "UTC"
@@ -105,6 +123,14 @@ const appstatuses = require("./modelos/appstatuses");
 const appdatos = require("./modelos/appdatos");
 const playerData = require("./modelos/playerdatas");
 const userplayonline = require("./modelos/userplayonline");
+
+async function precioCSC(){
+    var precio = fetch('https://brutustronstaking.tk/csc-market/api/v1/priceCSC')
+    .then(response => response.json())
+    .then(json => {return json;})
+
+    return precio;
+}
 
 async function resetDailyMision(){
     await user.updateMany({},{ $set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}).exec();
