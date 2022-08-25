@@ -299,16 +299,18 @@ app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
 
 app.get('/api/v1/sesion/consultar/latesmaches',async(req,res) => {
 
+
+    var long = 5;
+
     if( req.query.long ){
- 
-        var sesion = await userplayonline.find({finalizada: true},{__v:0,_id:0}).limit(req.query.long);
-   
-        res.send(sesion);
-        
-        
-    }else{
-        res.send("null");
+        long = parseInt(req.query.long)
     }
+ 
+    var sesion = await userplayonline.find({finalizada: true},{__v:0,_id:0}).limit(long);
+
+    res.send(sesion);
+        
+
 
 });
 
