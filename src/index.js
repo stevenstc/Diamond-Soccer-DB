@@ -62,8 +62,6 @@ const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
 const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
 const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
 
-const testNet = false; //quita todos los equipos y formaciones comprados deja solo los equpos testnet
-
 const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
@@ -108,6 +106,20 @@ const appdatos = require("./modelos/appdatos");
 const playerData = require("./modelos/playerdatas");
 const userplayonline = require("./modelos/userplayonline");
 
+async function precioCSC(){
+    var precio = await fetch('https://www.dextools.io/chain-bsc/api/pair/search?p=0x4a1534cbb5b6001a72f4489ad4b07ea68cf1829f',{
+    mode: 'no-cors',
+    method: 'GET', 
+        headers: {
+        'Content-Type': 'application/json'
+        }
+    })
+    //.then(response => response.json())
+    //.then(json => {return json;})
+    console.log(await precio.text())
+
+}
+precioCSC();
 
 async function resetDailyMision(){
     await user.updateMany({},{ $set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}).exec();
