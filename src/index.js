@@ -599,30 +599,53 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 app.get('/api/v1/compraravatar/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
 
-    if(web3.utils.isAddress(wallet) ){
-        res.send("0,0,0,0,0,0,0,0,0,0");
-        
-    }else{
-        res.send("0,0,0,0,0,0,0,0,0,0");
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet) ){
 
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+
+        if(usuario){
+            if(!isNaN(parseInt(usuario.imagen))){
+                res.send(usuario.imagen+"");
+
+            }else{
+                res.send("0");
+
+            }
+
+        }else{
+            res.send("0");
+
+        }
+        
+
+    }else{
+        res.send("0");
+        
     }
+
 })
 
 app.post('/api/v1/compraravatar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
-
-    req.body.avatar = parseInt(req.body.avatar);
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet) ){
 
-        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+        usuario = await user.updateOne({ wallet: uc.upperCase(wallet) },[
+            {$set: {imagen: req.body.avatar} }
+        ])
 
-        res.send("true");
+        if(usuario){
+            res.send(req.body.avatar);
+
+        }else{
+            res.send("0");
+
+        }
         
 
     }else{
-        res.send("false");
+        res.send("0");
         
     }
 		
@@ -1833,7 +1856,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
             aplicacion = aplicacion[aplicacion.length-1]
         
         
-            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC+","+(await appdatos.findOne({})).ligaCosto ); // penultimo 
+            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC+","+(await appdatos.findOne({})).ligaCosto +","(await appdatos.findOne({})).precioAvatar+""   ); // penultimo 
 
         }else{
 

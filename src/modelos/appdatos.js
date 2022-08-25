@@ -11,6 +11,7 @@ module.exports = mongoose.model('appdatos', {
   objetivosDiaria: [Number],
   cscSalas: [Number],
   maximoCSC: Number,
-  ligaCosto: Number
+  ligaCosto: Number,
+  precioAvatar: Number
 
 });
