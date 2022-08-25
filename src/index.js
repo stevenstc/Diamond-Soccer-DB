@@ -106,21 +106,6 @@ const appdatos = require("./modelos/appdatos");
 const playerData = require("./modelos/playerdatas");
 const userplayonline = require("./modelos/userplayonline");
 
-async function precioCSC(){
-    var precio = await fetch('https://www.dextools.io/chain-bsc/api/pair/search?p=0x4a1534cbb5b6001a72f4489ad4b07ea68cf1829f',{
-    mode: 'no-cors',
-    method: 'GET', 
-        headers: {
-        'Content-Type': 'application/json'
-        }
-    })
-    //.then(response => response.json())
-    //.then(json => {return json;})
-    console.log(await precio.text())
-
-}
-precioCSC();
-
 async function resetDailyMision(){
     await user.updateMany({},{ $set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}).exec();
 }
