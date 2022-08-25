@@ -610,7 +610,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 app.get('/api/v1/compraravatar/:wallet',async(req,res) => {
     var wallet =  req.params.wallet.toLowerCase();
 
-    if(req.body.token == TOKEN && web3.utils.isAddress(wallet) ){
+    if(web3.utils.isAddress(wallet) ){
 
         usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
