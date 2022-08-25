@@ -10,23 +10,6 @@ module.exports = mongoose.model('usuarios', {
     checkpoint: Number,
     reclamado: Boolean,
     balance: Number,
-    ingresado: Number,
-    retirado: Number,
-    deposit: [{
-      amount: Number,
-      date: Number,
-      finalized: Boolean,
-      txhash: String
-
-    }],
-    retiro: [{
-      amount: Number,
-      date: Number,
-      done: Boolean,
-      dateSend: Number,
-      txhash: String
-
-    }],
     txs: [String],
     pais: String,
     imagen: String,

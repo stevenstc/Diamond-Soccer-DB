@@ -157,7 +157,13 @@ app.get('/api/v1/sesion/consultar/',async(req,res) => {
 
         var sesion = await userplayonline.findOne({ sesionID: req.query.sesionID },{_id:0}).sort({identificador: 1});
 
-        res.send(sesion);
+        if(sesion){
+            res.send(sesion);
+
+        }else{
+            res.send("null");
+
+        }
       
     }else{
 
@@ -591,6 +597,38 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
     
 });
 
+app.get('/api/v1/compraravatar/:wallet',async(req,res) => {
+    var wallet =  req.params.wallet.toLowerCase();
+
+    if(web3.utils.isAddress(wallet) ){
+        res.send("0,0,0,0,0,0,0,0,0,0");
+        
+    }else{
+        res.send("0,0,0,0,0,0,0,0,0,0");
+
+    }
+})
+
+app.post('/api/v1/compraravatar/:wallet',async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+
+    req.body.avatar = parseInt(req.body.avatar);
+    
+    if(req.body.token == TOKEN && web3.utils.isAddress(wallet) ){
+
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+
+        res.send("true");
+        
+
+    }else{
+        res.send("false");
+        
+    }
+		
+});
+
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
@@ -605,13 +643,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
             var datos = usuario[0];
             if(datos.active){
                 datos.balance = datos.balance + req.body.coins;
-                datos.ingresado = datos.ingresado + req.body.coins;
-                datos.deposit.push({amount: req.body.coins,
-                    date: Date.now(),
-                    finalized: true,
-                    txhash: "Win coins: "+req.body.coins+" # "+uc.upperCase(wallet)
-                })
-
+                
                 //datos.wcscExchange = await consultarCscExchange(wallet);
 
                 update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
@@ -636,14 +668,6 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
                 checkpoint: 0,
                 reclamado: false,
                 balance: req.body.coins,
-                ingresado: req.body.coins,
-                retirado: 0,
-                deposit: [{amount: req.body.coins,
-                    date: Date.now(),
-                    finalized: true,
-                    txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
-                }],
-                retiro: [],
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
@@ -690,20 +714,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 datos.balance = datos.balance-req.body.coins;
                 if(datos.balance >= 0){
 
-                    datos.retirado = datos.retirado+ req.body.coins;
-                    datos.retiro.push({
-                        amount: req.body.coins,
-                        date: Date.now(),
-                        done: true,
-                        dateSend: Date.now(),
-                        txhash: "Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet)
-                  
-                      })
-
                     //datos.wcscExchange = await consultarCscExchange(wallet);
-
-                    //var nuevoUsuario = new user(datos)
-                    //await nuevoUsuario.save();
 
                     update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
                         {$set:datos}
@@ -731,10 +742,6 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
                 checkpoint: 0,
                 reclamado: false,
                 balance: 0,
-                ingresado: 0,
-                retirado: 0,
-                deposit: [],
-                retiro: [],
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
@@ -823,13 +830,6 @@ async function monedasAlJuego(coins,wallet,intentos){
                         delete datos._id;
                         if(datos.active){
                             datos.balance = coins.shiftedBy(-18).plus(datos.balance).decimalPlaces(0).toNumber();
-                            datos.ingresado = coins.shiftedBy(-18).plus(datos.ingresado).decimalPlaces(0).toNumber();
-                            datos.deposit.push({
-                                amount: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
-                                date: Date.now(),
-                                finalized: true,
-                                txhash: "FROM MARKET: "+coins.shiftedBy(-18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
-                            })
                             datos.txs.push(explorador+result.transactionHash)
                             update = user.updateOne({ wallet: uc.upperCase(wallet) }, {$set: datos})
                             .then(console.log("Coins SEND TO GAME: "+coins.shiftedBy(-18)+" # "+wallet))
@@ -849,14 +849,6 @@ async function monedasAlJuego(coins,wallet,intentos){
                             checkpoint: 0,
                             reclamado: false,
                             balance: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
-                            ingresado: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
-                            retirado: 0,
-                            deposit: [{amount: coins.shiftedBy(-18).decimalPlaces(0).toNumber(),
-                                date: Date.now(),
-                                finalized: true,
-                                txhash: "FROM MARKET: "+coins.shiftedBy(-18).decimalPlaces(0).toString()+" # "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
-                            }],
-                            retiro: [],
                             txs: [explorador+result.transactionHash]
                         });
                 
@@ -978,13 +970,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                     if(datos.active ){
                         datos.payAt = Date.now();
                         datos.balance = datos.balance-coins.shiftedBy(-18).toNumber();
-                        datos.retirado = coins.shiftedBy(-18).toNumber()+datos.retirado;
-                        datos.retiro.push({
-                            amount: coins.shiftedBy(-18).toNumber(),
-                            date: Date.now(),
-                            finalized: true,
-                            txhash: "TO MARKET: "+coins.shiftedBy(-18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
-                        })
+                        
                         datos.txs.push(explorador+result.transactionHash)
                         
                         user.updateOne({ wallet: uc.upperCase(wallet) }, [
@@ -1007,10 +993,6 @@ async function monedasAlMarket(coins,wallet,intentos){
                         checkpoint: 0,
                         reclamado: false,
                         balance: 0,
-                        ingresado: 0,
-                        retirado: 0,
-                        deposit: [],
-                        retiro: [],
                         txs: [explorador+result.transactionHash]
                     });
             
@@ -1602,10 +1584,6 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
                     checkpoint: 0,
                     reclamado: false,
                     balance: 0,
-                    ingresado: 0,
-                    retirado: 0,
-                    deposit: [],
-                    retiro: [],
                     txs: [],
                     pais: "null",
                     imagen: imgDefault,
@@ -1714,14 +1692,6 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 checkpoint: 0,
                 reclamado: false,
                 balance: 0,
-                ingresado: 0,
-                retirado: 0,
-                deposit: [{amount: req.body.coins,
-                    date: Date.now(),
-                    finalized: true,
-                    txhash: "Acount Creation "
-                }],
-                retiro: [],
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
@@ -2234,7 +2204,7 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
         cantidad = 300;
     }
     
-    usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, ingresado: 0, retirado: 0, deposit: 0, retiro:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
+    usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
 
     var lista = [];
     var ex = 0;
@@ -2335,13 +2305,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
             var datos = {}
             if(usuario.active){
                 datos.balance = usuario.balance + req.body.coins;
-                datos.ingresado = usuario.ingresado + req.body.coins;
-                datos.deposit.push({amount: req.body.coins,
-                    date: Date.now(),
-                    finalized: true,
-                    txhash: "Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet)
-                })
-
+                
                 //datos.wcscExchange = await consultarCscExchange(wallet);
 
                 await user.updateOne({ wallet: uc.upperCase(wallet) }, [
@@ -2365,14 +2329,6 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
                 checkpoint: 0,
                 reclamado: false,
                 balance: req.body.coins,
-                ingresado: req.body.coins,
-                retirado: 0,
-                deposit: [{amount: req.body.coins,
-                    date: Date.now(),
-                    finalized: true,
-                    txhash: "Win coins: "+req.body.coins+" # "+req.params.wallet
-                }],
-                retiro: [],
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
@@ -2416,16 +2372,6 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
                 datos.balance = datos.balance-req.body.coins;
                 if(datos.balance >= 0){
 
-                    datos.retirado = datos.retirado+ req.body.coins;
-                    datos.retiro.push({
-                        amount: req.body.coins,
-                        date: Date.now(),
-                        done: true,
-                        dateSend: Date.now(),
-                        txhash: "-Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet)
-                  
-                      })
-
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
                     var nuevoUsuario = new user(datos)
@@ -2455,10 +2401,6 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
                 checkpoint: 0,
                 reclamado: false,
                 balance: 0,
-                ingresado: 0,
-                retirado: 0,
-                deposit: [],
-                retiro: [],
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
