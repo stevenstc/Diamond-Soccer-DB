@@ -667,12 +667,19 @@ app.post('/api/v1/compraravatar/:wallet',async(req,res) => {
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet) ){
 
-        usuario = await user.updateOne({ wallet: uc.upperCase(wallet) },[
-            {$set: {imagen: req.body.avatar} }
-        ])
-
+        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) })
+        
         if(usuario){
-            res.send(req.body.avatar);
+
+            if(usuario.balance-(await appdatos.findOne({})).precioAvatar >= 0){
+                await user.updateOne({ wallet: uc.upperCase(wallet) },[
+                    {$set: {imagen: req.body.avatar, balance: {$sum:["$balance", (await appdatos.findOne({})).precioAvatar]}} }
+                ])
+            }
+        
+            usuario = await user.findOne({ wallet: uc.upperCase(wallet) })
+        
+            res.send(usuario.imagen);
 
         }else{
             res.send("0");
