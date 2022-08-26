@@ -337,8 +337,6 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 
         var ids = await userplayonline.count();
 
-        //console.log(ids)
-
         var usuario1 = await user.findOne({ username: req.body.u1 });
         
         if (usuario1.wallet) {
@@ -403,6 +401,8 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
 app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
     if(req.body.sesionID && req.body.token == TOKEN ){
+
+        console.log(req.body)
 
         var sesionPlay = await userplayonline.findOne({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort([['identificador', 1]]);
         if(sesionPlay){
