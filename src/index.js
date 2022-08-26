@@ -790,13 +790,11 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    req.body.coins = parseInt(req.body.coins);
+    req.body.coins = parseFloat((req.body.coins).toString().replace(",","."));
 
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
-
-        req.body.coins = parseFloat((req.body.coins).toString().replace(",","."));
 
         if (usuario.length >= 1) { 
             var datos = usuario[0];
