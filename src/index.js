@@ -47,7 +47,7 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('*/1 * * * *', async() => {
+cron.schedule('*/5 * * * *', async() => {
 
     var precioactCSC = await precioCSC();
     console.log("########## "+precioactCSC+" ##########")
@@ -404,7 +404,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
         console.log(req.body)
 
-        var sesionPlay = await userplayonline.findOne({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort([['identificador', 1]]);
+        var sesionPlay = await userplayonline.findOne({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort({identificador: -1});
         if(sesionPlay){
             if(!sesionPlay.finalizada){
 
@@ -791,6 +791,8 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
+
+        req.body.coins = parseFloat((req.body.coins).replace(",","."));
 
         if (usuario.length >= 1) { 
             var datos = usuario[0];
