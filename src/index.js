@@ -1886,9 +1886,16 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
             aplicacion = await appstatuses.find({version: req.query.version},{_id:0});
             aplicacion = aplicacion[aplicacion.length-1]
+
+           var lead = await leadborad(3);
+
+           for (let index = 0; index < lead.length; index++) {
+            lead[index] = (await user.findOne({wallet: lead[index]})).username;
+            
+           }
         
         
-            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC+","+(await appdatos.findOne({})).ligaCosto +","+(await appdatos.findOne({})).precioAvatar+",STC" ); 
+            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC+","+(await appdatos.findOne({})).ligaCosto +","+(await appdatos.findOne({})).precioAvatar+","+lead ); 
 
         }else{
 
@@ -1968,14 +1975,12 @@ app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 
 });
 
-app.get('/api/v1/consulta/leadboard',async(req,res) => {
-
-    var cantidad;
-
-    if(!req.query.cantidad){
+async function leadborad(cantidad){
+    
+    if(cantidad <= 0){
         cantidad = 20;
     }else{
-        cantidad = parseInt(req.query.cantidad);
+        cantidad = parseInt(cantidad);
         if(cantidad > 100 )cantidad= 100;
     }
 
@@ -1989,13 +1994,18 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
             lista[index] = aplicacion[index].wallet;
             
         }
-        res.send(lista.toLocaleString());
+        return lista;
 
     }else{
-        res.send("null");
+        return [0,0,0];
             
     }
     
+}
+
+app.get('/api/v1/consulta/leadboard',async(req,res) => {
+
+    res.send((await leadborad(req.body.cantidad)).toString());
 });
 
 app.get('/api/v1/consulta/redwardleague',async(req,res) => {
