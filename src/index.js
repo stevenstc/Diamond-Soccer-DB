@@ -434,7 +434,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     
                     if( req.body.ganador === "Empatado" && goles1 === goles2){
 
-                        var pago = sesionPlay.csc - sesionPlay.csc * 0.1
+                        var pago = parseFloat(sesionPlay.csc) - parseFloat(sesionPlay.csc) * 0.1
 
                         await user.updateOne({ username: sesionPlay.u1 }, [
                             {$set: {balance: {$sum:["$balance",pago]}} }
@@ -446,7 +446,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     }
 
-                    pago = (sesionPlay.csc*2) - (sesionPlay.csc*2) * 0.1
+                    pago = (parseFloat(sesionPlay.csc)*2) - (parseFloat(sesionPlay.csc)*2) * 0.1
 
                     if(req.body.ganador === sesionPlay.u1 && goles1 > goles2){
 
