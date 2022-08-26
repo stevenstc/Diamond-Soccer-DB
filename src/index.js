@@ -61,6 +61,7 @@ cron.schedule('0 * * * * *', async() => {
         await appdatos.updateOne({},[
             { $set:{cscSalas: [
                 new BigNumber(0.01/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(0.03/precioactCSC).decimalPlaces(2).toNumber(),
                 new BigNumber(0.05/precioactCSC).decimalPlaces(2).toNumber(),
                 new BigNumber(0.1/precioactCSC).decimalPlaces(2).toNumber(),
                 new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber(),
@@ -350,6 +351,8 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             var soporte2 = usuario2.wallet;
         }
 
+        var csc = parseFloat(req.body.csc);
+
         var playOnline = new userplayonline({
             identificador: ids,
             sesionID: req.body.sesionID,
@@ -360,13 +363,13 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             tipo: req.body.tipo,
             saqueInicial: aleatorio,
             turno: aleatorio,
-            csc: req.body.csc,
+            csc: csc,
             u1: req.body.u1,
             u2: req.body.u2,
             soporte1: soporte1,
             soporte2: soporte2,
-            goles1: "",
-            goles2: ""
+            goles1: 0,
+            goles2: 0
             
         });
 
