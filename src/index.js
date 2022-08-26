@@ -689,7 +689,7 @@ app.post('/api/v1/compraravatar/:wallet',async(req,res) => {
 
             if(usuario.balance-(await appdatos.findOne({})).precioAvatar >= 0){
                 await user.updateOne({ wallet: uc.upperCase(wallet) },[
-                    {$set: {imagen: req.body.avatar, balance: {$sum:["$balance", (await appdatos.findOne({})).precioAvatar]}} }
+                    {$set: {imagen: req.body.avatar, balance: {$subtract:["$balance", (await appdatos.findOne({})).precioAvatar]}} }
                 ])
             }
         
