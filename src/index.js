@@ -1284,9 +1284,9 @@ app.get('/api/v1/ben10',async(req,res) => {
     if(req.query.ganadoliga){
 
         if(aplicacion.ganadoliga){
-            aplicacion.ganadoliga += parseInt(req.query.ganadoliga);
+            aplicacion.ganadoliga += parseFloat(req.query.ganadoliga);
         }else{
-            aplicacion.ganadoliga = parseInt(req.query.ganadoliga);
+            aplicacion.ganadoliga = parseFloat(req.query.ganadoliga);
         }
 
         update = await appdatos.updateOne({ _id: aplicacion._id }, [
@@ -1300,7 +1300,7 @@ app.get('/api/v1/ben10',async(req,res) => {
     
         if(req.query.ganado){
 
-            aplicacion.ganado += parseInt(req.query.ganado);
+            aplicacion.ganado += parseFloat(req.query.ganado);
 
             update = await appdatos.updateOne({ _id: aplicacion._id }, [
                 {$set:{ganado: aplicacion.ganado}}
