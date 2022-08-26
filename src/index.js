@@ -423,9 +423,9 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     }
                 }
 
-                console.log("usuario 1: "+req.body.goles1+" | "+goles1);
-                console.log("usuario 2: "+req.body.goles2+" | "+goles2);
-                console.log("Dictamen: "+req.body.ganador);
+                //console.log("usuario 1: "+req.body.goles1+" | "+goles1);
+                //console.log("usuario 2: "+req.body.goles2+" | "+goles2);
+                //console.log("Dictamen: "+req.body.ganador);
 
                 var ganador = req.body.ganador;
 
