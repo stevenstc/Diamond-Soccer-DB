@@ -10,7 +10,7 @@ module.exports = mongoose.model('userplayonline', {
   tipo: String,
   saqueInicial: String,
   turno: String,
-  csc: Number,
+  csc: String,
   u1: String,
   u2: String,
   soporte1: String,

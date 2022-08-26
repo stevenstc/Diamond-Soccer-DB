@@ -349,7 +349,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             var soporte2 = usuario2.wallet;
         }
 
-        var csc = parseFloat((req.body.csc).replace(",","."));
+        var csc = parseFloat((req.body.csc).toString(10).replace(",","."));
 
         var playOnline = new userplayonline({
             identificador: ids,
@@ -361,7 +361,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             tipo: req.body.tipo,
             saqueInicial: aleatorio,
             turno: aleatorio,
-            csc: csc,
+            csc: csc.toString(10),
             u1: req.body.u1,
             u2: req.body.u2,
             soporte1: soporte1,
@@ -524,7 +524,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     res.send("true");
                 }
 
-                
+
                 //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
 
