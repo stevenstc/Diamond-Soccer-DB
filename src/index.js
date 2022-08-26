@@ -489,7 +489,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     ]);
 
                     await appdatos.updateOne({ }, [
-                        {$set: {ganadoliga: {$sum:["$ganadoliga" , "$ligaCosto"]}}}
+                        {$set: {ganadoliga: {$sum:["$ganadoliga" , (await appdatos.findOne({})).ligaCosto*2]}}}
                     ])
 
                     
