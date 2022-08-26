@@ -322,7 +322,7 @@ app.get('/api/v1/sesion/consultar/latesmaches',async(req,res) => {
         long = parseInt(req.query.long)
     }
  
-    var sesion = await userplayonline.find({finalizada: true},{__v:0,_id:0}).limit(long);
+    var sesion = await userplayonline.find({finalizada: true},{__v:0,_id:0}).sort({identificador:-1}).limit(long);
 
     res.send(sesion);
         
