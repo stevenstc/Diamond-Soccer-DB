@@ -1892,11 +1892,12 @@ app.get('/api/v1/app/init/',async(req,res) => {
                     aplicacion.liga = "off"
 
                 }else{
-                    ////aplicacion.liga = "on"
+                    //aplicacion.liga = "on"
                 }
 
             }else{
 
+                /*
                 appData = new appdatos({
                     entregado: 0,
                     ganado: 0, 
@@ -1905,7 +1906,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
                     finliga: Date.now() + 86400 * 1000 * 30 
                 });
             
-                await appData.save();
+                await appData.save();*/
 
                 appData.finliga = 30;
 
