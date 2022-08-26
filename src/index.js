@@ -60,11 +60,11 @@ cron.schedule('0 * * * * *', async() => {
     
         await appdatos.updateOne({},[
             { $set:{cscSalas: [
-                new BigNumber(0.01/precioactCSC).decimalPlaces(0).toNumber(),
-                new BigNumber(0.05/precioactCSC).decimalPlaces(0).toNumber(),
-                new BigNumber(0.1/precioactCSC).decimalPlaces(0).toNumber(),
-                new BigNumber(0.5/precioactCSC).decimalPlaces(0).toNumber(),
-                new BigNumber(1/precioactCSC).decimalPlaces(0).toNumber()
+                new BigNumber(0.01/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(0.05/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(0.1/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber()
 
             ]}}
         ]);
