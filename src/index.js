@@ -521,6 +521,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         {$set: {fin: Date.now(), finalizada: true, ganador: ganador, goles1: goles1,goles2:goles2}}
                     ]);
 
+                    userplayonline.updateMany({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]},[
+                        {$set: {fin: Date.now(), finalizada: true, ganador: "TimeOut"}}
+                    ]).exec();
+
                     console.log(sesionPlay.tipo+" | #"+sesionPlay.identificador+" | "+ganador+" | "+goles1+"-"+goles2)
 
                     //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
