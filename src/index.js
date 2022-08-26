@@ -408,10 +408,6 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
         if(sesionPlay){
             if(!sesionPlay.finalizada){
 
-                await userplayonline.updateOne({ _id: sesionPlay._id },[
-                    {$set: {fin: Date.now(), finalizada: true, ganador: ganador, goles1: goles1, goles2:goles2}}
-                ]);
-
                 var goles1 = 0;
                 var goles2 = 0;
 
@@ -426,6 +422,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         goles2 = req.body.goles2;
                     }
                 }
+
+                await userplayonline.updateOne({ _id: sesionPlay._id },[
+                    {$set: {fin: Date.now(), finalizada: true, ganador: ganador, goles1: goles1, goles2:goles2}}
+                ]);
 
                 var ganador = req.body.ganador;
 
