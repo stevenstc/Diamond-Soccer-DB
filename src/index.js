@@ -402,7 +402,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
     if(req.body.sesionID && req.body.token == TOKEN ){
 
-        console.log(req.body)
+        //console.log(req.body)
 
         var sesionPlay = await userplayonline.findOne({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort({identificador: -1});
         if(sesionPlay){
@@ -470,9 +470,6 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     console.log(sesionPlay.tipo+" | #"+sesionPlay.identificador+" | "+sesionPlay.csc+" | "+ganador+" | "+goles1+"-"+goles2)
 
-
-                    //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
-
                     res.send("true");
                 }
 
@@ -518,19 +515,17 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     }
 
                     await userplayonline.updateOne({ _id: sesionPlay._id },[
-                        {$set: {fin: Date.now(), finalizada: true, ganador: ganador, goles1: goles1,goles2:goles2}}
+                        {$set: {fin: Date.now(), finalizada: true, ganador: ganador, goles1: goles1,goles2:goles2,csc: "League"}}
                     ]);
-
-                    userplayonline.updateMany({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]},[
-                        {$set: {fin: Date.now(), finalizada: true, ganador: "TimeOut"}}
-                    ]).exec();
 
                     console.log(sesionPlay.tipo+" | #"+sesionPlay.identificador+" | "+ganador+" | "+goles1+"-"+goles2)
 
-                    //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
                     res.send("true");
                 }
+
+                    //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
+
 
             
             }else{
