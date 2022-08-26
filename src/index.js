@@ -431,6 +431,12 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
+                    var fee = (parseFloat(sesionPlay.csc)*2) * 0.1;
+
+                    await appdatos.updateOne({ }, [
+                        {$set:{ganado: {$sum:["$ganado",fee]}}}
+                    ])
+
                     
                     if(ganador === "Empatado" && goles1 === goles2){
 
@@ -481,6 +487,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                         {$set: {LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
                     ]);
+
+                    await appdatos.updateOne({ }, [
+                        {$set: {ganadoliga: {$sum:["$ganadoliga" , "$ligaCosto"]}}}
+                    ])
 
                     
                     if(ganador === "Empatado" && goles1 === goles2){
@@ -1264,46 +1274,6 @@ app.get('/api/v1/enlinea',async(req,res) => {
     
 });
 
-app.get('/api/v1/ben10',async(req,res) => {
-
-    var aplicacion = await appdatos.find({});
-    aplicacion = aplicacion[aplicacion.length-1]
-
-    if(req.query.ganadoliga){
-
-        if(aplicacion.ganadoliga){
-            aplicacion.ganadoliga += parseFloat(req.query.ganadoliga);
-        }else{
-            aplicacion.ganadoliga = parseFloat(req.query.ganadoliga);
-        }
-
-        update = await appdatos.updateOne({ _id: aplicacion._id }, [
-                {$set: {ganadoliga: aplicacion.ganadoliga}}
-            ])
-
-        res.send("true");
-
-    }else{
-
-    
-        if(req.query.ganado){
-
-            aplicacion.ganado += parseFloat(req.query.ganado);
-
-            update = await appdatos.updateOne({ _id: aplicacion._id }, [
-                {$set:{ganado: aplicacion.ganado}}
-            ])
-
-            res.send("true");
-
-        }else{
-            
-            res.send(appstatus.ganado+","+appstatus.entregado);
-
-        }
-    }
-    
-});
 
 app.get('/api/v1/texto/daily/', async(req,res) =>{
 
