@@ -792,7 +792,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
         usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
-        req.body.coins = parseFloat((req.body.coins).replace(",","."));
+        req.body.coins = parseFloat((req.body.coins).toString().replace(",","."));
 
         if (usuario.length >= 1) { 
             var datos = usuario[0];
@@ -2386,7 +2386,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    req.body.coins = parseInt(req.body.coins);
+    req.body.coins = parseFloat(req.body.coins);
     
     if(req.body.token == TOKEN2 && web3.utils.isAddress(wallet)){
 
@@ -2446,7 +2446,7 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    req.body.coins = parseInt(req.body.coins);
+    req.body.coins = parseFloat(req.body.coins);
 
     if(req.body.token == TOKEN2  && web3.utils.isAddress(wallet)){
 
