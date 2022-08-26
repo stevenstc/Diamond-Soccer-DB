@@ -54,7 +54,23 @@ cron.schedule('0 * * * * *', async() => {
     if( precioactCSC > 0){
 
         console.log("valor Diaria: "+new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
-        await appdatos.updateOne({},{ $set: {valorDiaria: new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber()}});
+        await appdatos.updateOne({},[
+            { $set: {valorDiaria: new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber()}}
+        ]);
+    
+        await appdatos.updateOne({},[
+            { $set:{cscSalas: [
+                new BigNumber(0.01/precioactCSC).decimalPlaces(0).toNumber(),
+                new BigNumber(0.05/precioactCSC).decimalPlaces(0).toNumber(),
+                new BigNumber(0.1/precioactCSC).decimalPlaces(0).toNumber(),
+                new BigNumber(0.5/precioactCSC).decimalPlaces(0).toNumber(),
+                new BigNumber(1/precioactCSC).decimalPlaces(0).toNumber()
+
+            ]}}
+        ]);
+
+        console.log((await appdatos.findOne({})).cscSalas)
+    
     }
 
 }, {
@@ -1902,7 +1918,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
            }
         
         
-            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC+","+(await appdatos.findOne({})).ligaCosto +","+(await appdatos.findOne({})).precioAvatar+","+lead ); 
+            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC+","+(await appdatos.findOne({})).ligaCosto +","+(await appdatos.findOne({})).precioAvatar+","+lead+","+(await appdatos.findOne({})).cscSalas ); 
 
         }else{
 
@@ -2419,12 +2435,6 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
         res.send("false");
     }
 		
-});
-
-app.get('/api/v1/salas/consultar/',async(req,res) => {
-
-    res.send((await appdatos.findOne({})).cscSalas.toString());
-
 });
 
 app.post('/api/v1/quitar2/:wallet',async(req,res) => {
