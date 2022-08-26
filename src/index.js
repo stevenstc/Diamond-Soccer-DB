@@ -524,7 +524,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     res.send("true");
                 }
 
-                    //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
+                
+                //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
 
             
