@@ -351,7 +351,7 @@ app.post('/api/v1/sesion/crear/',async(req,res) => {
             var soporte2 = usuario2.wallet;
         }
 
-        var csc = parseFloat(req.body.csc);
+        var csc = parseFloat((req.body.csc).replace(",","."));
 
         var playOnline = new userplayonline({
             identificador: ids,
