@@ -1883,8 +1883,10 @@ app.get('/api/v1/app/init/',async(req,res) => {
             
            }
         
-        
-            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+(await appdatos.findOne({})).maximoCSC+","+(await appdatos.findOne({})).ligaCosto +","+(await appdatos.findOne({})).precioAvatar+","+lead+","+(await appdatos.findOne({})).cscSalas ); 
+
+           var inicial = await appdatos.findOne({})
+    
+            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+inicial.maximoCSC+","+inicial.ligaCosto +","+inicial.precioAvatar+","+lead+","+inicial.cscSalas+","+inicial.onOffServers   ); 
 
         }else{
 
