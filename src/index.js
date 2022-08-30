@@ -423,12 +423,13 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     }
                 }
 
+                var ganador = req.body.ganador;
+
                 await userplayonline.updateOne({ _id: sesionPlay._id },[
                     {$set: {fin: Date.now(), finalizada: true, ganador: ganador, goles1: goles1, goles2:goles2}}
                 ]);
 
-                var ganador = req.body.ganador;
-
+                
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
                     var fee = (parseFloat(sesionPlay.csc)*2) * 0.1;
