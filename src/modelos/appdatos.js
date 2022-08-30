@@ -12,6 +12,7 @@ module.exports = mongoose.model('appdatos', {
   cscSalas: [Number],
   maximoCSC: Number,
   ligaCosto: Number,
-  precioAvatar: Number
+  precioAvatar: Number,
+  onOffServers: [String]
 
 });
