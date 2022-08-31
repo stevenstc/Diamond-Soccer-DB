@@ -500,27 +500,50 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     if(ganador === "Empatado" && goles1 === goles2){
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
                         ]);
                         await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
                         ]);
 
                     }
 
                     if(ganador === sesionPlay.u1 && goles1 > goles2){
 
-                        await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
-                        ]); 
+                        if(goles1 < 99){
+
+                            await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
+                            ]);
+
+                        }else{
+                            await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            ]);
+                            await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            ]);
+                        }
+
+                         
 
                     }
 
                     if(ganador === sesionPlay.u2 && goles2 > goles1){
 
-                        await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
-                        ]); 
+                        if(goles1 < 99){
+
+                            await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
+                            ]); 
+                        }else{
+                            await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            ]);
+                            await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
+                            ]);
+                        }
 
                     }
 
