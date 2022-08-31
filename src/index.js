@@ -1978,7 +1978,7 @@ async function leadborad(cantidad){
 
     var lista = [];
 
-    var aplicacion = await playerData.find({}).limit(cantidad).sort({"CupsWin": -1, "UserOnline": -1});
+    var aplicacion = await playerData.find({}).limit(cantidad).sort({"CupsWin": -1,"LeaguesOnlineWins": -1, "UserOnline": -1});
       
     if (aplicacion.length >= 1) {
         
