@@ -13,6 +13,7 @@ module.exports = mongoose.model('appdatos', {
   maximoCSC: Number,
   ligaCosto: Number,
   precioAvatar: Number,
-  onOffServers: [Boolean]
+  onOffServers: [Boolean],
+  entrenamiento: Number
 
 });
