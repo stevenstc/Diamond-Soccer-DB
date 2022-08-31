@@ -37,10 +37,9 @@ app.use(bodyParser.raw());
 app.use(bodyParser.text());
 
 cron.schedule('0 0 * * *', async() => {
-    console.log('Reinicio Misiones diarias: '+Date());
+    console.log('Reinicio Misiones diarias y Oportunidad de liga: '+Date());
     await resetDailyMision();
-
-    console.log('FIN Reinicio Misiones diarias: '+Date());
+    console.log('FIN Reinicio Misiones diarias y Oportunidad de liga: '+Date());
 
 }, {
     scheduled: true,
@@ -155,6 +154,9 @@ async function precioCSC(){
 
 async function resetDailyMision(){
     await user.updateMany({},{ $set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}).exec();
+
+    await playerData.updateMany({},{ $set: {LeagueOpport:0}}).exec();
+
 }
 
 app.get('/', require("./v1/funcionando"));
@@ -2168,8 +2170,6 @@ app.get('/api/v1/consulta/playerdata/:wallet',async(req,res) => {
 app.post('/api/v1/reset/leadboard',async(req,res) => {
 
     if(req.body.token == TOKEN ){
-
-        //var dataUsuarios = await playerData.find({}).sort([['CupsWin', 1]]);
 
         await playerData.updateMany({},{ $set: {CupsWin:0, LeagueOpport:0}}).exec();
         
