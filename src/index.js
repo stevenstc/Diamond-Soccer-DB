@@ -53,7 +53,7 @@ cron.schedule('*/5 * * * *', async() => {
     console.log("########## "+precioactCSC+" ##########")
     if( precioactCSC > 0){
 
-        console.log("valor Diaria: "+new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
+        //console.log("valor Diaria: "+new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
         await appdatos.updateOne({},[
             { $set: {valorDiaria: new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber()}}
         ]);
@@ -70,7 +70,11 @@ cron.schedule('*/5 * * * *', async() => {
             ]}}
         ]);
 
-        console.log((await appdatos.findOne({})).cscSalas)
+        await appdatos.updateOne({},[
+            { $set: {ligaCosto: new BigNumber(0.03/precioactCSC).decimalPlaces(2).toNumber()}}
+        ]);
+
+        //console.log((await appdatos.findOne({})).cscSalas)
     
     }
 
