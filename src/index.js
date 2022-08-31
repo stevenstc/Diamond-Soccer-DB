@@ -2045,18 +2045,14 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
             }
         }
 
-        var poolliga = appData.ganadoliga;
+        var poolliga = (appData.ganadoliga)*0.9;
 
-        poolliga = poolliga*0.7
-
-        var porcentajes = [0.4,0.2,0.15,0.05,0.04,0.04,0.04,0.03,0.03,0.02]
+        var porcentajes = [0.4,0.2,0.15,0.06,0.04,0.035,0.035,0.03,0.03,0.02]
         var lista = [];
-
-        var usuarios = await playerData.find({}).sort([['CupsWin', -1]]).limit(cantidad);
         
-        if (usuarios.length >= 1) {
+        if (cantidad >= 1) {
             
-            for (let index = 0; index < usuarios.length; index++) {
+            for (let index = 0; index < cantidad; index++) {
     
                 lista[index] = parseInt(poolliga*porcentajes[index]);
             
