@@ -432,13 +432,9 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
-                    var fee = (parseFloat(sesionPlay.csc)*2) * 0.1;
+                    var fee = (parseFloat(sesionPlay.csc) * 0.1);
 
-                    await appdatos.updateOne({ }, [
-                        {$set:{ganado: {$sum:["$ganado",fee]}}}
-                    ])
-
-                    
+                
                     if(ganador === "Empatado" && goles1 === goles2){
 
                         var pago = parseFloat(sesionPlay.csc) - parseFloat(sesionPlay.csc) * 0.1
@@ -450,8 +446,15 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             {$set: {balance: {$sum:["$balance",pago]}} }
                         ]);
 
+                        
 
+                    }else{
+                        fee = fee*2
                     }
+
+                    await appdatos.updateOne({ }, [
+                        {$set:{ganado: {$sum:["$ganado",fee]}}}
+                    ])
 
                     pago = (parseFloat(sesionPlay.csc)*2) - (parseFloat(sesionPlay.csc)*2) * 0.1
 
@@ -479,7 +482,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 if ((sesionPlay.tipo).search("LEAGUE") != -1) {
 
                     await userplayonline.updateOne({ _id: sesionPlay._id },[
-                        {$set: {fin: Date.now(), finalizada: true, ganador: ganador, goles1: goles1,goles2:goles2,csc: "League"}}
+                        {$set: {csc: 0}}
                     ]);
 
                     await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
@@ -527,11 +530,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     res.send("true");
                 }
 
-
                 //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
-
-            
             }else{
                 res.send("true");
             }
