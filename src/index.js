@@ -46,7 +46,7 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('*/30 * * * * *', async() => {
+cron.schedule('* */5 * * * *', async() => {
 
     
 
