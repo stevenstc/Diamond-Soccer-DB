@@ -1141,9 +1141,6 @@ async function recompensaDiaria(wallet){
 
     var cantidad = 43;
 
-    //20%
-    var coins = ((await appdatos.findOne({})).valorDiaria)*0.2; // CSC coins comunes todos
-    var bono = false;
 
     for (let index = 0; index < cantidad; index++) {
         inventario[index] = 0;
@@ -1181,33 +1178,43 @@ async function recompensaDiaria(wallet){
 
         }
     }
+
+    if(true) {// habilitar bono comunes
+        for (let index = 10; index < inventario.length; index++) {
+            if(inventario[index]){
+
+                var coins = 0.4; // CSC coins comunes todos
+            }
+        }
+
+    }
+
+    if (true) { // habilitar bono epico
+
+        for (let index = 3; index < 10; index++) {
+            if(inventario[index]){
+
+                coins += 0.7;
+            }
+        }
+    }
     
 
     if (true) { // habilitar bono legendarios
         for (let index = 0; index < 3; index++) {
             if(inventario[index]){
 
-                //80%+20%
-                coins += ((await appdatos.findOne({})).valorDiaria)*0.8;
-                bono = true;
-                break;
+                coins += 1;
             }
 
         }
     }
 
-    if (true) { // habilitar bono epico
-        if(!bono){
-            for (let index = 3; index < 10; index++) {
-                if(inventario[index]){
-
-                    //50%
-                    coins += ((await appdatos.findOne({})).valorDiaria)*0.5;
-                    break;
-                }
-            }
-        }
+    if(coins > 1){
+        coins = 1; // limite del 100% en la recompensa diaria
     }
+
+    coins = ((await appdatos.findOne({})).valorDiaria)*coins;
 
     //console.log(coins);
     return coins;
@@ -1916,7 +1923,8 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
            var inicial = await appdatos.findOne({})
     
-            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+inicial.maximoCSC+","+inicial.ligaCosto +","+inicial.precioAvatar+","+lead+","+inicial.cscSalas+","+inicial.onOffServers+","+inicial.entrenamiento   ); 
+            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+inicial.maximoCSC+","+inicial.ligaCosto +","+inicial.precioAvatar+","+lead+","+inicial.cscSalas+","+inicial.onOffServers+","+inicial.entrenamiento+",true,true,true"   ); 
+                                                                                                                                                                                                                                                                                                                                                                //Windows,Android,Web
 
         }else{
 
