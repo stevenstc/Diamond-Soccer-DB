@@ -46,10 +46,14 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('*/5 * * * *', async() => {
+cron.schedule('*/30 * * * * *', async() => {
+
+    
 
     var precioactCSC = await precioCSC();
     console.log("########## "+precioactCSC+" ##########")
+
+    
     if( precioactCSC > 0){
 
         //console.log("valor Diaria: "+new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
@@ -155,7 +159,9 @@ async function precioCSC(){
 async function resetDailyMision(){
     await user.updateMany({},{ $set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}).exec();
 
-    await playerData.updateMany({},{ $set: {LeagueOpport:0}}).exec();
+    await playerData.updateMany({},
+        { $set: {FriendLyWins: 0, DuelsPlays:0 ,LeagueOpport: 0, TournamentsPlays: 0, }}
+    ).exec();
 
 }
 
@@ -605,12 +611,12 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
         var verInventario = await contractInventario.methods
         .verInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
-        .catch(err => {console.log(err); return 0})
+        .catch(err => {console.log(err); return []})
 
         var nombres_items = await contractInventario.methods
         .verItemsMarket()
         .call({ from: web3.eth.accounts.wallet[0].address })
-        .catch(err => {console.log(err); return 0})
+        .catch(err => {console.log(err); return []})
 
   
         for (let index = 0; index < verInventario.length; index++) {
@@ -669,7 +675,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
 
         if (usuario) {
-            res.send((usuario.balance).toString(10));
+            res.send(usuario.balance+"");
 
         }else{
             res.send("0");
@@ -1136,36 +1142,30 @@ async function monedasAlMarket(coins,wallet,intentos){
 }
 
 async function recompensaDiaria(wallet){
+
+    wallet = wallet.toLocaleLowerCase();
   
     var inventario = [];
-
+    
     var cantidad = 43;
 
+    inventario[cantidad] = 0;
 
-    for (let index = 0; index < cantidad; index++) {
-        inventario[index] = 0;
-        for (let t = 0; t < testers.length; t++) {
-            if(testers[t] == wallet){
-                inventario[cantidad] = 1;
-            }
-            
-        }
-        
-    }
-
+    var coins = 0;
+    
     if (true) { // Habilitar reconocimiento de equipos
 
         var verInventario = await contractInventario.methods
         .verInventario(wallet)
         .call({ from: web3.eth.accounts.wallet[0].address })
-        .catch(err => {console.log(err); return 0})
+        .catch(err => {console.log(err); return []})
 
         var nombres_items = await contractInventario.methods
         .verItemsMarket()
         .call({ from: web3.eth.accounts.wallet[0].address })
-        .catch(err => {console.log(err); return 0})
+        .catch(err => {console.log(err); return []})
 
-            
+
         for (let index = 0; index < verInventario.length; index++) {
 
             var item = nombres_items[0][verInventario[index]];
@@ -1179,11 +1179,26 @@ async function recompensaDiaria(wallet){
         }
     }
 
+    if(false){ // habilitar bono tester
+
+        for (let index = 0; index < cantidad; index++) {
+        
+            for (let t = 0; t < testers.length; t++) {
+                if(testers[t] == wallet){
+                    coins += 0.1
+                }
+                
+            }
+            
+        }
+
+    }
+
     if(true) {// habilitar bono comunes
         for (let index = 10; index < inventario.length; index++) {
             if(inventario[index]){
 
-                var coins = 0.4; // CSC coins comunes todos
+                coins += 0.4; // CSC coins comunes todos
             }
         }
 
@@ -1216,7 +1231,6 @@ async function recompensaDiaria(wallet){
 
     coins = ((await appdatos.findOne({})).valorDiaria)*coins;
 
-    //console.log(coins);
     return coins;
 
 }
@@ -1474,7 +1488,7 @@ async function asignarMisionDiaria(wallet){
 
                 if(datos.active ){
 
-                    var coins = parseInt(await recompensaDiaria(wallet));
+                    var coins = await recompensaDiaria(wallet);
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
@@ -1485,7 +1499,7 @@ async function asignarMisionDiaria(wallet){
                         {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
                     ]);
                     await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {DuelsPlays: "0", FriendLyWins: "0"}}
+                        {$set: {FriendLyWins: 0, DuelsPlays: 0, TournamentsPlays: 0}}
                     ]);
 
                     console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
@@ -1924,7 +1938,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
            var inicial = await appdatos.findOne({})
     
             res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+inicial.maximoCSC+","+inicial.ligaCosto +","+inicial.precioAvatar+","+lead+","+inicial.cscSalas+","+inicial.onOffServers+","+inicial.entrenamiento+","+inicial.plaformaWin+","+inicial.plaformaAnd+","+inicial.plaformaWeb   ); 
-                                                                                                                                                                                                                                                                                                                                                                //Windows,Android,Web
+
 
         }else{
 
@@ -2242,10 +2256,10 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
         
             datos.UserOnline = Date.now();
 
-            if( Date.now() >= parseInt(usuario.LeagueTimer) + 86400*1000){
+            /*if( Date.now() >= parseInt(usuario.LeagueTimer) + 86400*1000){
                 datos.LeagueOpport = 0;
                 datos.LeagueTimer = Date.now();
-            }
+            }*/
 
             playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
                 {$set: datos}
