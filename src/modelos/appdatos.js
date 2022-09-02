@@ -14,6 +14,9 @@ module.exports = mongoose.model('appdatos', {
   ligaCosto: Number,
   precioAvatar: Number,
   onOffServers: [Boolean],
-  entrenamiento: Number
+  entrenamiento: Number,
+  plaformaWin: Boolean,
+  plaformaAnd: Boolean,
+  plaformaWeb: Boolean
 
 });
