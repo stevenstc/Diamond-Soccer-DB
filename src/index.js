@@ -1338,31 +1338,25 @@ app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
 
     if(web3.utils.isAddress(wallet)){
 
-        var data = await playerData.find({wallet: uc.upperCase(wallet)});
-        var usuario = await user.find({wallet: uc.upperCase(wallet)})
+        var data = await playerData.findOne({wallet: uc.upperCase(wallet)});
+        var usuario = await user.findOne({wallet: uc.upperCase(wallet)})
 
-        if (data.length >= 1) {
-            data = data[0];
-            usuario = usuario[0];
-
-            var no_time = false;
-
-            if(Date.now() < usuario.checkpoint && usuario.reclamado){
-                no_time = true;
-            }
+        if (data && usuario) {
 
             await pagarDiaria(wallet);
+
+            // true =  permite completar misiones || false = vuelva pronto
         
-            res.send(data.TournamentsPlays+","+data.DuelsPlays+","+data.FriendLyWins+","+usuario.reclamado+","+no_time);
+            res.send(data.FriendLyWins+","+data.DuelsPlays+","+data.TournamentsPlays+","+!usuario.reclamado);
 
         }else{
 
-            res.send("0,0,0,false,false");
+            res.send("0,0,0,true");
                 
         }
 
     }else{
-        res.send("0,0,0,false,false");
+        res.send("0,0,0,true");
     }
 
 });
