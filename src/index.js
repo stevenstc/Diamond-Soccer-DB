@@ -1345,7 +1345,7 @@ app.post('/api/v1/consulta/dailymission/:wallet',async(req,res) => {
 
             await pagarDiaria(wallet);
 
-            // true =  permite completar misiones || false = vuelva pronto
+            // true =  permite completar misiones || false = vuelva mañana 
         
             res.send(data.FriendLyWins+","+data.DuelsPlays+","+data.TournamentsPlays+","+!usuario.reclamado);
 
