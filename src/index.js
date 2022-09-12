@@ -36,7 +36,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(bodyParser.text());
 
-cron.schedule('0 17 * * *', async() => {
+cron.schedule('0 0 * * *', async() => {
     console.log('Reinicio Misiones diarias y Oportunidad de liga: '+Date());
     await resetDailyMision();
     console.log('FIN Reinicio Misiones diarias y Oportunidad de liga: '+Date());
@@ -58,17 +58,19 @@ cron.schedule('* */5 * * * *', async() => {
 
         //console.log("valor Diaria: "+new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
         await appdatos.updateOne({},[
-            { $set: {valorDiaria: new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber()}}
+            { $set: {valorDiaria: new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber()}}
         ]);
+
+        var salas = [0.05 , 0.1 , 0.3 , 0.5 , 1 , 3];
     
         await appdatos.updateOne({},[
             { $set:{cscSalas: [
-                new BigNumber(0.01/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(0.03/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(0.05/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(0.1/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(1/precioactCSC).decimalPlaces(2).toNumber()
+                new BigNumber(salas[0]/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(salas[1]/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(salas[2]/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(salas[3]/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(salas[4]/precioactCSC).decimalPlaces(2).toNumber(),
+                new BigNumber(salas[5]/precioactCSC).decimalPlaces(2).toNumber()
 
             ]}}
         ]);
@@ -100,7 +102,7 @@ const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
 const miniCoins = parseInt(process.env.APP_MIN_COINS) || 1000;
 
-const cantidadPersonasDiaria = process.env.APP_CANTDIARIA || 30;
+const cantidadPersonasDiaria = process.env.APP_CANTDIARIA || 60;
 
 const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
 const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
@@ -179,8 +181,6 @@ async function resetDailyMision(){
             {$set:{diponibleDiaria: disponibleMes, disponibleDiariaMES:disponibleMes}}
         ])
     }
-
-    
 
 }
 
@@ -1212,7 +1212,7 @@ async function recompensaDiaria(wallet){
 
     if(true) {// habilitar bono comunes
         for (let index = 10; index < inventario.length; index++) {
-            if(coins < 0.6){
+            if(coins < 0.5){
                 if(inventario[index]){
 
                     coins += 0.4; // CSC coins comunes todos
@@ -1256,7 +1256,7 @@ async function recompensaDiaria(wallet){
     }
 
     if(coins > 1){
-        coins = 1; // limite del 100% en la recompensa diaria
+        coins = 1; // limite del 100% en la recompensa diaria con legendarios y otros
     }
 
     coins = ((await appdatos.findOne({})).valorDiaria)*coins;
