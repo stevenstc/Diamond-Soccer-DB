@@ -17,6 +17,9 @@ module.exports = mongoose.model('appdatos', {
   entrenamiento: Number,
   plaformaWin: Boolean,
   plaformaAnd: Boolean,
-  plaformaWeb: Boolean
+  plaformaWeb: Boolean,
+  diponibleDiaria: Number,
+  disponibleDiariaMES: Number,
+  ganadoDEVS: Number
 
 });

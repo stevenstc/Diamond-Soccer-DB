@@ -36,7 +36,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(bodyParser.text());
 
-cron.schedule('0 0 * * *', async() => {
+cron.schedule('0 17 * * *', async() => {
     console.log('Reinicio Misiones diarias y Oportunidad de liga: '+Date());
     await resetDailyMision();
     console.log('FIN Reinicio Misiones diarias y Oportunidad de liga: '+Date());
@@ -100,6 +100,8 @@ const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
 const miniCoins = parseInt(process.env.APP_MIN_COINS) || 1000;
 
+const cantidadPersonasDiaria = process.env.APP_CANTDIARIA || 30;
+
 const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
 const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
 const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
@@ -162,6 +164,23 @@ async function resetDailyMision(){
     await playerData.updateMany({},
         { $set: {FriendLyWins: 0, DuelsPlays:0 ,LeagueOpport: 0, TournamentsPlays: 0, }}
     ).exec();
+
+    var diponibleParaElDia = (await appdatos.findOne({})).valorDiaria*cantidadPersonasDiaria
+
+    var disponibleMes = (await appdatos.findOne({})).disponibleDiariaMES
+
+    if(disponibleMes - diponibleParaElDia >= 0){
+
+        await appdatos.updateOne({},[
+            {$set:{diponibleDiaria: diponibleParaElDia, disponibleDiariaMES:disponibleMes}}
+        ])
+    }else{
+        await appdatos.updateOne({},[
+            {$set:{diponibleDiaria: disponibleMes, disponibleDiariaMES:disponibleMes}}
+        ])
+    }
+
+    
 
 }
 
@@ -1146,11 +1165,8 @@ async function recompensaDiaria(wallet){
     wallet = wallet.toLocaleLowerCase();
   
     var inventario = [];
-    
     var cantidad = 43;
-
     inventario[cantidad] = 0;
-
     var coins = 0;
     
     if (true) { // Habilitar reconocimiento de equipos
@@ -1196,10 +1212,15 @@ async function recompensaDiaria(wallet){
 
     if(true) {// habilitar bono comunes
         for (let index = 10; index < inventario.length; index++) {
-            if(inventario[index]){
+            if(coins < 0.6){
+                if(inventario[index]){
 
-                coins += 0.4; // CSC coins comunes todos
+                    coins += 0.4; // CSC coins comunes todos
+                }
+            }else{
+                break;
             }
+            
         }
 
     }
@@ -1207,9 +1228,14 @@ async function recompensaDiaria(wallet){
     if (true) { // habilitar bono epico
 
         for (let index = 3; index < 10; index++) {
-            if(inventario[index]){
 
-                coins += 0.7;
+            if(coins < 0.9){
+                if(inventario[index]){
+
+                    coins += 0.7;
+                }
+            }else{
+                break;
             }
         }
     }
@@ -1217,9 +1243,13 @@ async function recompensaDiaria(wallet){
 
     if (true) { // habilitar bono legendarios
         for (let index = 0; index < 3; index++) {
-            if(inventario[index]){
+            if(coins < 1){
+                if(inventario[index]){
 
-                coins += 1;
+                    coins += 1;
+                }
+            }else{
+                break;
             }
 
         }
@@ -1230,8 +1260,18 @@ async function recompensaDiaria(wallet){
     }
 
     coins = ((await appdatos.findOne({})).valorDiaria)*coins;
+    var restante = await (appdatos.findOne({})).diponibleDiaria
+    restante = restante-coins;
+    if(restante >= 0){
+        await appdatos.updateOne({},[
+            {$set:{diponibleDiaria:restante}}
+        ])
+        return coins;
 
-    return coins;
+    }else{
+        return 0;
+    }
+
 
 }
 
@@ -1469,35 +1509,40 @@ async function asignarMisionDiaria(wallet){
 
     wallet =  wallet.toLowerCase();
 
-    var aplicacion = await appdatos.find({});
-    aplicacion = aplicacion[aplicacion.length-1]
+    var aplicacion = await appdatos.findOne({});
     
-    if(web3.utils.isAddress(wallet)){
+    if(aplicacion && web3.utils.isAddress(wallet)){
 
-            var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-            var player = await playerData.find({ wallet: uc.upperCase(wallet) });
+            var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+            var player = await playerData.findOne({ wallet: uc.upperCase(wallet) });
 
-            if (usuario.length >= 1 && player.length >= 1) {
-                var datos = usuario[0];
+            if (usuario && player) {
 
-                if(datos.active ){
+                if(usuario.active){
 
                     var coins = await recompensaDiaria(wallet);
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
-                    await appdatos.updateOne({ version: aplicacion.version }, [
-                        {$set: {entregado:{$sum:["$entregado",coins]}}}
-                    ])
-                    await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
-                    ]);
-                    await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set: {FriendLyWins: 0, DuelsPlays: 0, TournamentsPlays: 0}}
-                    ]);
+                    if(coins > 0){
+                        await appdatos.updateOne({ version: aplicacion.version }, [
+                            {$set: {entregado:{$sum:["$entregado",coins]}}}
+                        ])
+                        await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                            {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
+                        ]);
+                        await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
+                            {$set: {FriendLyWins: 0, DuelsPlays: 0, TournamentsPlays: 0}}
+                        ]);
+    
+                        console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
+                        return coins;
+                    }else{
+                        console.log("## no hay saldo para pagar dayli misions");
+                        return 0;
+                    }
 
-                    console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
-                    return coins;
+                    
                 }else{
                     return 0;
                 }
