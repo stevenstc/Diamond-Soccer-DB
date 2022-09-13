@@ -1258,8 +1258,12 @@ async function recompensaDiaria(wallet){
     }
 
     coins = ((await appdatos.findOne({})).valorDiaria)*coins;
+
     var restante = await (appdatos.findOne({})).diponibleDiaria
     restante = restante-coins;
+
+    console.log("restante: "+restante)
+
     if(restante >= 0){
         await appdatos.updateOne({},[
             {$set:{diponibleDiaria:restante}}
