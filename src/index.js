@@ -1257,18 +1257,12 @@ async function recompensaDiaria(wallet){
         coins = 1; // limite del 100% en la recompensa diaria con legendarios y otros
     }
 
-    console.log("factor: "+coins)
 
     coins = ((await appdatos.findOne({})).valorDiaria)*coins;
 
-    console.log("coins: "+coins)
+    var restante = await appdatos.findOne({}).diponibleDiaria;
 
-    var restante = await (appdatos.findOne({})).diponibleDiaria
-
-    console.log("disponible: "+restante)
     restante = restante-coins;
-
-    console.log("restante: "+restante)
 
     if(restante >= 0){
         await appdatos.updateOne({},[
