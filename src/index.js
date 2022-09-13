@@ -1016,6 +1016,12 @@ async function monedasAlJuego(coins,wallet,intentos){
 
 }
 
+
+app.get('/api/v1/coinsdiaria/',async(req,res)=>{
+
+    res.send((await appdatos.findOne({})).diponibleDiaria)
+})
+
 app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
     var wallet =  req.params.wallet.toLowerCase();
 
