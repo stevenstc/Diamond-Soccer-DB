@@ -1019,7 +1019,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
 app.get('/api/v1/coinsdiaria/',async(req,res)=>{
 
-    res.send((await appdatos.findOne({})).diponibleDiaria)
+    res.send((await appdatos.findOne({})).diponibleDiaria.toString(10))
 })
 
 app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
