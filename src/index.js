@@ -1526,7 +1526,9 @@ async function asignarMisionDiaria(wallet){
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
-                    if(coins > 0){
+                    usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+
+                    if(coins > 0 && !usuario.reclamado){
                         await appdatos.updateOne({ version: aplicacion.version }, [
                             {$set: {entregado:{$sum:["$entregado",coins]}}}
                         ])
