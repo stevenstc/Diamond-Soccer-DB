@@ -151,9 +151,11 @@ const playerData = require("./modelos/playerdatas");
 const userplayonline = require("./modelos/userplayonline");
 
 async function precioCSC(){
-    var precio = fetch('https://brutustronstaking.tk/csc-market/api/v1/priceCSC')
+    var precio = 0.00045;
+
+    /*var precio = fetch('https://brutustronstaking.tk/csc-market/api/v1/priceCSC')
     .then(response => response.json())
-    .then(json => {return json;})
+    .then(json => {return json;})*/
 
     return precio;
 }
@@ -172,11 +174,11 @@ async function resetDailyMision(){
     if(disponibleMes - diponibleParaElDia >= 0){
 
         await appdatos.updateOne({},[
-            {$set:{diponibleDiaria: diponibleParaElDia, disponibleDiariaMES:disponibleMes}}
+            {$set:{diponibleDiaria: diponibleParaElDia, disponibleDiariaMES: disponibleMes-diponibleParaElDia}}
         ])
     }else{
         await appdatos.updateOne({},[
-            {$set:{diponibleDiaria: disponibleMes, disponibleDiariaMES:disponibleMes}}
+            {$set:{diponibleDiaria: disponibleMes, disponibleDiariaMES:0}}
         ])
     }
 
