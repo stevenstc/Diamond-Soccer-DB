@@ -435,7 +435,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
         //console.log(req.body)
 
-        var sesionPlay = await userplayonline.findOne({$and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}).sort({identificador: -1});
+        var sesionPlay = await userplayonline.findOne({ identificador: parseInt(req.body.sesionID) });
         if(sesionPlay){
             if(!sesionPlay.finalizada){
 
@@ -587,6 +587,11 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 //await userplayonline.updateMany({ $and: [{ sesionID: req.body.sesionID }, { finalizada: false }]}, { finalizada: true, fin: Date.now()});
 
             }else{
+
+                await userplayonline.updateOne({ _id: sesionPlay._id },[
+                    {$set: {soporteAlterno: "goles1:"+req.body.goles1+",goles2:"+req.body.goles2+",ganador:"+req.body.ganador}}
+                ]);
+
                 res.send("true");
             }
         }else{
