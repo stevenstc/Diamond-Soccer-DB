@@ -435,7 +435,17 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
         //console.log(req.body)
 
-        var sesionPlay = await userplayonline.findOne({ identificador: parseInt(req.body.sesionID) });
+        var sesionPlay = {};
+
+        
+
+        if(isNaN(parseInt(req.body.sesionID))){
+            sesionPlay = await userplayonline.findOne({ sesionID: req.body.sesionID }).sort({identificador: -1});
+        }else{
+            sesionPlay = await userplayonline.findOne({ identificador: parseInt(req.body.sesionID) });
+
+        }
+
         if(sesionPlay){
             if(!sesionPlay.finalizada){
 
