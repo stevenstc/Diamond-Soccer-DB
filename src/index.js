@@ -475,44 +475,70 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     var fee = (parseFloat(sesionPlay.csc) * 0.1);
 
-                
-                    if(ganador === "Empatado" && goles1 === goles2){
+                    if(goles1 < 99 && goles2 < 99){
 
-                        var pago = parseFloat(sesionPlay.csc) - parseFloat(sesionPlay.csc) * 0.1
+                        if(ganador === "Empatado" && goles1 === goles2){
 
-                        await user.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {balance: {$sum:["$balance",pago]}} }
-                        ]);
-                        await user.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {balance: {$sum:["$balance",pago]}} }
-                        ]);
+                            var pago = parseFloat(sesionPlay.csc) - fee
 
-                        
+                            await user.updateOne({ username: sesionPlay.u1 }, [
+                                {$set: {balance: {$sum:["$balance",pago]}} }
+                            ]);
+                            await user.updateOne({ username: sesionPlay.u2 }, [
+                                {$set: {balance: {$sum:["$balance",pago]}} }
+                            ]);
+
+
+                        }else{
+                            fee = fee*2
+                        }
+
+                        await appdatos.updateOne({ }, [
+                            {$set:{ganado: {$sum:["$ganado",fee]}}}
+                        ])
+
+                        pago = (parseFloat(sesionPlay.csc)*2) - (parseFloat(sesionPlay.csc)*2) * 0.1
+
+                        if(ganador === sesionPlay.u1 && goles1 > goles2){
+
+                            update = await user.updateOne({ username: sesionPlay.u1 }, [
+                                {$set: {balance: {$sum:["$balance",pago]}} }
+                            ]); 
+
+                        }
+
+                        if(ganador === sesionPlay.u2 && goles2 > goles1){
+
+                            update = await user.updateOne({ username: sesionPlay.u2 }, [
+                                {$set: {balance: {$sum:["$balance",pago]}} }
+                            ]); 
+
+                        }
 
                     }else{
-                        fee = fee*2
-                    }
+                        var pago = parseFloat(sesionPlay.csc)
 
-                    await appdatos.updateOne({ }, [
-                        {$set:{ganado: {$sum:["$ganado",fee]}}}
-                    ])
+                        if(goles1 > goles2){
 
-                    pago = (parseFloat(sesionPlay.csc)*2) - (parseFloat(sesionPlay.csc)*2) * 0.1
+                            await user.updateOne({ username: sesionPlay.u1 }, [
+                                {$set: {balance: {$sum:["$balance",pago]}} }
+                            ]);
+                            await user.updateOne({ username: sesionPlay.u2 }, [
+                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                            ]);
 
-                    if(ganador === sesionPlay.u1 && goles1 > goles2){
+                        }else{
 
-                        update = await user.updateOne({ username: sesionPlay.u1 }, [
-                            {$set: {balance: {$sum:["$balance",pago]}} }
-                        ]); 
+                            await user.updateOne({ username: sesionPlay.u1 }, [
+                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                            ]);
+                            await user.updateOne({ username: sesionPlay.u2 }, [
+                                {$set: {balance: {$sum:["$balance",pago]}} }
+                            ]);
 
-                    }
+                        }
 
-                    if(ganador === sesionPlay.u2 && goles2 > goles1){
-
-                        update = await user.updateOne({ username: sesionPlay.u2 }, [
-                            {$set: {balance: {$sum:["$balance",pago]}} }
-                        ]); 
-
+                        
                     }
 
                     console.log(sesionPlay.tipo+" | #"+sesionPlay.identificador+" | "+sesionPlay.csc+" | "+ganador+" | "+goles1+"-"+goles2)
@@ -526,66 +552,77 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         {$set: {csc: 0}}
                     ]);
 
-                    await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                        {$set: {LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
-                    ]);
-                    await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                        {$set: {LeagueOpport: {$sum:["$LeagueOpport" , 1]}} }
-                    ]);
-
                     await appdatos.updateOne({ }, [
                         {$set: {ganadoliga: {$sum:["$ganadoliga" , (await appdatos.findOne({})).ligaCosto*2]}}}
                     ])
 
+                    if(goles1 < 99 && goles2 < 99){
+
                     
-                    if(ganador === "Empatado" && goles1 === goles2){
+                        if(ganador === "Empatado" && goles1 === goles2){
 
-                        await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
-                        ]);
-                        await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                            {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
-                        ]);
+                            await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
+                            ]);
+                            await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
+                                {$set: {CupsWin: {$sum:["$CupsWin", 4]}} }
+                            ]);
 
-                    }
+                        }
 
-                    if(ganador === sesionPlay.u1 && goles1 > goles2){
+                        if(ganador === sesionPlay.u1 && goles1 > goles2){
 
-                        if(goles1 < 99){
-
+                            
                             await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                                 {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
                             ]);
 
-                        }else{
-                            await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                                {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
-                            ]);
-                            await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                                {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
-                            ]);
+
                         }
 
-                         
+                        if(ganador === sesionPlay.u2 && goles2 > goles1){
 
-                    }
-
-                    if(ganador === sesionPlay.u2 && goles2 > goles1){
-
-                        if(goles1 < 99){
-
+                            
                             await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                                 {$set: {CupsWin: {$sum:["$CupsWin", 6]}} }
                             ]); 
-                        }else{
+
+                        }
+
+                        await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
+                            {$set: {LeagueOpport:{$sum:["$LeagueOpport", 1]}} }
+                        ]);
+                        await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
+                            {$set: {LeagueOpport:{$sum:["$LeagueOpport", 1]}} }
+                        ]);
+
+                    }else{
+
+                        if(goles1 > goles2){
+
                             await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                                 {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                             ]);
+
+                            await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
+                                {$set: {LeagueOpport:{$sum:["$LeagueOpport", 1]}} }
+                            ]);
+
+                        }else{
+
                             await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                                 {$set: {CupsWin: {$sum:["$CupsWin", 3]}} }
                             ]);
+
+                            await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
+                                {$set: {LeagueOpport:{$sum:["$LeagueOpport", 1]}} }
+                            ]);
+
                         }
 
+
+                        
+                        
                     }
 
                     console.log(sesionPlay.tipo+" | #"+sesionPlay.identificador+" | "+ganador+" | "+goles1+"-"+goles2)
