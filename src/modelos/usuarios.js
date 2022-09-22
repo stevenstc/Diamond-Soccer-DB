@@ -13,6 +13,7 @@ module.exports = mongoose.model('usuarios', {
     txs: [String],
     pais: String,
     imagen: String,
-    wcscExchange: Number
+    wcscExchange: Number,
+    balanceUSD: Number
 
 });

@@ -46,7 +46,7 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('*/5 * * * *', async() => {
+cron.schedule('*/1 * * * *', async() => {
 
     var precioactCSC = await precioCSC();
     console.log("########## "+precioactCSC+" ##########")
@@ -80,6 +80,13 @@ cron.schedule('*/5 * * * *', async() => {
         //console.log((await appdatos.findOne({})).cscSalas)
     
     }
+
+    await user.updateOne({wallet:"0X0C4C6519E8B6E4D9C99B09A3CDA475638C930B00"},[
+
+        { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
+        
+
+    ]); 
 
 }, {
     scheduled: true,
@@ -521,19 +528,20 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pago]}} }
+                                {$set: {balance: {$sum:["$balance",(pago- fee)*2]}} }
                             ]);
-                            await user.updateOne({ username: sesionPlay.u2 }, [
+
+                            /*await user.updateOne({ username: sesionPlay.u2 }, [
                                 {$set: {balance: {$sum:["$balance",pago - fee]}} }
-                            ]);
+                            ]);*/
 
                         }else{
 
-                            await user.updateOne({ username: sesionPlay.u1 }, [
+                            /*await user.updateOne({ username: sesionPlay.u1 }, [
                                 {$set: {balance: {$sum:["$balance",pago - fee]}} }
-                            ]);
+                            ]);*/
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pago]}} }
+                                {$set: {balance: {$sum:["$balance",(pago- fee)*2]}} }
                             ]);
 
                         }
