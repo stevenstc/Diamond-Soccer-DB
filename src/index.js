@@ -745,22 +745,26 @@ app.get('/api/v1/formations-teams/:wallet',async(req,res) => {
 
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
-    if(req.query.moneda){
+    if(req.query){
+        if(req.query.moneda === "csc"){
 
-        let wallet =  req.params.wallet.toLowerCase();
+            let wallet =  req.params.wallet.toLowerCase();
 
-        if(web3.utils.isAddress(wallet)){
-            usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
+            if(web3.utils.isAddress(wallet)){
+                usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
 
-            if (usuario) {
-                res.send(usuario.balance+"");
+                if (usuario) {
+                    res.send(usuario.balance+"");
 
+
+                }else{
+                    res.send("0");
+                        
+                }
 
             }else{
                 res.send("0");
-                    
             }
-
         }else{
             res.send("0");
         }
