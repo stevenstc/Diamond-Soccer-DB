@@ -477,36 +477,35 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
+                    var pago = parseFloat(sesionPlay.csc)
                     var fee = (parseFloat(sesionPlay.csc) * 0.1);
+                    
 
                     if(goles1 < 99 && goles2 < 99){
 
                         if(ganador === "Empatado" && goles1 === goles2){
 
-                            var pago = parseFloat(sesionPlay.csc) - fee
-
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pago]}} }
+                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
                             ]);
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pago]}} }
+                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
                             ]);
 
 
                         }else{
                             fee = fee*2
+                            pago = pago*2
                         }
 
                         await appdatos.updateOne({ }, [
                             {$set:{ganado: {$sum:["$ganado",fee]}}}
                         ])
 
-                        pago = (parseFloat(sesionPlay.csc)*2) - (parseFloat(sesionPlay.csc)*2) * 0.1
-
                         if(ganador === sesionPlay.u1 && goles1 > goles2){
 
                             update = await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pago]}} }
+                                {$set: {balance: {$sum:["$balance",pago-fee]}} }
                             ]); 
 
                         }
@@ -514,31 +513,30 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(ganador === sesionPlay.u2 && goles2 > goles1){
 
                             update = await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pago]}} }
+                                {$set: {balance: {$sum:["$balance",pago-fee]}} }
                             ]); 
 
                         }
 
                     }else{
-                        var pagar = parseFloat(sesionPlay.csc)
 
                         if(goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",(pagar- fee)*2]}} }
+                                {$set: {balance: {$sum:["$balance",(pago - fee)*2]}} }
                             ]);
 
                             /*await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pagar - fee]}} }
+                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
                             ]);*/
 
                         }else{
 
                             /*await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pagar - fee]}} }
+                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
                             ]);*/
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",(pagar- fee)*2]}} }
+                                {$set: {balance: {$sum:["$balance",(pago - fee)*2]}} }
                             ]);
 
                         }
