@@ -774,7 +774,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         let wallet =  req.params.wallet.toLowerCase();
 
         if(web3.utils.isAddress(wallet)){
-            usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
+            usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balanceUSD: 1});
 
             if (usuario) {
                 //res.send(usuario.balance+"");
