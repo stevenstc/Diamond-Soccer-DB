@@ -81,12 +81,9 @@ cron.schedule('*/1 * * * *', async() => {
     
     }
 
-    await user.updateOne({wallet:"0X0C4C6519E8B6E4D9C99B09A3CDA475638C930B00"},[
-
+    /*await user.updateOne({wallet:"0X0C4C6519E8B6E4D9C99B09A3CDA475638C930B00"},[
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
-        
-
-    ]); 
+    ]); */
 
 }, {
     scheduled: true,
@@ -523,25 +520,25 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         }
 
                     }else{
-                        var pago = parseFloat(sesionPlay.csc)
+                        var pagar = parseFloat(sesionPlay.csc)
 
                         if(goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",(pago- fee)*2]}} }
+                                {$set: {balance: {$sum:["$balance",(pagar- fee)*2]}} }
                             ]);
 
                             /*await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                                {$set: {balance: {$sum:["$balance",pagar - fee]}} }
                             ]);*/
 
                         }else{
 
                             /*await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                                {$set: {balance: {$sum:["$balance",pagar - fee]}} }
                             ]);*/
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",(pago- fee)*2]}} }
+                                {$set: {balance: {$sum:["$balance",(pagar- fee)*2]}} }
                             ]);
 
                         }
