@@ -754,7 +754,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
         if (usuario) {
             console.log(usuario)
-            res.send(usuario.balanceUSD+"");
+            res.send(usuario.balanceUSD.toFixed(2)+"");
 
 
         }else{
@@ -783,7 +783,7 @@ app.get('/api/v1/coinscsc/:wallet',async(req,res) => {
         usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
 
         if (usuario) {
-            res.send(usuario.balance+"");
+            res.send(usuario.balance.toFixed(2)+"");
 
 
         }else{
