@@ -81,7 +81,11 @@ cron.schedule('*/5 * * * *', async() => {
     
     }
 
-    /*await user.updateOne({wallet:"0X0C4C6519E8B6E4D9C99B09A3CDA475638C930B00"},[
+    await user.updateMany({active:true},[
+        { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
+    ]).exec(); 
+
+    /*await user.updateOne({wallet:"0X0C4C6519E8B6E4D9C99B09A3CDA475638C930B00",active:true},[
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
     ]); */
 
@@ -109,8 +113,6 @@ const cantidadPersonasDiaria = process.env.APP_CANTDIARIA || 60;
 const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
 const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
 const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
-
-const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
 
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressInventario = process.env.APP_CONTRACT_INVENTARIO || "0x16Da4914542574F953b31688f20f1544d4E89537";
@@ -155,7 +157,7 @@ const playerData = require("./modelos/playerdatas");
 const userplayonline = require("./modelos/userplayonline");
 
 async function precioCSC(){
-    var precio = 0.00045;
+    var precio = 1;
 
     /*var precio = fetch('https://brutustronstaking.tk/csc-market/api/v1/priceCSC')
     .then(response => response.json())
@@ -477,8 +479,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
-                    var pago = parseFloat(sesionPlay.csc)
-                    var fee = (parseFloat(sesionPlay.csc) * 0.1);
+                    var pago = parseFloat(sesionPlay.csc);
+                    var fee = pago * 0.1;
                     
 
                     if(goles1 < 99 && goles2 < 99){
@@ -486,10 +488,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(ganador === "Empatado" && goles1 === goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago - fee]}} }
                             ]);
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago - fee]}} }
                             ]);
 
 
@@ -505,7 +507,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(ganador === sesionPlay.u1 && goles1 > goles2){
 
                             update = await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pago-fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-fee]}} }
                             ]); 
 
                         }
@@ -513,7 +515,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(ganador === sesionPlay.u2 && goles2 > goles1){
 
                             update = await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pago-fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-fee]}} }
                             ]); 
 
                         }
@@ -523,20 +525,20 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",(pago - fee)*2]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",(pago - fee)*2]}} }
                             ]);
 
                             /*await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago - fee]}} }
                             ]);*/
 
                         }else{
 
                             /*await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balance: {$sum:["$balance",pago - fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago - fee]}} }
                             ]);*/
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balance: {$sum:["$balance",(pago - fee)*2]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",(pago - fee)*2]}} }
                             ]);
 
                         }
@@ -749,7 +751,9 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
 
         if (usuario) {
-            res.send(usuario.balance+"");
+            //res.send(usuario.balance+"");
+            res.send(usuario.balanceUSD+"");
+
 
         }else{
             res.send("0");
@@ -802,9 +806,9 @@ app.post('/api/v1/compraravatar/:wallet',async(req,res) => {
         
         if(usuario){
 
-            if(usuario.balance-(await appdatos.findOne({})).precioAvatar >= 0){
+            if(usuario.balanceUSD-(await appdatos.findOne({})).precioAvatar >= 0){
                 await user.updateOne({ wallet: uc.upperCase(wallet) },[
-                    {$set: {imagen: req.body.avatar, balance: {$subtract:["$balance", (await appdatos.findOne({})).precioAvatar]}} }
+                    {$set: {imagen: req.body.avatar, balanceUSD: {$subtract:["$balanceUSD", (await appdatos.findOne({})).precioAvatar]}} }
                 ])
             }
         
@@ -838,7 +842,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
         if (usuario.length >= 1) {
             var datos = usuario[0];
             if(datos.active){
-                datos.balance = datos.balance + req.body.coins;
+                datos.balanceUSD = datos.balanceUSD + req.body.coins;
                 
                 //datos.wcscExchange = await consultarCscExchange(wallet);
 
@@ -907,8 +911,8 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
         if (usuario.length >= 1) { 
             var datos = usuario[0];
             if(datos.active){
-                datos.balance = datos.balance-req.body.coins;
-                if(datos.balance >= 0){
+                datos.balanceUSD = datos.balanceUSD-req.body.coins;
+                if(datos.balanceUSD >= 0){
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
@@ -1357,7 +1361,7 @@ async function asignarMisionDiaria(wallet){
                             {$set: {entregado:{$sum:["$entregado",coins]}}}
                         ])
                         await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                            {$set: {reclamado: true , balance: {$sum:["$balance",coins]}}}
+                            {$set: {reclamado: true , balanceUSD: {$sum:["$balanceUSD",coins]}}}
                         ]);
                         await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
                             {$set: {FriendLyWins: 0, DuelsPlays: 0, TournamentsPlays: 0}}
@@ -1543,7 +1547,7 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
                     payAt: Date.now(),
                     checkpoint: 0,
                     reclamado: false,
-                    balance: 0,
+                    balanceUSD: 0,
                     txs: [],
                     pais: "null",
                     imagen: imgDefault,
@@ -1651,7 +1655,7 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
                 payAt: Date.now(),
                 checkpoint: 0,
                 reclamado: false,
-                balance: 0,
+                balanceUSD: 0,
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
@@ -2158,7 +2162,7 @@ app.get('/', (req, res, next) => {
 
 });
 
-app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
+app.get('/api/v1/consultar/usd/lista/', async(req, res, next) => {
 
     var usuarios;
 
@@ -2172,7 +2176,7 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
         cantidad = 300;
     }
     
-    usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balance', -1]]);
+    usuarios = await user.find({},{password: 0, _id: 0, checkpoint:0, txs:0,email:0,reclamado:0}).limit(cantidad).sort([['balanceUSD', -1]]);
 
     var lista = [];
     var ex = 0;
@@ -2189,7 +2193,7 @@ app.get('/api/v1/consultar/wcsc/lista/', async(req, res, next) => {
             username: usuarios[index].username,
             activo: usuarios[index].active,
             wallet: usuarios[index].wallet,
-            balance: usuarios[index].balance,
+            balanceUSD: usuarios[index].balanceUSD,
             exchange: ex
         }
         
@@ -2272,7 +2276,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
             usuario = usuario[0];
             var datos = {}
             if(usuario.active){
-                datos.balance = usuario.balance + req.body.coins;
+                datos.balanceUSD = usuario.balanceUSD + req.body.coins;
                 
                 //datos.wcscExchange = await consultarCscExchange(wallet);
 
@@ -2296,7 +2300,7 @@ app.post('/api/v1/asignar2/:wallet',async(req,res) => {
                 payAt: Date.now(),
                 checkpoint: 0,
                 reclamado: false,
-                balance: req.body.coins,
+                balanceUSD: req.body.coins,
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
@@ -2331,8 +2335,8 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
         if (usuario.length >= 1) { 
             var datos = usuario[0];
             if(datos.active){
-                datos.balance = datos.balance-req.body.coins;
-                if(datos.balance >= 0){
+                datos.balanceUSD = datos.balanceUSD-req.body.coins;
+                if(datos.balanceUSD >= 0){
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
@@ -2362,7 +2366,7 @@ app.post('/api/v1/quitar2/:wallet',async(req,res) => {
                 payAt: Date.now(),
                 checkpoint: 0,
                 reclamado: false,
-                balance: 0,
+                balanceUSD: 0,
                 txs: [],
                 pais: "null",
                 imagen: imgDefault,
