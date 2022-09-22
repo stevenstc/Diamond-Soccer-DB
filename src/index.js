@@ -754,7 +754,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
         if (usuario) {
             console.log(usuario)
-            res.send(usuario.balance+"");
+            res.send(usuario.balanceUSD+"");
 
 
         }else{
