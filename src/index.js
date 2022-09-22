@@ -74,7 +74,7 @@ cron.schedule('*/5 * * * *', async() => {
         ]);
 
         await appdatos.updateOne({},[
-            { $set: {ligaCosto: new BigNumber(0.03/precioactCSC).decimalPlaces(0).toNumber()}}
+            { $set: {ligaCosto: new BigNumber(0.03/precioactCSC).decimalPlaces(2).toNumber()}}
         ]);
 
         //console.log((await appdatos.findOne({})).cscSalas)
