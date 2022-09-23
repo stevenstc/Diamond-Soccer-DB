@@ -481,6 +481,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     var pago = parseFloat(sesionPlay.csc);
                     var fee = pago * 0.1;
+
+                    console.log(pago+":"+fee)
                     
 
                     if(goles1 < 99 && goles2 < 99){
@@ -521,6 +523,9 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         }
 
                     }else{
+
+                        console.log(pago+":"+fee)
+
 
                         if(goles1 > goles2){
 
