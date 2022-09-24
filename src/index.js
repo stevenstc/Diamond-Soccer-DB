@@ -56,9 +56,9 @@ cron.schedule('*/5 * * * *', async() => {
 
         var salas = [0.05 , 0.1 , 0.3 , 0.5 , 1 , 3];
 
-        //console.log("valor Diaria: "+new BigNumber(salas[0]/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
+        //console.log("valor Diaria: "+new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
         await appdatos.updateOne({},[
-            { $set: {valorDiaria: new BigNumber(salas[0]/precioactCSC).decimalPlaces(2).toNumber()}}
+            { $set: {valorDiaria: new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber()}}
         ]);
     
         await appdatos.updateOne({},[
@@ -71,6 +71,10 @@ cron.schedule('*/5 * * * *', async() => {
                 new BigNumber(salas[5]/precioactCSC).decimalPlaces(2).toNumber()
 
             ]}}
+        ]);
+
+        await appdatos.updateOne({},[
+            { $set: {entrenamiento: new BigNumber(salas[0]/precioactCSC).decimalPlaces(2).toNumber()}}
         ]);
 
         await appdatos.updateOne({},[
