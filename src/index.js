@@ -762,7 +762,9 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balanceUSD: 1});
 
         if (usuario) {
-            res.send(usuario.balanceUSD.toFixed(2)+"");
+
+            
+            res.send(new BigNumber(usuario.balanceUSD).decimalPlaces(2).toString(10)+"");
 
 
         }else{
