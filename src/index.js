@@ -120,8 +120,8 @@ const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
 
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressInventario = process.env.APP_CONTRACT_INVENTARIO || "0x16Da4914542574F953b31688f20f1544d4E89537";
-const addressExchnge = process.env.APP_CONTRACT_EXCHANGE || "0x42D3ad6032311220C48ccee4cE5401308F7AC88A";
-const addressContractToken = process.env.APP_CONTRACTTOKEN || "0xF0fB4a5ACf1B1126A991ee189408b112028D7A63";
+const addressExchnge = process.env.APP_CONTRACT_EXCHANGE || "0x7eeAA02dAc001bc589703B6330067fdDAeAcAc87";
+const addressContractToken = process.env.APP_CONTRACTTOKEN || "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4";
 
 const imgDefault = "0";
 
@@ -2289,7 +2289,7 @@ app.get('/api/v1/consultar/csc/exchange/:wallet', async(req, res, next) => {
 
  });
 
- app.get('/api/v1/consultar/csc/cuenta/:wallet', async(req, res, next) => {
+ app.get('/api/v1/consultar/dcsc/cuenta/:wallet', async(req, res, next) => {
 
     var wallet = req.params.wallet;
 
