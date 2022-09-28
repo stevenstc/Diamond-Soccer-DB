@@ -764,7 +764,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
         if (usuario) {
 
             if (usuario.balanceUSD) {
-                res.send(new BigNumber(usuario.balanceUSD).decimalPlaces(2).toString(10)+"");
+                res.send((usuario.balanceUSD).toFixed(3)+"");
 
             }else{
                 res.send("0");
