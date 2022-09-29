@@ -85,9 +85,9 @@ cron.schedule('*/5 * * * *', async() => {
     
     }
 
-    await user.updateMany({active:true},[
+    /*await user.updateMany({active:true},[
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
-    ]).exec(); 
+    ]).exec(); */
 
     /*await user.updateOne({wallet:"0X0C4C6519E8B6E4D9C99B09A3CDA475638C930B00",active:true},[
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
@@ -181,14 +181,14 @@ async function resetDailyMision(){
 
     var disponibleMes = (await appdatos.findOne({})).disponibleDiariaMES
 
-    if(disponibleMes - diponibleParaElDia >= 0){
+    if(disponibleMes > diponibleParaElDia ){
 
         await appdatos.updateOne({},[
-            {$set:{diponibleDiaria: diponibleParaElDia, disponibleDiariaMES: disponibleMes-diponibleParaElDia}}
+            {$set:{diponibleDiaria: {$sum:['$diponibleDiaria',diponibleParaElDia]}, disponibleDiariaMES: disponibleMes-diponibleParaElDia}}
         ])
     }else{
         await appdatos.updateOne({},[
-            {$set:{diponibleDiaria: disponibleMes, disponibleDiariaMES:0}}
+            {$set:{diponibleDiaria: {$sum:['$diponibleDiaria','$disponibleDiariaMES']}, disponibleDiariaMES:0}}
         ])
     }
 
@@ -649,8 +649,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
             }else{
 
+                var support = JSON.stringify({goles1:req.body.goles1,goles2:req.body.goles2,ganador:req.body.ganador})
+
                 await userplayonline.updateOne({ _id: sesionPlay._id },[
-                    {$set: {soporteAlterno: "goles1:"+req.body.goles1+",goles2:"+req.body.goles2+",ganador:"+req.body.ganador}}
+                    {$set: {soporteAlterno: support}}
                 ]);
 
                 res.send("true");
