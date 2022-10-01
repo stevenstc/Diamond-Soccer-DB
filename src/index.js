@@ -56,29 +56,29 @@ cron.schedule('*/5 * * * *', async() => {
 
         var salas = [0.05 , 0.1 , 0.3 , 0.5 , 1 , 3];
 
-        //console.log("valor Diaria: "+new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber() +"CSC")
+        //console.log("valor Diaria: "+new BigNumber(0.5/precioactCSC).decimalPlaces(3).toNumber() +"CSC")
         await appdatos.updateOne({},[
-            { $set: {valorDiaria: new BigNumber(0.5/precioactCSC).decimalPlaces(2).toNumber()}}
+            { $set: {valorDiaria: new BigNumber(0.5/precioactCSC).decimalPlaces(3).toNumber()}}
         ]);
     
         await appdatos.updateOne({},[
             { $set:{cscSalas: [
-                new BigNumber(salas[0]/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(salas[1]/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(salas[2]/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(salas[3]/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(salas[4]/precioactCSC).decimalPlaces(2).toNumber(),
-                new BigNumber(salas[5]/precioactCSC).decimalPlaces(2).toNumber()
+                new BigNumber(salas[0]/precioactCSC).decimalPlaces(3).toNumber(),
+                new BigNumber(salas[1]/precioactCSC).decimalPlaces(3).toNumber(),
+                new BigNumber(salas[2]/precioactCSC).decimalPlaces(3).toNumber(),
+                new BigNumber(salas[3]/precioactCSC).decimalPlaces(3).toNumber(),
+                new BigNumber(salas[4]/precioactCSC).decimalPlaces(3).toNumber(),
+                new BigNumber(salas[5]/precioactCSC).decimalPlaces(3).toNumber()
 
             ]}}
         ]);
 
         await appdatos.updateOne({},[
-            { $set: {entrenamiento: new BigNumber(salas[0]/precioactCSC).decimalPlaces(2).toNumber()}}
+            { $set: {entrenamiento: new BigNumber(salas[0]/precioactCSC).decimalPlaces(3).toNumber()}}
         ]);
 
         await appdatos.updateOne({},[
-            { $set: {ligaCosto: new BigNumber(0.03/precioactCSC).decimalPlaces(2).toNumber()}}
+            { $set: {ligaCosto: new BigNumber(salas[0]/precioactCSC).decimalPlaces(3).toNumber()}}
         ]);
 
         //console.log((await appdatos.findOne({})).cscSalas)
@@ -1940,11 +1940,12 @@ app.get('/api/v1/consulta/miranking/:wallet',async(req,res) => {
 });
 
 async function leadborad(cantidad){
-    
+
+    cantidad = parseInt(cantidad);
+
     if(cantidad <= 0){
         cantidad = 20;
     }else{
-        cantidad = parseInt(cantidad);
         if(cantidad > 100 )cantidad= 100;
     }
 
