@@ -89,9 +89,6 @@ cron.schedule('*/5 * * * *', async() => {
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
     ]).exec(); */
 
-    /*await user.updateOne({wallet:"0X0C4C6519E8B6E4D9C99B09A3CDA475638C930B00",active:true},[
-        { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
-    ]); */
 
 }, {
     scheduled: true,
@@ -1105,7 +1102,7 @@ async function recompensaDiaria(wallet){
 
         for (let index = 3; index < 10; index++) {
 
-            if(coins < 0.9){
+            if(coins < 1.4){
                 if(inventario[index]){
 
                     coins += 0.7;
@@ -1119,7 +1116,7 @@ async function recompensaDiaria(wallet){
 
     if (true) { // habilitar bono legendarios
         for (let index = 0; index < 3; index++) {
-            if(coins < 1){
+            if(coins < 2){
                 if(inventario[index]){
 
                     coins += 1;
@@ -1131,8 +1128,8 @@ async function recompensaDiaria(wallet){
         }
     }
 
-    if(coins > 1){
-        coins = 1; // limite del 100% en la recompensa diaria con legendarios y otros
+    if(coins > 2){
+        coins = 2; // limite del 200% en la recompensa diaria con legendarios y otros
     }
 
 
@@ -1840,16 +1837,14 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
             aplicacion = await appstatuses.findOne({version: req.query.version},{_id:0});
 
+            var lead = await leadborad(3);
 
-           var lead = await leadborad(3);
-
-           for (let index = 0; index < lead.length; index++) {
-            lead[index] = (await user.findOne({wallet: lead[index]})).username;
+            for (let index = 0; index < lead.length; index++) {
+                lead[index] = (await user.findOne({wallet: lead[index]})).username;
             
-           }
+            }
         
-
-           var inicial = await appdatos.findOne({})
+            var inicial = await appdatos.findOne({})
     
             res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+inicial.maximoCSC+","+inicial.ligaCosto +","+inicial.precioAvatar+","+lead+","+inicial.cscSalas+","+inicial.onOffServers+","+inicial.entrenamiento+","+inicial.plaformaWin+","+inicial.plaformaAnd+","+inicial.plaformaWeb   ); 
 
@@ -2120,6 +2115,8 @@ app.post('/api/v1/reset/leadboard',async(req,res) => {
 
         await playerData.updateMany({},{ $set: {CupsWin:0, LeagueOpport:0}}).exec();
         
+        //await playerData.updateMany({},{ $set: { LeagueOpport:0}}).exec();
+
         
         res.send("true");
     }else{
