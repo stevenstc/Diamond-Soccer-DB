@@ -1803,16 +1803,13 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 app.get('/api/v1/app/init/',async(req,res) => {
 
     if(req.query.version){
-        var aplicacion = await appstatuses.find({version: req.query.version},{_id:0});
+        var aplicacion = await appstatuses.findOne({version: req.query.version},{_id:0});
 
-        if (aplicacion.length >= 1) {
+        if (aplicacion) {
 
-            aplicacion = aplicacion[aplicacion.length-1]
+            var appData = await appdatos.findOne({});
 
-            var appData = await appdatos.find({});
-
-            if (appData.length >= 1) {
-                appData = appData[appData.length-1]
+            if (appData) {
 
                 appData.finliga = parseInt((appData.finliga-Date.now())/(86400*1000));
 
@@ -1825,14 +1822,11 @@ app.get('/api/v1/app/init/',async(req,res) => {
                     //aplicacion.liga = "on"
                 }
 
+
             }else{
 
                 /*
-                appData = new appdatos({
-                    entregado: 0,
-                    ganado: 0, 
-                    ganadoliga: 0,
-                    misiondiaria: true,
+                appdatos.set({
                     finliga: Date.now() + 86400 * 1000 * 30 
                 });
             
@@ -1844,9 +1838,8 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
             await appstatuses.updateOne({version: req.query.version}, aplicacion);
 
+            aplicacion = await appstatuses.findOne({version: req.query.version},{_id:0});
 
-            aplicacion = await appstatuses.find({version: req.query.version},{_id:0});
-            aplicacion = aplicacion[aplicacion.length-1]
 
            var lead = await leadborad(3);
 
@@ -1943,11 +1936,10 @@ async function leadborad(cantidad){
 
     cantidad = parseInt(cantidad);
 
-    if(cantidad <= 0){
-        cantidad = 20;
-    }else{
-        if(cantidad > 100 )cantidad= 100;
-    }
+    if(isNaN(cantidad))cantidad = 0;
+    if(cantidad > 100)cantidad = 100;
+    if(cantidad <= 0)cantidad = 20;
+   
 
     var lista = [];
 
@@ -1970,7 +1962,18 @@ async function leadborad(cantidad){
 
 app.get('/api/v1/consulta/leadboard',async(req,res) => {
 
-    res.send((await leadborad(req.body.cantidad)).toString());
+    var cantidad = 20;
+
+    if(req.body){
+        cantidad = req.body.cantidad;
+    }
+
+    if(req.query){
+        cantidad = req.query.cantidad;
+        
+    }
+
+    res.send((await leadborad(cantidad)).toString());
 });
 
 app.get('/api/v1/consulta/redwardleague',async(req,res) => {
@@ -1984,8 +1987,8 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
         if(!req.query.cantidad){
             cantidad = 20;
         }else{
-            if(parseInt(req.query.cantidad) > 300){
-                cantidad = 300;
+            if(parseInt(req.query.cantidad) > 100){
+                cantidad = 100;
             }else{
                 cantidad = parseInt(req.query.cantidad);
             }
@@ -1993,7 +1996,7 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 
         var poolliga = (appData.ganadoliga)*0.9;
 
-        var porcentajes = [0.4,0.2,0.15,0.06,0.04,0.035,0.035,0.03,0.03,0.02]
+        var porcentajes = [0.35,0.25,0.15,0.06,0.04,0.035,0.035,0.03,0.03,0.02]
         var lista = [];
         
         if (cantidad >= 1) {
