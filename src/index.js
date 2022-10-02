@@ -81,9 +81,15 @@ cron.schedule('*/5 * * * *', async() => {
             { $set: {ligaCosto: new BigNumber(salas[0]/precioactCSC).decimalPlaces(3).toNumber()}}
         ]);
 
+
+
         //console.log((await appdatos.findOne({})).cscSalas)
     
     }
+
+    // termina partidas abandonadas por tiempo
+    await finalizarPartidas();
+
 
     /*await user.updateMany({active:true},[
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
@@ -348,6 +354,42 @@ app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
         
     }else{
         res.send("null");
+    }
+
+});
+
+async function finalizarPartidas(){
+
+    await userplayonline.updateMany({$and: [{finalizada:false},{inicio:{$lte:{$subtract:[Date.now(),185000]}}}]},{ $set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}).exec();
+    //await userplayonline.updateMany({$and: [{finalizada:false},{inicio: 1664628445577}]}, {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}).exec();
+
+}
+
+app.get('/api/v1/sesion/usuarioenpartida',async(req,res) => {
+
+    if( req.query.usuario ){
+
+        req.query.usuario = uc.upperCase(req.query.usuario);
+
+        var sesion = await userplayonline.findOne({$and: [{$or:[{soporte1:req.query.usuario},{soporte2:req.query.usuario}]  },{finalizada:false}]}).sort({identificador: -1})
+        //console.log(sesion)
+
+        await finalizarPartidas();
+        if(sesion){
+            if(sesion.identificador){
+                console.log("consulta de sesion #"+sesion.identificador )
+                res.send("si#"+sesion.identificador);
+            }else{
+                res.send("no");
+
+            }
+        }else{
+            res.send("no");
+
+        }
+        
+    }else{
+        res.send("no");
     }
 
 });
