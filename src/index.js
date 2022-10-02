@@ -49,7 +49,7 @@ cron.schedule('0 0 * * *', async() => {
 cron.schedule('*/5 * * * *', async() => {
 
     var precioactCSC = await precioCSC();
-    console.log("########## "+precioactCSC+" ##########")
+    //console.log("########## "+precioactCSC+" ##########")
 
     
     if( precioactCSC > 0){
