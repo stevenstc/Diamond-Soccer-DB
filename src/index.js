@@ -46,10 +46,10 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('*/5 * * * *', async() => {
+cron.schedule('* */5 * * * *', async() => {
 
     var precioactCSC = await precioCSC();
-    //console.log("########## "+precioactCSC+" ##########")
+    console.log("########## "+precioactCSC+" ##########")
 
     
     if( precioactCSC > 0){
@@ -360,7 +360,7 @@ app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
 
 async function finalizarPartidas(){
 
-    await userplayonline.updateMany({$and: [{finalizada:false},{inicio:{$lte:{$subtract:[Date.now(),185000]}}}]},{ $set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}).exec();
+    await userplayonline.updateMany({$and: [{finalizada:false},{inicio:{$gte:{$subtract:[Date.now(),185000]}}}]},{ $set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}).exec();
     //await userplayonline.updateMany({$and: [{finalizada:false},{inicio: 1664628445577}]}, {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}).exec();
 
 }
