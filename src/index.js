@@ -360,7 +360,7 @@ app.get('/api/v1/sesion/consultar/porid',async(req,res) => {
 
 async function finalizarPartidas(){
 
-    await userplayonline.updateMany({$and: [{finalizada:false},{inicio:{$gte:{$subtract:[Date.now(),185000]}}}]},{ $set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}).exec();
+    await userplayonline.updateMany({$and: [{finalizada:false},{'inicio':{$gte:{$subtract:[Date.now(),185000]}}}]},{ $set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}).exec();
     //await userplayonline.updateMany({$and: [{finalizada:false},{inicio: 1664628445577}]}, {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}).exec();
 
 }
