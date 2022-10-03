@@ -364,10 +364,10 @@ async function finalizarPartidas(){
 
     console.log("##"+tiempoDeCorte+"##")
 
-    await userplayonline.updateMany({finalizada:false,inicio:{$lte:tiempoDeCorte}},
+    /*await userplayonline.updateMany({finalizada:false,inicio:{$lte:tiempoDeCorte}},
         [
             {$set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}
-        ]).exec();
+        ]).exec();*/
     //await userplayonline.updateMany({$and: [{finalizada:false},{inicio: 1664628445577}]}, {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}).exec();
 
 }
