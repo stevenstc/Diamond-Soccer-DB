@@ -46,7 +46,7 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('*/5 * * * *', async() => {
+cron.schedule('* */2 * * * *', async() => {
 
     var precioactCSC = await precioCSC();
     //console.log("########## "+precioactCSC+" ##########")
@@ -362,7 +362,7 @@ async function finalizarPartidas(){
 
     console.log("####")
 
-    await userplayonline.updateMany({$and: [{finalizada:false},{inicio:{$lte:{$substract:[Date.now(),185000]}}} ]},{fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}).exec();
+    await userplayonline.updateMany({finalizada:false,inicio:{$lte:{$substract:[Date.now(),185000]}}},{fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}).exec();
     //await userplayonline.updateMany({$and: [{finalizada:false},{inicio: 1664628445577}]}, {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}).exec();
 
 }
