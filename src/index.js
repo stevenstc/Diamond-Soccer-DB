@@ -46,7 +46,7 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('* */2 * * * *', async() => {
+cron.schedule('*/2 * * * *', async() => {
 
     var precioactCSC = await precioCSC();
     //console.log("########## "+precioactCSC+" ##########")
