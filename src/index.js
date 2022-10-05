@@ -46,12 +46,10 @@ cron.schedule('0 0 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('*/2 * * * *', async() => {
+cron.schedule('20 * * * * *', async() => {
 
     var precioactCSC = await precioCSC();
     //console.log("########## "+precioactCSC+" ##########")
-
-    
     if( precioactCSC > 0){
 
         var salas = [0.05 , 0.1 , 0.3 , 0.5 , 1 , 3];
@@ -91,6 +89,7 @@ cron.schedule('*/2 * * * *', async() => {
     await finalizarPartidas();
 
 
+    // transforma los CSC a la nueva moneda DCSC
     /*await user.updateMany({active:true},[
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
     ]).exec(); */
@@ -363,6 +362,12 @@ async function finalizarPartidas(){
     var tiempoDeCorte = Date.now()-185000;
 
     console.log("##"+tiempoDeCorte+"##")
+
+    await userplayonline.updateMany({inicio:{$lte:tiempoDeCorte},finalizada:false},
+        [
+            {$set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}
+        ]
+    ).sort({identificador:-1})
 
     /*await userplayonline.updateMany({finalizada:false,inicio:{$lte:tiempoDeCorte}},
         [
@@ -1152,7 +1157,7 @@ async function recompensaDiaria(wallet){
             if(coins < 0.5){
                 if(inventario[index]){
 
-                    coins += 0.4; // CSC coins comunes todos
+                    coins += 0.1; // CSC coins comunes todos
                 }
             }else{
                 break;
@@ -1166,10 +1171,10 @@ async function recompensaDiaria(wallet){
 
         for (let index = 3; index < 10; index++) {
 
-            if(coins < 1.4){
+            if(coins < 1.5){
                 if(inventario[index]){
 
-                    coins += 0.7;
+                    coins += 0.5;
                 }
             }else{
                 break;
