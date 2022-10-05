@@ -40,6 +40,8 @@ cron.schedule('0 0 * * *', async() => {
     console.log('Reinicio Misiones diarias y Oportunidad de liga: '+Date());
     await resetDailyMision();
     console.log('FIN Reinicio Misiones diarias y Oportunidad de liga: '+Date());
+    // termina partidas abandonadas por tiempo
+    await finalizarPartidas();
 
 }, {
     scheduled: true,
@@ -85,8 +87,7 @@ cron.schedule('20 * * * * *', async() => {
     
     }
 
-    // termina partidas abandonadas por tiempo
-    await finalizarPartidas();
+    
 
 
     // transforma los CSC a la nueva moneda DCSC
@@ -367,7 +368,7 @@ async function finalizarPartidas(){
         [
             {$set: {fin: Date.now(),finalizada: true , ganador: "finalizado por tiempo"}}
         ]
-    ).sort({identificador:-1})
+    )
 
     /*await userplayonline.updateMany({finalizada:false,inicio:{$lte:tiempoDeCorte}},
         [
