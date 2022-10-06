@@ -40,8 +40,10 @@ cron.schedule('0 0 * * *', async() => {
     console.log('Reinicio Misiones diarias y Oportunidad de liga: '+Date());
     await resetDailyMision();
     console.log('FIN Reinicio Misiones diarias y Oportunidad de liga: '+Date());
+
+
     // termina partidas abandonadas por tiempo
-    await finalizarPartidas();
+    //await finalizarPartidas();
 
 }, {
     scheduled: true,
@@ -87,9 +89,10 @@ cron.schedule('20 * * * * *', async() => {
     
     }
 
+    // termina partidas abandonadas por tiempo
+    //await finalizarPartidas();
+
     
-
-
     // transforma los CSC a la nueva moneda DCSC
     /*await user.updateMany({active:true},[
         { $set: { balanceUSD: {$sum: ["$balanceUSD", {$multiply:["$balance",0.00045] } ]}  , balance: 0} }
