@@ -33,13 +33,26 @@ app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(bodyParser.raw());
-app.use(bodyParser.text());
+//app.use(bodyParser.raw());
+//app.use(bodyParser.text());
 
-cron.schedule('0 0 * * *', async() => {
-    console.log('Reinicio Misiones diarias y Oportunidad de liga: '+Date());
+cron.schedule('0 5 * * *', async() => {
+    console.log('Reinicio de OBJETIVOS Misiones diarias y Oportunidad de liga: '+Date());
     await resetDailyMision();
-    console.log('FIN Reinicio Misiones diarias y Oportunidad de liga: '+Date());
+    console.log('FIN: '+Date());
+
+    // termina partidas abandonadas por tiempo
+    await finalizarPartidas();
+
+}, {
+    scheduled: true,
+    timezone: "UTC"
+});
+
+cron.schedule('0 20 * * *', async() => {
+    console.log('Recarga saldo misiones diarias: '+Date());
+    await recargaDayliMision();
+    console.log('FIN: '+Date());
 
 
     // termina partidas abandonadas por tiempo
@@ -182,6 +195,10 @@ async function resetDailyMision(){
     await playerData.updateMany({},
         { $set: {FriendLyWins: 0, DuelsPlays:0 ,LeagueOpport: 0, TournamentsPlays: 0, }}
     ).exec();
+
+}
+
+async function recargaDayliMision(){
 
     var diponibleParaElDia = (await appdatos.findOne({})).valorDiaria*cantidadPersonasDiaria
 
