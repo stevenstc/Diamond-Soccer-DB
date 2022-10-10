@@ -20,6 +20,6 @@ module.exports = mongoose.model('appdatos', {
   plaformaWeb: Boolean,
   diponibleDiaria: Number,
   disponibleDiariaMES: Number,
-  ganadoDEVS: Number
+  cantidadPersonasDiaria: Number
 
 });

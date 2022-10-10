@@ -131,7 +131,7 @@ const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
 
 const miniCoins = parseInt(process.env.APP_MIN_COINS) || 1000;
 
-const cantidadPersonasDiaria = process.env.APP_CANTDIARIA || 60;
+const cantidadPersonasDiaria = process.env.APP_CANTDIARIA || 20;
 
 const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
 const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
@@ -140,7 +140,7 @@ const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 const addressInventario = process.env.APP_CONTRACT_INVENTARIO || "0x16Da4914542574F953b31688f20f1544d4E89537";
 const addressExchnge = process.env.APP_CONTRACT_EXCHANGE || "0x7eeAA02dAc001bc589703B6330067fdDAeAcAc87";
-const addressContractToken = process.env.APP_CONTRACTTOKEN || "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4";
+const addressContractToken = process.env.APP_CONTRACTTOKEN || "0x456D75D8cE68Aff9e746b77B1AEC0b052cD29e57";
 
 const imgDefault = "0";
 
@@ -200,7 +200,7 @@ async function resetDailyMision(){
 
 async function recargaDayliMision(){
 
-    var diponibleParaElDia = (await appdatos.findOne({})).valorDiaria*cantidadPersonasDiaria
+    var diponibleParaElDia = (await appdatos.findOne({})).valorDiaria*(await appdatos.findOne({})).cantidadPersonasDiaria
 
     var disponibleMes = (await appdatos.findOne({})).disponibleDiariaMES
 
