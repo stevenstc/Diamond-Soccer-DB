@@ -407,7 +407,7 @@ app.get('/api/v1/sesion/usuarioenpartida',async(req,res) => {
         var sesion = await userplayonline.findOne({$and: [{$or:[{soporte1:req.query.usuario},{soporte2:req.query.usuario}]  },{finalizada:false}]}).sort({identificador: -1})
         //console.log(sesion)
 
-        await finalizarPartidas();
+        //await finalizarPartidas();
         if(sesion){
             if(sesion.identificador){
                 console.log("consulta de sesion #"+sesion.identificador )
