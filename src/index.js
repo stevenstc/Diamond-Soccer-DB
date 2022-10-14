@@ -581,7 +581,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(ganador === sesionPlay.u1 && goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",(pago*2)-fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-(fee*2)]}} }
                             ]); 
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
@@ -597,7 +597,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             ]); 
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",(pago*2)-fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-(fee*2)]}} }
                             ]); 
 
                         }
@@ -607,7 +607,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",(pago-fee)*2]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-fee]}} }
                             ]);
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
@@ -621,7 +621,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             ]);
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",(pago-fee)*2]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-fee]}} }
                             ]);
 
                         }
