@@ -557,6 +557,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     var pago = parseFloat(sesionPlay.csc);
 
+                    await appdatos.updateOne({ }, [
+                        {$set:{ganado: {$sum:["$ganado",pago*0.2]}}}
+                    ])
+
                     if(goles1 < 99 && goles2 < 99){
 
                         if(ganador === "Empatado" && goles1 === goles2){
@@ -568,22 +572,12 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                                 {$set: {balanceUSD: {$subtract:["$balanceUSD", pago*0.1]}} }
                             ]);
 
-
-                            await appdatos.updateOne({ }, [
-                                {$set:{ganado: {$sum:["$ganado",pago*0.1]}}}
-                            ])
-
-
-                        }else{
-                            await appdatos.updateOne({ }, [
-                                {$set:{ganado: {$sum:["$ganado",pago*0.2]}}}
-                            ])
                         }
 
                         if(ganador === sesionPlay.u1 && goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.8]}} }
                             ]); 
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
@@ -599,17 +593,19 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             ]); 
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.8]}} }
                             ]); 
 
                         }
 
+
                     }else{
+
 
                         if(goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.8]}} }
                             ]);
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
@@ -623,7 +619,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             ]);
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.8]}} }
                             ]);
 
                         }
