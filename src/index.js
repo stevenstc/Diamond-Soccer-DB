@@ -556,32 +556,34 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                 if ((sesionPlay.tipo).search("DUEL") != -1) {
 
                     var pago = parseFloat(sesionPlay.csc);
-                    var fee = pago * 0.1;
 
                     if(goles1 < 99 && goles2 < 99){
 
                         if(ganador === "Empatado" && goles1 === goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$subtract:["$balanceUSD", fee]}} }
+                                {$set: {balanceUSD: {$subtract:["$balanceUSD", pago*0.1]}} }
                             ]);
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balanceUSD: {$subtract:["$balanceUSD", fee]}} }
+                                {$set: {balanceUSD: {$subtract:["$balanceUSD", pago*0.1]}} }
                             ]);
+
+
+                            await appdatos.updateOne({ }, [
+                                {$set:{ganado: {$sum:["$ganado",pago*0.1]}}}
+                            ])
 
 
                         }else{
-                            fee = fee*2
+                            await appdatos.updateOne({ }, [
+                                {$set:{ganado: {$sum:["$ganado",pago*0.2]}}}
+                            ])
                         }
-
-                        await appdatos.updateOne({ }, [
-                            {$set:{ganado: {$sum:["$ganado",fee]}}}
-                        ])
 
                         if(ganador === sesionPlay.u1 && goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-(fee*2)]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
                             ]); 
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
@@ -597,7 +599,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             ]); 
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-(fee*2)]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
                             ]); 
 
                         }
@@ -607,7 +609,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         if(goles1 > goles2){
 
                             await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
                             ]);
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
@@ -621,7 +623,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             ]);
 
                             await user.updateOne({ username: sesionPlay.u2 }, [
-                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago-fee]}} }
+                                {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.9]}} }
                             ]);
 
                         }
@@ -881,11 +883,16 @@ app.get('/api/v1/coinscsc/:wallet',async(req,res) => {
 
     if(web3.utils.isAddress(wallet)){
     
-            
         usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{balance: 1});
 
         if (usuario) {
-            res.send(usuario.balance.toFixed(2)+"");
+            if(usuario.balance){
+                res.send(parseFloat(usuario.balance).toFixed(2)+"");
+
+            }else{
+                res.send("0");
+
+            }
 
 
         }else{
