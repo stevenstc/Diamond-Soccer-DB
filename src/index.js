@@ -642,6 +642,10 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     var costoDeLiga = (await appdatos.findOne({})).ligaCosto;
 
+                    await appdatos.updateOne({ }, [
+                        {$set:{ganado: {$sum:["$ganado",costoDeLiga*0.1]}}}
+                    ])
+
                     await user.updateOne({ username: sesionPlay.u1 }, [
                         {$set: {balanceUSD: {$subtract:["$balanceUSD",costoDeLiga]}} }
                     ]);
@@ -649,6 +653,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                     await user.updateOne({ username: sesionPlay.u2 }, [
                         {$set: {balanceUSD: {$subtract:["$balanceUSD",costoDeLiga]}} }
                     ]);
+
+                    // sumatoria para repartir entre usuarios
 
                     await appdatos.updateOne({ }, [
                         {$set: {ganadoliga: {$sum:["$ganadoliga",costoDeLiga*2]}}}
@@ -2082,7 +2088,7 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
             }
         }
 
-        var poolliga = (appData.ganadoliga)*0.9;
+        var poolliga = appData.ganadoliga;
 
         var porcentajes = [0.35,0.25,0.15,0.06,0.04,0.035,0.035,0.03,0.03,0.02]
         var lista = [];
