@@ -36,10 +36,8 @@ app.use(bodyParser.json());
 //app.use(bodyParser.raw());
 //app.use(bodyParser.text());
 
+
 cron.schedule('0 5 * * *', async() => {
-    console.log('Reinicio de OBJETIVOS Misiones diarias y Oportunidad de liga: '+Date());
-    await resetDailyMision();
-    console.log('FIN: '+Date());
 
     // termina partidas abandonadas por tiempo
     await finalizarPartidas();
@@ -49,7 +47,11 @@ cron.schedule('0 5 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('0 20 * * *', async() => {
+cron.schedule('0 0 * * *', async() => {
+    console.log('Reinicio de OBJETIVOS Misiones diarias y Oportunidad de liga: '+Date());
+    await resetDailyMision();
+    console.log('FIN: '+Date());
+
     console.log('Recarga saldo misiones diarias: '+Date());
     await recargaDayliMision();
     console.log('FIN: '+Date());
@@ -519,8 +521,6 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
         var sesionPlay = {};
 
-        
-
         if(isNaN(parseInt(req.body.sesionID))){
             sesionPlay = await userplayonline.findOne({ sesionID: req.body.sesionID }).sort({identificador: -1});
         }else{
@@ -588,12 +588,12 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                         if(ganador === sesionPlay.u2 && goles2 > goles1){
 
-                            await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$subtract:["$balanceUSD",pago]}} }
-                            ]); 
-
                             await user.updateOne({ username: sesionPlay.u2 }, [
                                 {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.8]}} }
+                            ]);
+
+                            await user.updateOne({ username: sesionPlay.u1 }, [
+                                {$set: {balanceUSD: {$subtract:["$balanceUSD",pago]}} }
                             ]); 
 
                         }
@@ -614,14 +614,14 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                         }else{
 
-                            await user.updateOne({ username: sesionPlay.u1 }, [
-                                {$set: {balanceUSD: {$subtract:["$balanceUSD",pago]}} }
-                            ]);
-
                             await user.updateOne({ username: sesionPlay.u2 }, [
                                 {$set: {balanceUSD: {$sum:["$balanceUSD",pago*0.8]}} }
                             ]);
 
+                            await user.updateOne({ username: sesionPlay.u1 }, [
+                                {$set: {balanceUSD: {$subtract:["$balanceUSD",pago]}} }
+                            ]);
+                        
                         }
 
                         
