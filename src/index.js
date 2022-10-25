@@ -47,7 +47,7 @@ cron.schedule('0 5 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('0 0 * * *', async() => {
+cron.schedule('0 22 * * *', async() => {
     console.log('Reinicio de OBJETIVOS Misiones diarias y Oportunidad de liga: '+Date());
     await resetDailyMision();
     console.log('FIN: '+Date());
