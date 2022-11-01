@@ -47,18 +47,21 @@ cron.schedule('0 5 * * *', async() => {
     timezone: "UTC"
 });
 
-cron.schedule('0 22 * * *', async() => {
-    console.log('Reinicio de OBJETIVOS Misiones diarias y Oportunidad de liga: '+Date());
-    await resetDailyMision();
-    console.log('FIN: '+Date());
+cron.schedule('0 20 * * *', async() => {
 
     console.log('Recarga saldo misiones diarias: '+Date());
     await recargaDayliMision();
     console.log('FIN: '+Date());
 
+}, {
+    scheduled: true,
+    timezone: "UTC"
+});
 
-    // termina partidas abandonadas por tiempo
-    //await finalizarPartidas();
+cron.schedule('0 22 * * *', async() => {
+    console.log('Reinicio de OBJETIVOS Misiones diarias y Oportunidad de liga: '+Date());
+    await resetDailyMision();
+    console.log('FIN: '+Date());
 
 }, {
     scheduled: true,
