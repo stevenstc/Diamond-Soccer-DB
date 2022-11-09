@@ -1416,15 +1416,13 @@ async function resetChecpoint(wallet){
     var usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{});
 
     if(Date.now() >= usuario.checkpoint){
-
-        // resetear daily mision
+        // resetear - habilitar  daily mision
         await user.updateOne({ wallet: uc.upperCase(wallet) }, [
             {$set: {checkpoint: (Date.now()+DaylyTime*1000) , reclamado: false}}
         ]);
-
-        // resetear objetivos
-        //await playerData.updateOne({wallet: uc.upperCase(wallet)},[{$set: {DuelsPlays: "0", FriendLyWins: "0"}}]);
-
+        return true;
+    }else{
+        return false;
     }
 
 }
@@ -1434,13 +1432,10 @@ async function pagarDiaria(wallet){
 
         await resetChecpoint(wallet);
 
-        var usuario = await user.find({ wallet: uc.upperCase(wallet) });
-        var data = await playerData.find({wallet: uc.upperCase(wallet)});
+        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+        var data = await playerData.findOne({wallet: uc.upperCase(wallet)});
 
-        if (data.length >= 1 && usuario.length >= 1 ) {
-
-            data = data[0];
-            usuario = usuario[0];
+        if (data && usuario ) {
     
             if(usuario.active && !usuario.reclamado && parseInt(data.FriendLyWins) >= (await appdatos.findOne({})).objetivosDiaria[0]  && parseInt(data.DuelsPlays) >= (await appdatos.findOne({})).objetivosDiaria[1] && parseInt(data.LeagueOpport) >= (await appdatos.findOne({})).objetivosDiaria[2] && parseInt(data.TournamentsPlays) >= (await appdatos.findOne({})).objetivosDiaria[3] ){
 
@@ -1476,7 +1471,7 @@ app.get('/api/v1/misiondiaria/:wallet',async(req,res) => {
 
     if(web3.utils.isAddress(wallet) ){
 
-        res.send(await pagarDiaria(wallet)+"")
+        res.send( "false")//await pagarDiaria(wallet)+"")
 
     }else{
         res.send("false");
@@ -1492,48 +1487,36 @@ async function asignarMisionDiaria(wallet){
     
     if(aplicacion && web3.utils.isAddress(wallet)){
 
-            var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
-            var player = await playerData.findOne({ wallet: uc.upperCase(wallet) });
+        var coins = await recompensaDiaria(wallet);
+        //datos.wcscExchange = await consultarCscExchange(wallet);
 
-            if (usuario && player) {
+        var usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+        var player = await playerData.findOne({ wallet: uc.upperCase(wallet) });
 
-                if(usuario.active){
+        if (usuario && player) {
 
-                    var coins = await recompensaDiaria(wallet);
+            if(usuario.active && coins > 0 && !usuario.reclamado){
 
-                    //datos.wcscExchange = await consultarCscExchange(wallet);
+                await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                    {$set: {reclamado: true , balanceUSD: {$sum:["$balanceUSD",coins]}}}
+                ]);
+                await appdatos.updateOne({ version: aplicacion.version }, [
+                    {$set: {entregado:{$sum:["$entregado",coins]}}}
+                ]);
+                await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
+                    {$set: {FriendLyWins: 0, DuelsPlays: 0, TournamentsPlays: 0}}
+                ]);
 
-                    usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
-
-                    if(coins > 0 && !usuario.reclamado){
-                        await appdatos.updateOne({ version: aplicacion.version }, [
-                            {$set: {entregado:{$sum:["$entregado",coins]}}}
-                        ])
-                        await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                            {$set: {reclamado: true , balanceUSD: {$sum:["$balanceUSD",coins]}}}
-                        ]);
-                        await playerData.updateOne({ wallet: uc.upperCase(wallet) }, [
-                            {$set: {FriendLyWins: 0, DuelsPlays: 0, TournamentsPlays: 0}}
-                        ]);
-    
-                        console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
-                        return coins;
-                    }else{
-                        console.log("## no hay saldo para pagar dayli misions");
-                        return 0;
-                    }
-
-                    
-                }else{
-                    return 0;
-                }
-
-            
+                console.log("Daily mision coins: "+coins+" # "+uc.upperCase(wallet));
+                return coins;
             }else{
+                console.log("## no hay saldo para pagar dayli misions");
                 return 0;
             }
 
-       
+        }else{
+            return 0;
+        }
 
     }else{
         return 0;
