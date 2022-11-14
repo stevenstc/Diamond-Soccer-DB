@@ -434,7 +434,6 @@ app.get('/api/v1/sesion/usuarioenpartida',async(req,res) => {
 
 app.get('/api/v1/sesion/consultar/latesmaches',async(req,res) => {
 
-
     var long = 5;
 
     if( req.query.long ){
@@ -442,6 +441,24 @@ app.get('/api/v1/sesion/consultar/latesmaches',async(req,res) => {
     }
  
     var sesion = await userplayonline.find({finalizada: true},{__v:0,_id:0}).sort({identificador:-1}).limit(long);
+
+    res.send(sesion);
+        
+
+
+});
+
+app.get('/api/v1/sesion/consultar/maches',async(req,res) => {
+
+    var long = 5;
+
+    var wallet = req.query.wallet = uc.upperCase(req.query.wallet);
+
+    if( req.query.long ){
+        long = parseInt(req.query.long)
+    }
+ 
+    var sesion = await userplayonline.find({wallet: wallet},{__v:0,_id:0}).sort({identificador:-1}).limit(long);
 
     res.send(sesion);
         
@@ -978,6 +995,32 @@ app.post('/api/v1/compraravatar/:wallet',async(req,res) => {
 		
 });
 
+async function asignarMonedas(wallet, cantidad){
+
+    usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
+
+    if (usuario) {
+        
+        if(usuario.active){
+            //datos.wcscExchange = await consultarCscExchange(wallet);
+
+            await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                {$set:{balanceUSD: {$sum:["$balanceUSD",cantidad]}}}
+            ])
+
+            console.log("Add coins: "+cantidad+" # "+uc.upperCase(wallet));
+            return true;
+        }else{
+            return false;
+        }
+
+    }else{
+        
+        return false;
+    }
+
+}
+
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
@@ -986,51 +1029,12 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet) && req.body.coins <= miniCoins){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
-
-        if (usuario.length >= 1) {
-            var datos = usuario[0];
-            if(datos.active){
-                datos.balanceUSD = datos.balanceUSD + req.body.coins;
-                
-                //datos.wcscExchange = await consultarCscExchange(wallet);
-
-                update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                    {$set:datos}
-                ])
-
-                console.log("Win coins: "+req.body.coins+" # "+uc.upperCase(wallet));
-                res.send("true");
-            }else{
-                res.send("false");
-            }
-    
+        if (await asignarMonedas(wallet, req.body.coins)) {
+            res.send("true");
+            
         }else{
-            console.log("creado USUARIO al Asignar"+wallet)
-            var users = new user({
-                wallet: uc.upperCase(wallet),
-                email: "",
-                password: "",
-                username: "", 
-                active: true,
-                payAt: Date.now(),
-                checkpoint: 0,
-                reclamado: false,
-                balance: req.body.coins,
-                txs: [],
-                pais: "null",
-                imagen: imgDefault,
-                wcscExchange: 0
-            });
-    
-            users.save().then(()=>{
-                console.log("Usuario creado exitodamente");
-                
-            })
-
             res.send("false");
                 
-            
         }
 
 
@@ -1055,20 +1059,20 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
-        if (usuario.length >= 1) { 
-            var datos = usuario[0];
-            if(datos.active){
-                datos.balanceUSD = datos.balanceUSD-req.body.coins;
-                if(datos.balanceUSD >= 0){
+        if (usuario) { 
+
+            if(usuario.active){
+
+                if(usuario.balanceUSD-req.body.coins >= 0){
 
                     //datos.wcscExchange = await consultarCscExchange(wallet);
 
-                    update = await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                        {$set:datos}
+                    await user.updateOne({ wallet: uc.upperCase(wallet) }, [
+                        {$set:{balanceUSD: {$subtract:["$balanceUSD",req.body.coins]}}}
                     ]);
-                    console.log("Lost coins: "+req.body.coins+" # "+uc.upperCase(wallet));
+                    console.log("Subtract coins: "+req.body.coins+" # "+uc.upperCase(wallet));
                     res.send("true");
 
                 }else{
@@ -1080,31 +1084,9 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
             }
     
         }else{
-            console.log("usuario creado al retirar monedas"+wallet)
-            var users = new user({
-                wallet: uc.upperCase(wallet),  
-                email: "",
-                password: "",
-                username: "",   
-                active: true,
-                payAt: Date.now(),
-                checkpoint: 0,
-                reclamado: false,
-                balance: 0,
-                txs: [],
-                pais: "null",
-                imagen: imgDefault,
-                wcscExchange: 0
-            });
-    
-            users.save().then(()=>{
-                console.log("Usuario creado exitodamente");
-                
-            })
-
+            
             res.send("false");
                 
-            
         }
 
     }else{
@@ -1336,7 +1318,7 @@ app.get('/api/v1/enlinea',async(req,res) => {
 
         }else{
 
-            res.send((appstatus.linea).toString());
+            res.send((appstatus.linea).toString(10));
 
         }   
 
@@ -1530,19 +1512,14 @@ app.get('/api/v1/user/exist/:wallet',async(req,res) => {
      
     if(web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) })
-            .catch(err => {
-                console.log("usuario inexistente");
-                res.send("false");
-                return;
-            });
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) },{id: true})
 
-        if (usuario.length >= 1) {
+        if (usuario) {
             res.send("true");
         }else{
-    
             res.send("false");
         }
+
     }else{
         res.send("false");
     }
@@ -1554,10 +1531,9 @@ app.get('/api/v1/user/active/:wallet',async(req,res) => {
      
     if(web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
+        if (usuario) {
             res.send(""+usuario.active);
         }else{
             res.send("false");
@@ -1572,11 +1548,9 @@ app.get('/api/v1/user/username/:wallet',async(req,res) => {
      
     if(web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
-
+        if (usuario) {
             res.send(usuario.username);
         }else{
             res.send("false");
@@ -1589,11 +1563,9 @@ app.get('/api/v1/user/username/:wallet',async(req,res) => {
 app.get('/api/v1/user/wallet/',async(req,res) => {
     var username =  req.query.username;
      
-    usuario = await user.find({ username: username });
+    usuario = await user.findOne({ username: username });
 
-    if (usuario.length >= 1) {
-        usuario = usuario[0];
-
+    if (usuario) {
         res.send(usuario.wallet);
     }else{
         res.send("false");
@@ -1620,11 +1592,9 @@ app.get('/api/v1/user/pais/:wallet',async(req,res) => {
      
     if(web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
 
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
-
+        if (usuario) {
             res.send(usuario.pais);
         }else{
             res.send("false");
@@ -1662,11 +1632,9 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
      
     if(web3.utils.isAddress(wallet)){
 
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
+        usuario = await user.findOne({ wallet: uc.upperCase(wallet) });
         
-  
-            if (usuario.length >= 1) {
-                usuario = usuario[0];
+            if (usuario) {
 
                 res.send(!usuario.active+"");
             }else{
@@ -1763,9 +1731,9 @@ app.post('/api/v1/user/update/info/:wallet',async(req,res) => {
     
         }else{
             console.log("creado USUARIO al actualizar info: "+wallet)
-            var email = "";
-            var username = "";
-            var password = "";
+            var email = "N/A@N/A.N/A";
+            var username = "N/A";
+            var password = "please register bro";
 
             if (req.body.email) {
                 email = req.body.email;
@@ -1871,11 +1839,11 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
 
     var email =  req.query.email;
 
-    usuario = await user.find({ email: email });
+    usuario = await user.findOne({ email: email });
 
-    if (usuario.length >= 1) {
-        //res.send("false");
-        res.send("true");
+    if (usuario) {
+        res.send("false");
+        //res.send("true");
     }else{
         res.send("true");
     }
@@ -1896,27 +1864,39 @@ app.get('/api/v1/app/init/',async(req,res) => {
                 appData.finliga = parseInt((appData.finliga-Date.now())/(86400*1000));
 
                 if(appData.finliga < 0){
-                    appData.finliga = 0;
 
-                    aplicacion.liga = "off"
+                    /* pagar Liga y reiniciar nueva fecha */
 
-                }else{
-                    //aplicacion.liga = "on"
+                    var cantidades = await redwardleague(10);
+                    var wallets = await leadborad(10);
+
+                    await appdatos.updateOne({},[
+                        {$set: {finliga: Date.now() + 86400*1000 * 7 , ganadoliga: 0}}
+                    ]);
+
+                    await playerData.updateMany({},{ $set: {CupsWin:0, LeagueOpport:0}}).exec();
+
+                    for (let index = 0; index < wallets.length; index++) {
+                        if(cantidades[index] > 0){
+                            await asignarMonedas(wallets[index], cantidades[index])
+                        }
+                        
+                        
+                    }
+
+                    appData = await appdatos.findOne({});
+                    appData.finliga = parseInt((appData.finliga-Date.now())/(86400*1000));
+
                 }
 
 
             }else{
 
-                /*
-                appdatos.set({
-                    finliga: Date.now() + 86400 * 1000 * 30 
-                });
-            
-                await appData.save();*/
-
-                appData.finliga = 30;
+                appData.finliga = 7;
 
             }
+
+            appData.finliga++;
 
             await appstatuses.updateOne({version: req.query.version}, aplicacion);
 
@@ -2056,21 +2036,19 @@ app.get('/api/v1/consulta/leadboard',async(req,res) => {
     res.send((await leadborad(cantidad)).toString());
 });
 
-app.get('/api/v1/consulta/redwardleague',async(req,res) => {
+async function redwardleague(cantidad){
 
     var appData = await appdatos.findOne({});
 
-    if (appData) {
+    if (appData ) {
 
-        var cantidad;
-
-        if(!req.query.cantidad){
+        if(!cantidad){
             cantidad = 20;
         }else{
-            if(parseInt(req.query.cantidad) > 100){
+            if(parseInt(cantidad) > 100){
                 cantidad = 100;
             }else{
-                cantidad = parseInt(req.query.cantidad);
+                cantidad = parseInt(cantidad);
             }
         }
 
@@ -2078,27 +2056,43 @@ app.get('/api/v1/consulta/redwardleague',async(req,res) => {
 
         var porcentajes = [0.35,0.25,0.15,0.06,0.04,0.035,0.035,0.03,0.03,0.02]
         var lista = [];
-        
-        if (cantidad >= 1) {
-            
-            for (let index = 0; index < cantidad; index++) {
     
-                lista[index] = parseInt(poolliga*porcentajes[index]);
             
-                if(isNaN(lista[index])){
-                    lista[index] = 0;
-                }
-                
-            }
-            res.send(lista.toString(10));
+        for (let index = 0; index < cantidad; index++) {
 
-        }else{
-            res.send("null");  
+            lista[index] = parseInt(poolliga*porcentajes[index]);
+        
+            if(isNaN(lista[index])){
+                lista[index] = 0;
+            }
+            
         }
 
+        return lista;
+
     }else{
-        res.send("null");
+        return [];
     }
+
+}
+
+app.get('/api/v1/consulta/redwardleague',async(req,res) => {
+
+    var cantidad;
+
+    if(!req.query.cantidad){
+        cantidad = 20;
+    }else{
+        if(parseInt(req.query.cantidad) > 100){
+            cantidad = 100;
+        }else{
+            cantidad = parseInt(req.query.cantidad);
+        }
+    }
+
+    var lista =  await redwardleague(cantidad)
+
+    res.send(lista.toString(10));
 
 
 });
@@ -2292,12 +2286,6 @@ app.post('/api/v1/update/playerdata/:wallet',async(req,res) => {
     
 });
 
-app.get('/', (req, res, next) => {
-
-    res.send(req.query);
-
-});
-
 app.get('/api/v1/consultar/usd/lista/', async(req, res, next) => {
 
     var usuarios;
@@ -2396,133 +2384,6 @@ app.get('/api/v1/consultar/numero/aleatorio', async(req, res, next) => {
 
     res.send(Math.floor(Math.random() * 2)+'');
  
-});
-
-app.post('/api/v1/asignar2/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    req.body.coins = parseFloat(req.body.coins);
-    
-    if(req.body.token == TOKEN2 && web3.utils.isAddress(wallet)){
-
-        usuario = await user.find({ wallet: uc.upperCase(wallet) },{_id: 0});
-
-        if (usuario.length >= 1) {
-            usuario = usuario[0];
-            var datos = {}
-            if(usuario.active){
-                datos.balanceUSD = usuario.balanceUSD + req.body.coins;
-                
-                //datos.wcscExchange = await consultarCscExchange(wallet);
-
-                await user.updateOne({ wallet: uc.upperCase(wallet) }, [
-                    {$set: datos}
-                ]);
-                console.log("Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet));
-                res.send("true");
-            }else{
-                res.send("false");
-            }
-    
-        }else{
-            console.log("creado USUARIO al Ajustar"+wallet)
-            var users = new user({
-                wallet: uc.upperCase(wallet),
-                email: "",
-                password: "",
-                username: "", 
-                active: true,
-                payAt: Date.now(),
-                checkpoint: 0,
-                reclamado: false,
-                balanceUSD: req.body.coins,
-                txs: [],
-                pais: "null",
-                imagen: imgDefault,
-                wcscExchange: 0
-            });
-    
-            users.save().then(()=>{
-                console.log("Usuario creado exitodamente");
-                res.send("true");
-            })
-                
-            
-        }
-
-
-    }else{
-        res.send("false");
-    }
-		
-});
-
-app.post('/api/v1/quitar2/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    req.body.coins = parseFloat(req.body.coins);
-
-    if(req.body.token == TOKEN2  && web3.utils.isAddress(wallet)){
-
-        usuario = await user.find({ wallet: uc.upperCase(wallet) });
-
-        if (usuario.length >= 1) { 
-            var datos = usuario[0];
-            if(datos.active){
-                datos.balanceUSD = datos.balanceUSD-req.body.coins;
-                if(datos.balanceUSD >= 0){
-
-                    //datos.wcscExchange = await consultarCscExchange(wallet);
-
-                    var nuevoUsuario = new user(datos)
-                    await nuevoUsuario.save();
-
-                    //update = await user.updateOne({ wallet: uc.upperCase(wallet) }, datos);
-                    console.log("-Ajuste: "+req.body.coins+" # "+uc.upperCase(wallet));
-                    res.send("true");
-
-                }else{
-                    res.send("false");
-                }
-                
-            }else{
-                res.send("false");
-            }
-    
-        }else{
-            console.log("usuario creado al retirar monedas"+wallet)
-            var users = new user({
-                wallet: uc.upperCase(wallet),  
-                email: "",
-                password: "",
-                username: "",   
-                active: true,
-                payAt: Date.now(),
-                checkpoint: 0,
-                reclamado: false,
-                balanceUSD: 0,
-                txs: [],
-                pais: "null",
-                imagen: imgDefault,
-                wcscExchange: 0
-            });
-    
-            users.save().then(()=>{
-                console.log("Usuario creado exitodamente");
-                
-            })
-            res.send("false");
-                
-            
-        }
-
-    }else{
-        res.send("false");
-    }
-		
-    
 });
 
 app.post('/api/v1/ban/unban/:wallet',async(req,res) => {
