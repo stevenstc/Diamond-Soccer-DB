@@ -1861,11 +1861,11 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
             if (appData) {
 
-                appData.finliga = parseInt((appData.finliga-Date.now())/(86400*1000));
+                var finliga = (appData.finliga-Date.now())/(86400*1000);
 
-                if(appData.finliga < 0){
+                if(finliga <= 0){
 
-                    /* pagar Liga y reiniciar nueva fecha */
+                    console.log("pagar Liga y reiniciar nueva fecha");
 
                     var cantidades = await redwardleague(10);
                     var wallets = await leadborad(10);
@@ -1881,22 +1881,20 @@ app.get('/api/v1/app/init/',async(req,res) => {
                             await asignarMonedas(wallets[index], cantidades[index])
                         }
                         
-                        
                     }
-
-                    appData = await appdatos.findOne({});
-                    appData.finliga = parseInt((appData.finliga-Date.now())/(86400*1000));
 
                 }
 
+                appData = await appdatos.findOne({});
 
-            }else{
+                var today = new Date(appData.finliga);
 
-                appData.finliga = 7;
+                finliga = today.getUTCDate()+" - "+today.getUTCHours()+":"+today.getUTCMinutes()+":"+today.getUTCSeconds() +" ~ "+parseInt(finliga+1)
+                //"M"+(today.getUTCMonth()+1)+" / D"+
+                console.log(finliga)
 
             }
-
-            appData.finliga++;
+            
 
             await appstatuses.updateOne({version: req.query.version}, aplicacion);
 
@@ -1911,7 +1909,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
         
             var inicial = await appdatos.findOne({})
     
-            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+appData.finliga+",false,"+inicial.maximoCSC+","+inicial.ligaCosto +","+inicial.precioAvatar+","+lead+","+inicial.cscSalas+","+inicial.onOffServers+","+inicial.entrenamiento+","+inicial.plaformaWin+","+inicial.plaformaAnd+","+inicial.plaformaWeb   ); 
+            res.send( aplicacion.liga+","+aplicacion.mantenimiento+","+aplicacion.version+","+aplicacion.link+","+aplicacion.duelo+","+aplicacion.torneo+","+aplicacion.updates+","+finliga+",false,"+inicial.maximoCSC+","+inicial.ligaCosto +","+inicial.precioAvatar+","+lead+","+inicial.cscSalas+","+inicial.onOffServers+","+inicial.entrenamiento+","+inicial.plaformaWin+","+inicial.plaformaAnd+","+inicial.plaformaWeb   ); 
 
 
         }else{
