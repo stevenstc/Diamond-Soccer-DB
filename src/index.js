@@ -1871,7 +1871,7 @@ app.get('/api/v1/app/init/',async(req,res) => {
                     var wallets = await leadborad(10);
 
                     await appdatos.updateOne({},[
-                        {$set: {finliga: Date.now() + 86400*1000 * 7 , ganadoliga: 0}}
+                        {$set: {finliga: appData.finliga + 86400*1000 * 7 , ganadoliga: 0}}
                     ]);
 
                     await playerData.updateMany({},{ $set: {CupsWin:0, LeagueOpport:0}}).exec();
