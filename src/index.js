@@ -1889,9 +1889,8 @@ app.get('/api/v1/app/init/',async(req,res) => {
 
                 var today = new Date(appData.finliga);
 
-                finliga = today.getUTCDate()+" - "+today.getUTCHours()+":"+today.getUTCMinutes()+":"+today.getUTCSeconds() +" ~ "+parseInt(finliga+1)
+                finliga = "End: "+ today.getUTCDate()+" - "+today.getUTCHours()+":"+today.getUTCMinutes()+":"+today.getUTCSeconds() +" ~ "+parseInt(finliga+1)
                 //"M"+(today.getUTCMonth()+1)+" / D"+
-                console.log(finliga)
 
             }
             
