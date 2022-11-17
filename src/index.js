@@ -658,29 +658,30 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         {$set: {csc: 0}}
                     ]);
 
-                    // pagar entrada liga
+                    // costo entrada liga
 
                     var costoDeLiga = (await appdatos.findOne({})).ligaCosto;
 
-                    await appdatos.updateOne({ }, [
-                        {$set:{ganado: {$sum:["$ganado",costoDeLiga*0.1]}}}
-                    ])
-
-                    await user.updateOne({ username: sesionPlay.u1 }, [
-                        {$set: {balanceUSD: {$subtract:["$balanceUSD",costoDeLiga]}} }
-                    ]);
-
-                    await user.updateOne({ username: sesionPlay.u2 }, [
-                        {$set: {balanceUSD: {$subtract:["$balanceUSD",costoDeLiga]}} }
-                    ]);
-
-                    // sumatoria para repartir entre usuarios
-
-                    await appdatos.updateOne({ }, [
-                        {$set: {ganadoliga: {$sum:["$ganadoliga",costoDeLiga*2]}}}
-                    ])
-
+                    
                     if(goles1 < 99 && goles2 < 99){
+
+                        await appdatos.updateOne({ }, [
+                            {$set:{ganado: {$sum:["$ganado",costoDeLiga*0.1]}}}
+                        ])
+    
+                        await user.updateOne({ username: sesionPlay.u1 }, [
+                            {$set: {balanceUSD: {$subtract:["$balanceUSD",costoDeLiga]}} }
+                        ]);
+    
+                        await user.updateOne({ username: sesionPlay.u2 }, [
+                            {$set: {balanceUSD: {$subtract:["$balanceUSD",costoDeLiga]}} }
+                        ]);
+
+                        // sumatoria para repartir entre usuarios
+
+                        await appdatos.updateOne({ }, [
+                            {$set: {ganadoliga: {$sum:["$ganadoliga",costoDeLiga*2]}}}
+                        ])
 
                     
                         if(ganador === "Empatado" && goles1 === goles2){
@@ -724,6 +725,8 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                         if(goles1 > goles2){
 
+                            /*
+
                             await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                                 {$set:{ CupsWin: {$sum:["$CupsWin", 3]},LeagueOpport:{$sum:["$LeagueOpport", 1]} }}
                             ]);
@@ -731,9 +734,12 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                                 {$set: {LeagueOpport:{$sum:["$LeagueOpport", 1]}} }
                             ]);
+                            */
 
                         }else{
 
+                            /*
+
                             await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                                 {$set:{ CupsWin: {$sum:["$CupsWin", 3]},LeagueOpport:{$sum:["$LeagueOpport", 1]} }}
 
@@ -742,6 +748,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                             await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                                 {$set: {LeagueOpport:{$sum:["$LeagueOpport", 1]}} }
                             ]);
+                            */
 
                         }
 
