@@ -722,14 +722,11 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     }else{
 
-                        
-                        
-
                             if(goles1 > goles2){
 
                                 var copas = 3;
 
-                                if(goles1 == 99 || goles2 == 99){copas = 6 }
+                                if(goles1 == 999 || goles2 == 999){copas = 6 }
 
                                 await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
                                     {$set:{ CupsWin: {$sum:["$CupsWin", copas]},LeagueOpport:{$sum:["$LeagueOpport", 1]} }}
@@ -743,7 +740,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                                 var copas = 3;
 
-                                if(goles1 == 99 || goles2 == 99){copas = 6 }
+                                if(goles1 == 999 || goles2 == 999){copas = 6 }
 
                                 await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
                                     {$set:{ CupsWin: {$sum:["$CupsWin", copas]},LeagueOpport:{$sum:["$LeagueOpport", 1]} }}
