@@ -730,11 +730,11 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         var copas = 3;
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte1 }, [
-                            {$set:{ CupsWin: {$sum:["$CupsWin", copas]},LeagueOpport:{$sum:["$LeagueOpport", 1]} }}
+                            {$set:{ CupsWin: {$sum:["$CupsWin", copas]} }}
                         ]);
 
                         await playerData.updateOne({ wallet: sesionPlay.soporte2 }, [
-                            {$set:{ CupsWin: {$sum:["$CupsWin", copas]},LeagueOpport:{$sum:["$LeagueOpport", 1]} }}
+                            {$set:{ CupsWin: {$sum:["$CupsWin", copas]} }}
 
                         ]);
 
