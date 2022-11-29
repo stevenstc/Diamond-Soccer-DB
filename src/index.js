@@ -660,11 +660,7 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
 
                     
 
-                    // sumatoria para repartir entre usuarios
-
-                    await appdatos.updateOne({ }, [
-                        {$set: {ganadoliga: {$sum:["$ganadoliga",costoDeLiga*2]}}}
-                    ])
+                    
 
                     if(goles1 < 99 && goles2 < 99){
 
@@ -683,6 +679,12 @@ app.post('/api/v1/sesion/actualizar/',async(req,res) => {
                         await user.updateOne({ username: sesionPlay.u2 }, [
                             {$set: {balanceUSD: {$subtract:["$balanceUSD",costoDeLiga]}} }
                         ]);
+
+                        // sumatoria para repartir entre usuarios
+
+                        await appdatos.updateOne({ }, [
+                            {$set: {ganadoliga: {$sum:["$ganadoliga",costoDeLiga*2]}}}
+                        ])
 
                     
                         if(ganador === "Empatado" && goles1 === goles2){
@@ -2094,7 +2096,7 @@ app.get('/api/v1/consulta/poolliga',async(req,res) => {
     }
 
 
-    res.send(appData.ganadoliga+"");
+    res.send((appData.ganadoliga).toString(10));
 
 
 });
