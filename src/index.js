@@ -10,6 +10,8 @@ var moment = require('moment');
 const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
 
+mongoose.set('strictQuery', false);
+
 const abiExchage = require("./abiExchange.js");
 const abiInventario = require("./abiInventario.js");
 const abiToken = require("./abitoken.js");
