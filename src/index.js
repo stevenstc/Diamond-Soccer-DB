@@ -10,8 +10,6 @@ var moment = require('moment');
 const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
 
-mongoose.set('strictQuery', false);
-
 const abiExchage = require("./abiExchange.js");
 const abiInventario = require("./abiInventario.js");
 const abiToken = require("./abitoken.js");
@@ -172,7 +170,7 @@ web3.eth.accounts.wallet.add(PEKEY);
     data: ""
 }, 'MyPassword!').then(console.log);*/
 //console.log(web3.eth.accounts.wallet);
-const options = { useNewUrlParser: true, useUnifiedTopology: true };
+const options = { useNewUrlParser: true, useUnifiedTopology: true};
 
 var formatoliga = 'MDYYYY';
 
