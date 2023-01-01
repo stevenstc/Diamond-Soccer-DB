@@ -31,10 +31,8 @@ var testers = require("./betaTesters");
 const app = express();
 app.use(cors());
 
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-//app.use(bodyParser.raw());
-//app.use(bodyParser.text());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 cron.schedule('0 5 * * *', async() => {
